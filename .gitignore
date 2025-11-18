@@ -42,3 +42,4 @@ testem.log
 Thumbs.db
 /backend/certs
 /backend/node_modules
+/frontend/node_modules

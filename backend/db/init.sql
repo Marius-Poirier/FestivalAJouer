@@ -551,12 +551,6 @@ GROUP BY zp.id, zp.nom, zp.festival_id, j.id, j.nom, e.nom;
 -- DONNÉES D'EXEMPLE (optionnel)
 -- ============================================
 
--- Utilisateur admin par défaut (mot de passe: admin - à hasher avec bcrypt)
--- Note: Le hash sera généré par le backend via bcrypt
-INSERT INTO Utilisateur (email, password_hash, role, statut, valide_par)
-VALUES ('admin@festival.com', '$2a$10$ExempleHashMotDePasseSecurise', 'admin', 'valide', NULL)
-ON CONFLICT (email) DO NOTHING;
-
 -- Festival exemple
 INSERT INTO Festival (nom) VALUES ('Festival du Jeu 2025')
 ON CONFLICT (nom) DO NOTHING;
