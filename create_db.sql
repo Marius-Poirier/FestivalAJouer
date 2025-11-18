@@ -65,7 +65,6 @@ CREATE TABLE ZoneTarifaire (
     nom VARCHAR(255) NOT NULL,
     nombre_tables_total INT NOT NULL,
     prix_table DECIMAL(10, 2) NOT NULL,
-    prix_m2 DECIMAL(10, 2) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE,
@@ -476,8 +475,8 @@ VALUES ('admin@festival.com', '$2y$10$ExempleHashMotDePasseSecurise', 'admin', '
 INSERT INTO Festival (nom) VALUES ('Festival du Jeu 2025');
 
 -- Zone tarifaire exemple
-INSERT INTO ZoneTarifaire (festival_id, nom, nombre_tables_total, prix_table, prix_m2)
-VALUES (1, 'Zone Premium', 50, 200.00, 44.44);
+INSERT INTO ZoneTarifaire (festival_id, nom, nombre_tables_total, prix_table)
+VALUES (1, 'Zone Premium', 50, 200.00);
 
 -- Zone du plan exemple
 INSERT INTO ZoneDuPlan (festival_id, nom, nombre_tables, zone_tarifaire_id)
