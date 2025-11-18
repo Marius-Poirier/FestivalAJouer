@@ -4,10 +4,10 @@ import bcrypt from 'bcryptjs'
 export async function ensureAdmin() {
     const hash = await bcrypt.hash('admin', 10);
     await pool.query(
-        `INSERT INTO users (login, password_hash, role)
-        VALUES ('admin', $1, 'admin')
-        ON CONFLICT (login) DO NOTHING`,
+        `INSERT INTO Utilisateur (email, password_hash, role, statut, valide_par)
+        VALUES ('admin@festival.com', $1, 'admin', 'valide', NULL)
+        ON CONFLICT (email) DO NOTHING`,
         [hash]
-    )
+    );
     console.log('Compte admin vérifié ou créé');
 }
