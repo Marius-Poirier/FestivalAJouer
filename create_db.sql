@@ -1,225 +1,250 @@
 -- ============================================
--- Base de données Festival de Jeux
+-- Base de données Festival de Jeux (PostgreSQL)
 -- ============================================
 
 -- Suppression des tables si elles existent (pour réinitialisation)
-DROP TABLE IF EXISTS AuditLog;
-DROP TABLE IF EXISTS JeuFestivalTable;
-DROP TABLE IF EXISTS JeuFestival;
-DROP TABLE IF EXISTS ReservationTable;
-DROP TABLE IF EXISTS Reservation;
-DROP TABLE IF EXISTS ContactEditeur;
-DROP TABLE IF EXISTS JeuAuteur;
-DROP TABLE IF EXISTS JeuEditeur;
-DROP TABLE IF EXISTS EditeurContact;
-DROP TABLE IF EXISTS Jeu;
-DROP TABLE IF EXISTS Personne;
-DROP TABLE IF EXISTS Editeur;
-DROP TABLE IF EXISTS Table_Jeu;
-DROP TABLE IF EXISTS ZoneDuPlan;
-DROP TABLE IF EXISTS ZoneTarifaire;
-DROP TABLE IF EXISTS Festival;
-DROP TABLE IF EXISTS Utilisateur;
+DROP TABLE IF EXISTS AuditLog CASCADE;
+DROP TABLE IF EXISTS JeuFestivalTable CASCADE;
+DROP TABLE IF EXISTS JeuFestival CASCADE;
+DROP TABLE IF EXISTS ReservationTable CASCADE;
+DROP TABLE IF EXISTS Reservation CASCADE;
+DROP TABLE IF EXISTS ContactEditeur CASCADE;
+DROP TABLE IF EXISTS JeuAuteur CASCADE;
+DROP TABLE IF EXISTS JeuEditeur CASCADE;
+DROP TABLE IF EXISTS EditeurContact CASCADE;
+DROP TABLE IF EXISTS Jeu CASCADE;
+DROP TABLE IF EXISTS Personne CASCADE;
+DROP TABLE IF EXISTS Editeur CASCADE;
+DROP TABLE IF EXISTS Table_Jeu CASCADE;
+DROP TABLE IF EXISTS ZoneDuPlan CASCADE;
+DROP TABLE IF EXISTS ZoneTarifaire CASCADE;
+DROP TABLE IF EXISTS Festival CASCADE;
+DROP TABLE IF EXISTS Utilisateur CASCADE;
+
+-- Suppression des types ENUM s'ils existent
+DROP TYPE IF EXISTS role_utilisateur CASCADE;
+DROP TYPE IF EXISTS statut_utilisateur CASCADE;
+DROP TYPE IF EXISTS statut_table CASCADE;
+DROP TYPE IF EXISTS statut_workflow_reservation CASCADE;
+
+-- ============================================
+-- CRÉATION DES TYPES ENUM
+-- ============================================
+CREATE TYPE role_utilisateur AS ENUM ('benevole', 'organisateur', 'super_organisateur', 'admin');
+CREATE TYPE statut_utilisateur AS ENUM ('en_attente', 'valide', 'refuse');
+CREATE TYPE statut_table AS ENUM ('libre', 'reserve', 'plein', 'hors_service');
+CREATE TYPE statut_workflow_reservation AS ENUM (
+    'pas_contacte',
+    'contact_pris',
+    'discussion_en_cours',
+    'sera_absent',
+    'considere_absent',
+    'present',
+    'facture',
+    'paiement_recu',
+    'paiement_en_retard'
+);
 
 -- ============================================
 -- TABLE: Utilisateur
 -- Gestion des comptes (organisateurs, admin)
 -- ============================================
 CREATE TABLE Utilisateur (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role ENUM('benevole', 'organisateur', 'super_organisateur', 'admin') NOT NULL,
-    statut ENUM('en_attente', 'valide', 'refuse') NOT NULL DEFAULT 'en_attente',
-    date_demande DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    valide_par INT NULL,
+    role role_utilisateur NOT NULL,
+    statut statut_utilisateur NOT NULL DEFAULT 'en_attente',
+    date_demande TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    valide_par INTEGER NULL,
     email_bloque BOOLEAN DEFAULT FALSE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (valide_par) REFERENCES Utilisateur(id) ON DELETE SET NULL,
-    INDEX idx_email (email),
-    INDEX idx_statut (statut),
-    INDEX idx_role (role)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (valide_par) REFERENCES Utilisateur(id) ON DELETE SET NULL
 );
+
+CREATE INDEX idx_utilisateur_email ON Utilisateur(email);
+CREATE INDEX idx_utilisateur_statut ON Utilisateur(statut);
+CREATE INDEX idx_utilisateur_role ON Utilisateur(role);
 
 -- ============================================
 -- TABLE: Festival
 -- Représente un festival de jeux
 -- ============================================
 CREATE TABLE Festival (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL UNIQUE,
-    date_creation DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_nom (nom)
+    date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_festival_nom ON Festival(nom);
 
 -- ============================================
 -- TABLE: ZoneTarifaire
 -- Zones avec tarification différente
 -- ============================================
 CREATE TABLE ZoneTarifaire (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    festival_id INT NOT NULL,
+    id SERIAL PRIMARY KEY,
+    festival_id INTEGER NOT NULL,
     nom VARCHAR(255) NOT NULL,
-    nombre_tables_total INT NOT NULL,
+    nombre_tables_total INTEGER NOT NULL,
     prix_table DECIMAL(10, 2) NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_zone_festival (festival_id, nom),
-    INDEX idx_festival (festival_id)
+    UNIQUE (festival_id, nom)
 );
+
+CREATE INDEX idx_zonetarifaire_festival ON ZoneTarifaire(festival_id);
 
 -- ============================================
 -- TABLE: ZoneDuPlan
 -- Zones géographiques du festival
 -- ============================================
 CREATE TABLE ZoneDuPlan (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    festival_id INT NOT NULL,
+    id SERIAL PRIMARY KEY,
+    festival_id INTEGER NOT NULL,
     nom VARCHAR(255) NOT NULL,
-    nombre_tables INT NOT NULL,
-    zone_tarifaire_id INT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    nombre_tables INTEGER NOT NULL,
+    zone_tarifaire_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE,
     FOREIGN KEY (zone_tarifaire_id) REFERENCES ZoneTarifaire(id) ON DELETE RESTRICT,
-    UNIQUE KEY unique_zone_plan_festival (festival_id, nom),
-    INDEX idx_festival (festival_id),
-    INDEX idx_zone_tarifaire (zone_tarifaire_id)
+    UNIQUE (festival_id, nom)
 );
+
+CREATE INDEX idx_zoneduplan_festival ON ZoneDuPlan(festival_id);
+CREATE INDEX idx_zoneduplan_zone_tarifaire ON ZoneDuPlan(zone_tarifaire_id);
 
 -- ============================================
 -- TABLE: Table_Jeu
 -- Tables physiques du festival
 -- ============================================
 CREATE TABLE Table_Jeu (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    zone_du_plan_id INT NOT NULL,
-    zone_tarifaire_id INT NOT NULL,
-    capacite_jeux INT NOT NULL DEFAULT 2,
-    nb_jeux_actuels INT NOT NULL DEFAULT 0,
-    statut ENUM('libre', 'reserve', 'plein', 'hors_service') NOT NULL DEFAULT 'libre',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id SERIAL PRIMARY KEY,
+    zone_du_plan_id INTEGER NOT NULL,
+    zone_tarifaire_id INTEGER NOT NULL,
+    capacite_jeux INTEGER NOT NULL DEFAULT 2,
+    nb_jeux_actuels INTEGER NOT NULL DEFAULT 0,
+    statut statut_table NOT NULL DEFAULT 'libre',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (zone_du_plan_id) REFERENCES ZoneDuPlan(id) ON DELETE CASCADE,
-    FOREIGN KEY (zone_tarifaire_id) REFERENCES ZoneTarifaire(id) ON DELETE RESTRICT,
-    INDEX idx_zone_plan (zone_du_plan_id),
-    INDEX idx_zone_tarifaire (zone_tarifaire_id),
-    INDEX idx_statut (statut)
+    FOREIGN KEY (zone_tarifaire_id) REFERENCES ZoneTarifaire(id) ON DELETE RESTRICT
 );
+
+CREATE INDEX idx_tablejeu_zone_plan ON Table_Jeu(zone_du_plan_id);
+CREATE INDEX idx_tablejeu_zone_tarifaire ON Table_Jeu(zone_tarifaire_id);
+CREATE INDEX idx_tablejeu_statut ON Table_Jeu(statut);
 
 -- ============================================
 -- TABLE: Editeur
 -- Éditeurs de jeux
 -- ============================================
 CREATE TABLE Editeur (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL UNIQUE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_nom (nom)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_editeur_nom ON Editeur(nom);
 
 -- ============================================
 -- TABLE: Personne
 -- Contacts, auteurs, etc.
 -- ============================================
 CREATE TABLE Personne (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
     prenom VARCHAR(255) NOT NULL,
     telephone VARCHAR(20) NOT NULL UNIQUE,
     email VARCHAR(255) NULL,
     fonction VARCHAR(255) NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_telephone (telephone),
-    INDEX idx_nom_prenom (nom, prenom)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_personne_telephone ON Personne(telephone);
+CREATE INDEX idx_personne_nom_prenom ON Personne(nom, prenom);
 
 -- ============================================
 -- TABLE: EditeurContact
 -- Relation N-N entre Éditeur et Personne (contacts)
 -- ============================================
 CREATE TABLE EditeurContact (
-    editeur_id INT NOT NULL,
-    personne_id INT NOT NULL,
+    editeur_id INTEGER NOT NULL,
+    personne_id INTEGER NOT NULL,
     PRIMARY KEY (editeur_id, personne_id),
     FOREIGN KEY (editeur_id) REFERENCES Editeur(id) ON DELETE CASCADE,
-    FOREIGN KEY (personne_id) REFERENCES Personne(id) ON DELETE CASCADE,
-    INDEX idx_editeur (editeur_id),
-    INDEX idx_personne (personne_id)
+    FOREIGN KEY (personne_id) REFERENCES Personne(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_editeurcontact_editeur ON EditeurContact(editeur_id);
+CREATE INDEX idx_editeurcontact_personne ON EditeurContact(personne_id);
 
 -- ============================================
 -- TABLE: Jeu
 -- Jeux de société
 -- ============================================
 CREATE TABLE Jeu (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
-    nb_joueurs_min INT NULL,
-    nb_joueurs_max INT NULL,
-    duree_minutes INT NULL,
-    age_min INT NULL,
-    age_max INT NULL,
+    nb_joueurs_min INTEGER NULL,
+    nb_joueurs_max INTEGER NULL,
+    duree_minutes INTEGER NULL,
+    age_min INTEGER NULL,
+    age_max INTEGER NULL,
     description TEXT NULL,
     lien_regles VARCHAR(500) NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_nom (nom)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE INDEX idx_jeu_nom ON Jeu(nom);
 
 -- ============================================
 -- TABLE: JeuEditeur
 -- Relation N-N entre Jeu et Éditeur (co-édition)
 -- ============================================
 CREATE TABLE JeuEditeur (
-    jeu_id INT NOT NULL,
-    editeur_id INT NOT NULL,
+    jeu_id INTEGER NOT NULL,
+    editeur_id INTEGER NOT NULL,
     PRIMARY KEY (jeu_id, editeur_id),
     FOREIGN KEY (jeu_id) REFERENCES Jeu(id) ON DELETE CASCADE,
-    FOREIGN KEY (editeur_id) REFERENCES Editeur(id) ON DELETE CASCADE,
-    INDEX idx_jeu (jeu_id),
-    INDEX idx_editeur (editeur_id)
+    FOREIGN KEY (editeur_id) REFERENCES Editeur(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_jeuediteur_jeu ON JeuEditeur(jeu_id);
+CREATE INDEX idx_jeuediteur_editeur ON JeuEditeur(editeur_id);
 
 -- ============================================
 -- TABLE: JeuAuteur
 -- Relation N-N entre Jeu et Personne (auteurs)
 -- ============================================
 CREATE TABLE JeuAuteur (
-    jeu_id INT NOT NULL,
-    personne_id INT NOT NULL,
+    jeu_id INTEGER NOT NULL,
+    personne_id INTEGER NOT NULL,
     PRIMARY KEY (jeu_id, personne_id),
     FOREIGN KEY (jeu_id) REFERENCES Jeu(id) ON DELETE CASCADE,
-    FOREIGN KEY (personne_id) REFERENCES Personne(id) ON DELETE CASCADE,
-    INDEX idx_jeu (jeu_id),
-    INDEX idx_personne (personne_id)
+    FOREIGN KEY (personne_id) REFERENCES Personne(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_jeuauteur_jeu ON JeuAuteur(jeu_id);
+CREATE INDEX idx_jeuauteur_personne ON JeuAuteur(personne_id);
 
 -- ============================================
 -- TABLE: Reservation
 -- Réservations des éditeurs pour un festival
 -- ============================================
 CREATE TABLE Reservation (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    editeur_id INT NOT NULL,
-    festival_id INT NOT NULL,
-    statut_workflow ENUM(
-        'pas_contacte',
-        'contact_pris',
-        'discussion_en_cours',
-        'sera_absent',
-        'considere_absent',
-        'present',
-        'facture',
-        'paiement_recu',
-        'paiement_en_retard'
-    ) NOT NULL DEFAULT 'pas_contacte',
+    id SERIAL PRIMARY KEY,
+    editeur_id INTEGER NOT NULL,
+    festival_id INTEGER NOT NULL,
+    statut_workflow statut_workflow_reservation NOT NULL DEFAULT 'pas_contacte',
     editeur_presente_jeux BOOLEAN DEFAULT FALSE,
     remise_pourcentage DECIMAL(5, 2) NULL,
     remise_montant DECIMAL(10, 2) NULL,
@@ -227,117 +252,247 @@ CREATE TABLE Reservation (
     prix_final DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
     commentaires_paiement TEXT NULL,
     paiement_relance BOOLEAN DEFAULT FALSE,
-    date_facture DATETIME NULL,
-    date_paiement DATETIME NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    created_by INT NULL,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    updated_by INT NULL,
+    date_facture TIMESTAMP NULL,
+    date_paiement TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by INTEGER NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by INTEGER NULL,
     FOREIGN KEY (editeur_id) REFERENCES Editeur(id) ON DELETE CASCADE,
     FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE,
     FOREIGN KEY (created_by) REFERENCES Utilisateur(id) ON DELETE SET NULL,
     FOREIGN KEY (updated_by) REFERENCES Utilisateur(id) ON DELETE SET NULL,
-    UNIQUE KEY unique_editeur_festival (editeur_id, festival_id),
-    INDEX idx_editeur (editeur_id),
-    INDEX idx_festival (festival_id),
-    INDEX idx_statut (statut_workflow)
+    UNIQUE (editeur_id, festival_id)
 );
+
+CREATE INDEX idx_reservation_editeur ON Reservation(editeur_id);
+CREATE INDEX idx_reservation_festival ON Reservation(festival_id);
+CREATE INDEX idx_reservation_statut ON Reservation(statut_workflow);
 
 -- ============================================
 -- TABLE: ReservationTable
 -- Attribution des tables aux réservations
 -- ============================================
 CREATE TABLE ReservationTable (
-    reservation_id INT NOT NULL,
-    table_id INT NOT NULL,
-    date_attribution DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    attribue_par INT NULL,
+    reservation_id INTEGER NOT NULL,
+    table_id INTEGER NOT NULL,
+    date_attribution TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    attribue_par INTEGER NULL,
     PRIMARY KEY (reservation_id, table_id),
     FOREIGN KEY (reservation_id) REFERENCES Reservation(id) ON DELETE CASCADE,
     FOREIGN KEY (table_id) REFERENCES Table_Jeu(id) ON DELETE CASCADE,
-    FOREIGN KEY (attribue_par) REFERENCES Utilisateur(id) ON DELETE SET NULL,
-    INDEX idx_reservation (reservation_id),
-    INDEX idx_table (table_id)
+    FOREIGN KEY (attribue_par) REFERENCES Utilisateur(id) ON DELETE SET NULL
 );
+
+CREATE INDEX idx_reservationtable_reservation ON ReservationTable(reservation_id);
+CREATE INDEX idx_reservationtable_table ON ReservationTable(table_id);
 
 -- ============================================
 -- TABLE: JeuFestival
 -- Jeux présents dans une réservation pour un festival
 -- ============================================
 CREATE TABLE JeuFestival (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    jeu_id INT NOT NULL,
-    reservation_id INT NOT NULL,
-    festival_id INT NOT NULL,
+    id SERIAL PRIMARY KEY,
+    jeu_id INTEGER NOT NULL,
+    reservation_id INTEGER NOT NULL,
+    festival_id INTEGER NOT NULL,
     dans_liste_demandee BOOLEAN DEFAULT FALSE,
     dans_liste_obtenue BOOLEAN DEFAULT FALSE,
     jeux_recu BOOLEAN DEFAULT FALSE,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (jeu_id) REFERENCES Jeu(id) ON DELETE CASCADE,
     FOREIGN KEY (reservation_id) REFERENCES Reservation(id) ON DELETE CASCADE,
-    FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE,
-    INDEX idx_jeu (jeu_id),
-    INDEX idx_reservation (reservation_id),
-    INDEX idx_festival (festival_id)
+    FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_jeufestival_jeu ON JeuFestival(jeu_id);
+CREATE INDEX idx_jeufestival_reservation ON JeuFestival(reservation_id);
+CREATE INDEX idx_jeufestival_festival ON JeuFestival(festival_id);
 
 -- ============================================
 -- TABLE: JeuFestivalTable
 -- Attribution des jeux aux tables
 -- ============================================
 CREATE TABLE JeuFestivalTable (
-    jeu_festival_id INT NOT NULL,
-    table_id INT NOT NULL,
+    jeu_festival_id INTEGER NOT NULL,
+    table_id INTEGER NOT NULL,
     PRIMARY KEY (jeu_festival_id, table_id),
     FOREIGN KEY (jeu_festival_id) REFERENCES JeuFestival(id) ON DELETE CASCADE,
-    FOREIGN KEY (table_id) REFERENCES Table_Jeu(id) ON DELETE CASCADE,
-    INDEX idx_jeu_festival (jeu_festival_id),
-    INDEX idx_table (table_id)
+    FOREIGN KEY (table_id) REFERENCES Table_Jeu(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_jeufestivaltable_jeu_festival ON JeuFestivalTable(jeu_festival_id);
+CREATE INDEX idx_jeufestivaltable_table ON JeuFestivalTable(table_id);
 
 -- ============================================
 -- TABLE: ContactEditeur
 -- Historique des contacts avec les éditeurs
 -- ============================================
 CREATE TABLE ContactEditeur (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    editeur_id INT NOT NULL,
-    festival_id INT NOT NULL,
-    utilisateur_id INT NOT NULL,
-    date_contact DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id SERIAL PRIMARY KEY,
+    editeur_id INTEGER NOT NULL,
+    festival_id INTEGER NOT NULL,
+    utilisateur_id INTEGER NOT NULL,
+    date_contact TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     notes TEXT NULL,
     FOREIGN KEY (editeur_id) REFERENCES Editeur(id) ON DELETE CASCADE,
     FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE,
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur(id) ON DELETE CASCADE,
-    INDEX idx_editeur_festival (editeur_id, festival_id),
-    INDEX idx_date (date_contact)
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur(id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_contactediteur_editeur_festival ON ContactEditeur(editeur_id, festival_id);
+CREATE INDEX idx_contactediteur_date ON ContactEditeur(date_contact);
 
 -- ============================================
 -- TABLE: AuditLog
 -- Journal d'audit pour tracer les actions importantes
 -- ============================================
 CREATE TABLE AuditLog (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    utilisateur_id INT NULL,
+    id SERIAL PRIMARY KEY,
+    utilisateur_id INTEGER NULL,
     action VARCHAR(255) NOT NULL,
     entite_type VARCHAR(100) NOT NULL,
-    entite_id INT NOT NULL,
-    date_action DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    entite_id INTEGER NOT NULL,
+    date_action TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     details TEXT NULL,
-    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur(id) ON DELETE SET NULL,
-    INDEX idx_utilisateur (utilisateur_id),
-    INDEX idx_entite (entite_type, entite_id),
-    INDEX idx_date (date_action)
+    FOREIGN KEY (utilisateur_id) REFERENCES Utilisateur(id) ON DELETE SET NULL
 );
+
+CREATE INDEX idx_auditlog_utilisateur ON AuditLog(utilisateur_id);
+CREATE INDEX idx_auditlog_entite ON AuditLog(entite_type, entite_id);
+CREATE INDEX idx_auditlog_date ON AuditLog(date_action);
+
+-- ============================================
+-- FONCTION: Mise à jour automatique de updated_at
+-- ============================================
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Application du trigger updated_at sur toutes les tables concernées
+CREATE TRIGGER trg_utilisateur_updated_at BEFORE UPDATE ON Utilisateur
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_festival_updated_at BEFORE UPDATE ON Festival
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_zonetarifaire_updated_at BEFORE UPDATE ON ZoneTarifaire
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_zoneduplan_updated_at BEFORE UPDATE ON ZoneDuPlan
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_tablejeu_updated_at BEFORE UPDATE ON Table_Jeu
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_editeur_updated_at BEFORE UPDATE ON Editeur
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_personne_updated_at BEFORE UPDATE ON Personne
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_jeu_updated_at BEFORE UPDATE ON Jeu
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_reservation_updated_at BEFORE UPDATE ON Reservation
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_jeufestival_updated_at BEFORE UPDATE ON JeuFestival
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
+-- TRIGGER: Mise à jour du nombre de jeux sur une table
+-- ============================================
+CREATE OR REPLACE FUNCTION trg_update_table_jeux_count_func()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Mettre à jour le compteur de jeux
+    UPDATE Table_Jeu 
+    SET nb_jeux_actuels = (
+        SELECT COUNT(DISTINCT jeu_festival_id) 
+        FROM JeuFestivalTable 
+        WHERE table_id = NEW.table_id
+    )
+    WHERE id = NEW.table_id;
+    
+    -- Marquer la table comme pleine si capacité atteinte
+    UPDATE Table_Jeu 
+    SET statut = 'plein'
+    WHERE id = NEW.table_id 
+    AND nb_jeux_actuels >= capacite_jeux
+    AND statut != 'hors_service';
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_table_jeux_count 
+AFTER INSERT ON JeuFestivalTable
+FOR EACH ROW 
+EXECUTE FUNCTION trg_update_table_jeux_count_func();
+
+-- ============================================
+-- TRIGGER: Recalcul du prix lors de l'attribution de tables
+-- ============================================
+CREATE OR REPLACE FUNCTION trg_recalcul_prix_reservation_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_prix_total DECIMAL(10, 2);
+    v_remise_pct DECIMAL(5, 2);
+    v_remise_mt DECIMAL(10, 2);
+    v_prix_final DECIMAL(10, 2);
+BEGIN
+    -- Calculer le prix total
+    SELECT COALESCE(SUM(zt.prix_table), 0)
+    INTO v_prix_total
+    FROM ReservationTable rt
+    JOIN Table_Jeu t ON t.id = rt.table_id
+    JOIN ZoneTarifaire zt ON zt.id = t.zone_tarifaire_id
+    WHERE rt.reservation_id = NEW.reservation_id;
+    
+    -- Récupérer les remises
+    SELECT remise_pourcentage, remise_montant
+    INTO v_remise_pct, v_remise_mt
+    FROM Reservation
+    WHERE id = NEW.reservation_id;
+    
+    -- Calculer le prix final
+    v_prix_final := v_prix_total;
+    
+    IF v_remise_pct IS NOT NULL THEN
+        v_prix_final := v_prix_final * (1 - v_remise_pct / 100);
+    END IF;
+    
+    IF v_remise_mt IS NOT NULL THEN
+        v_prix_final := v_prix_final - v_remise_mt;
+    END IF;
+    
+    -- Mise à jour de la réservation
+    UPDATE Reservation
+    SET prix_total = v_prix_total,
+        prix_final = v_prix_final
+    WHERE id = NEW.reservation_id;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_recalcul_prix_reservation 
+AFTER INSERT ON ReservationTable
+FOR EACH ROW 
+EXECUTE FUNCTION trg_recalcul_prix_reservation_func();
 
 -- ============================================
 -- VUES UTILES
 -- ============================================
 
 -- Vue: Tables disponibles par zone tarifaire
-CREATE VIEW v_tables_disponibles_par_zone AS
+CREATE OR REPLACE VIEW v_tables_disponibles_par_zone AS
 SELECT 
     zt.id AS zone_tarifaire_id,
     zt.festival_id,
@@ -351,7 +506,7 @@ LEFT JOIN Table_Jeu t ON t.zone_tarifaire_id = zt.id
 GROUP BY zt.id, zt.festival_id, zt.nom, zt.nombre_tables_total;
 
 -- Vue: Résumé des réservations par festival
-CREATE VIEW v_reservations_festival AS
+CREATE OR REPLACE VIEW v_reservations_festival AS
 SELECT 
     f.id AS festival_id,
     f.nom AS festival_nom,
@@ -371,7 +526,7 @@ LEFT JOIN ReservationTable rt ON rt.reservation_id = r.id
 GROUP BY f.id, f.nom, e.id, e.nom, r.statut_workflow, r.prix_total, r.prix_final;
 
 -- Vue: Jeux par zone du plan
-CREATE VIEW v_jeux_par_zone_plan AS
+CREATE OR REPLACE VIEW v_jeux_par_zone_plan AS
 SELECT 
     zp.id AS zone_plan_id,
     zp.nom AS zone_plan_nom,
@@ -379,7 +534,7 @@ SELECT
     j.id AS jeu_id,
     j.nom AS jeu_nom,
     e.nom AS editeur_nom,
-    GROUP_CONCAT(DISTINCT p.nom ORDER BY p.nom SEPARATOR ', ') AS auteurs,
+    STRING_AGG(DISTINCT p.nom, ', ' ORDER BY p.nom) AS auteurs,
     COUNT(DISTINCT jft.table_id) AS nombre_tables
 FROM ZoneDuPlan zp
 LEFT JOIN Table_Jeu t ON t.zone_du_plan_id = zp.id
@@ -393,96 +548,35 @@ LEFT JOIN Personne p ON p.id = ja.personne_id
 GROUP BY zp.id, zp.nom, zp.festival_id, j.id, j.nom, e.nom;
 
 -- ============================================
--- TRIGGERS UTILES
--- ============================================
-
--- Trigger: Mise à jour du nombre de jeux sur une table
-DELIMITER //
-CREATE TRIGGER trg_update_table_jeux_count AFTER INSERT ON JeuFestivalTable
-FOR EACH ROW
-BEGIN
-    UPDATE Table_Jeu 
-    SET nb_jeux_actuels = (
-        SELECT COUNT(DISTINCT jeu_festival_id) 
-        FROM JeuFestivalTable 
-        WHERE table_id = NEW.table_id
-    )
-    WHERE id = NEW.table_id;
-    
-    -- Marquer la table comme pleine si capacité atteinte
-    UPDATE Table_Jeu 
-    SET statut = 'plein'
-    WHERE id = NEW.table_id 
-    AND nb_jeux_actuels >= capacite_jeux
-    AND statut != 'hors_service';
-END//
-
-DELIMITER ;
-
--- Trigger: Recalcul du prix lors de l'attribution de tables
-DELIMITER //
-CREATE TRIGGER trg_recalcul_prix_reservation AFTER INSERT ON ReservationTable
-FOR EACH ROW
-BEGIN
-    DECLARE v_prix_total DECIMAL(10, 2);
-    DECLARE v_remise_pct DECIMAL(5, 2);
-    DECLARE v_remise_mt DECIMAL(10, 2);
-    DECLARE v_prix_final DECIMAL(10, 2);
-    
-    -- Calculer le prix total
-    SELECT SUM(zt.prix_table)
-    INTO v_prix_total
-    FROM ReservationTable rt
-    JOIN Table_Jeu t ON t.id = rt.table_id
-    JOIN ZoneTarifaire zt ON zt.id = t.zone_tarifaire_id
-    WHERE rt.reservation_id = NEW.reservation_id;
-    
-    -- Récupérer les remises
-    SELECT remise_pourcentage, remise_montant
-    INTO v_remise_pct, v_remise_mt
-    FROM Reservation
-    WHERE id = NEW.reservation_id;
-    
-    -- Calculer le prix final
-    SET v_prix_final = v_prix_total;
-    
-    IF v_remise_pct IS NOT NULL THEN
-        SET v_prix_final = v_prix_final * (1 - v_remise_pct / 100);
-    END IF;
-    
-    IF v_remise_mt IS NOT NULL THEN
-        SET v_prix_final = v_prix_final - v_remise_mt;
-    END IF;
-    
-    -- Mise à jour de la réservation
-    UPDATE Reservation
-    SET prix_total = v_prix_total,
-        prix_final = v_prix_final
-    WHERE id = NEW.reservation_id;
-END//
-
-DELIMITER ;
-
--- ============================================
 -- DONNÉES D'EXEMPLE (optionnel)
 -- ============================================
 
--- Utilisateur admin par défaut
+-- Utilisateur admin par défaut (mot de passe: admin - à hasher avec bcrypt)
+-- Note: Le hash sera généré par le backend via bcrypt
 INSERT INTO Utilisateur (email, password_hash, role, statut, valide_par)
-VALUES ('admin@festival.com', '$2y$10$ExempleHashMotDePasseSecurise', 'admin', 'valide', NULL);
+VALUES ('admin@festival.com', '$2a$10$ExempleHashMotDePasseSecurise', 'admin', 'valide', NULL)
+ON CONFLICT (email) DO NOTHING;
 
 -- Festival exemple
-INSERT INTO Festival (nom) VALUES ('Festival du Jeu 2025');
+INSERT INTO Festival (nom) VALUES ('Festival du Jeu 2025')
+ON CONFLICT (nom) DO NOTHING;
 
 -- Zone tarifaire exemple
 INSERT INTO ZoneTarifaire (festival_id, nom, nombre_tables_total, prix_table)
-VALUES (1, 'Zone Premium', 50, 200.00);
+SELECT 1, 'Zone Premium', 50, 200.00
+WHERE EXISTS (SELECT 1 FROM Festival WHERE id = 1)
+ON CONFLICT (festival_id, nom) DO NOTHING;
 
 -- Zone du plan exemple
 INSERT INTO ZoneDuPlan (festival_id, nom, nombre_tables, zone_tarifaire_id)
-VALUES (1, 'Hall Principal', 50, 1);
+SELECT 1, 'Hall Principal', 50, 1
+WHERE EXISTS (SELECT 1 FROM Festival WHERE id = 1)
+  AND EXISTS (SELECT 1 FROM ZoneTarifaire WHERE id = 1)
+ON CONFLICT (festival_id, nom) DO NOTHING;
 
 -- Tables exemple
 INSERT INTO Table_Jeu (zone_du_plan_id, zone_tarifaire_id, capacite_jeux, statut)
-SELECT 1, 1, 2, 'libre' FROM 
-(SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5) AS numbers;
+SELECT 1, 1, 2, 'libre'
+FROM generate_series(1, 5)
+WHERE EXISTS (SELECT 1 FROM ZoneDuPlan WHERE id = 1)
+  AND EXISTS (SELECT 1 FROM ZoneTarifaire WHERE id = 1);
