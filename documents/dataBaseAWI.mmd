@@ -1,0 +1,181 @@
+erDiagram
+    Utilisateur ||--o{ ContactEditeur : "effectue"
+    Utilisateur ||--o{ AuditLog : "crée"
+    Utilisateur }o--|| Utilisateur : "validé_par"
+    
+    Festival ||--|{ ZoneTarifaire : "possède"
+    Festival ||--|{ ZoneDuPlan : "possède"
+    Festival ||--|{ Reservation : "concerne"
+    Festival ||--|{ ContactEditeur : "concerne"
+    
+    ZoneTarifaire ||--o{ Table : "tarifie"
+    ZoneDuPlan ||--o{ Table : "contient"
+    ZoneDuPlan }o--|| ZoneTarifaire : "applique_tarif"
+    
+    Editeur ||--|{ ContactEditeur : "reçoit"
+    Editeur ||--|{ Reservation : "fait"
+    Editeur ||--o{ EditeurContact : "a_pour_contact"
+    
+    Personne ||--o{ EditeurContact : "est_contact_de"
+    Personne ||--o{ JeuAuteur : "est_auteur_de"
+    
+    Jeu ||--o{ JeuEditeur : "édité_par"
+    Jeu ||--o{ JeuAuteur : "a_pour_auteur"
+    Jeu ||--o{ JeuFestival : "présent_dans"
+    
+    Editeur ||--o{ JeuEditeur : "édite"
+    
+    Reservation ||--|{ ReservationTable : "réserve"
+    Reservation ||--|{ JeuFestival : "inclut"
+    
+    Table ||--o{ ReservationTable : "réservée_dans"
+    Table ||--o{ JeuFestivalTable : "accueille"
+    
+    JeuFestival ||--o{ JeuFestivalTable : "placé_sur"
+    
+    Utilisateur {
+        int id PK
+        string email UK
+        string password_hash
+        enum role
+        enum statut
+        datetime date_demande
+        int valide_par FK
+        boolean email_bloque
+    }
+    
+    Festival {
+        int id PK
+        string nom UK
+        datetime date_creation
+        datetime date_debut
+        datetime date_fin
+        string lieu
+    }
+    
+    ZoneTarifaire {
+        int id PK
+        int festival_id FK
+        string nom
+        int nombre_tables_total
+        decimal prix_table
+    }
+    
+    ZoneDuPlan {
+        int id PK
+        int festival_id FK
+        string nom
+        int nombre_tables
+        int zone_tarifaire_id FK
+    }
+    
+    Table {
+        int id PK
+        int zone_du_plan_id FK
+        int zone_tarifaire_id FK
+        int capacite_jeux
+        int nb_jeux_actuels
+        enum statut
+    }
+    
+    Editeur {
+        int id PK
+        string nom
+    }
+    
+    Personne {
+        int id PK
+        string nom
+        string prenom
+        string telephone UK
+        string email
+        string fonction
+    }
+    
+    EditeurContact {
+        int editeur_id FK
+        int personne_id FK
+    }
+    
+    Jeu {
+        int id PK
+        string nom
+        int nb_joueurs_min
+        int nb_joueurs_max
+        int duree_minutes
+        int age_min
+        int age_max
+        text description
+        string lien_regles
+    }
+    
+    JeuEditeur {
+        int jeu_id FK
+        int editeur_id FK
+    }
+    
+    JeuAuteur {
+        int jeu_id FK
+        int personne_id FK
+    }
+    
+    Reservation {
+        int id PK
+        int editeur_id FK
+        int festival_id FK
+        enum statut_workflow
+        boolean editeur_presente_jeux
+        decimal remise_pourcentage
+        decimal remise_montant
+        decimal prix_total
+        decimal prix_final
+        text commentaires_paiement
+        boolean paiement_relance
+        datetime date_facture
+        datetime date_paiement
+        datetime created_at
+        int created_by FK
+        datetime updated_at
+        int updated_by FK
+    }
+    
+    ReservationTable {
+        int reservation_id FK
+        int table_id FK
+        datetime date_attribution
+        int attribue_par FK
+    }
+    
+    JeuFestival {
+        int id PK
+        int jeu_id FK
+        int reservation_id FK
+        int festival_id FK
+        boolean dans_liste_demandee
+        boolean dans_liste_obtenue
+        boolean jeux_recu
+    }
+    
+    JeuFestivalTable {
+        int jeu_festival_id FK
+        int table_id FK
+    }
+    
+    ContactEditeur {
+        int id PK
+        int editeur_id FK
+        int festival_id FK
+        int utilisateur_id FK
+        datetime date_contact
+        text notes
+    }
+    
+    AuditLog {
+        int id PK
+        int utilisateur_id FK
+        string action
+        string entite_type
+        int entite_id
+        datetime date_action
+        text details
+    }

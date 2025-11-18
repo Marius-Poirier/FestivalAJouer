@@ -1,0 +1,23 @@
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background: #e9ebee;
+  color: #1c1e21;
+}
+
+a {
+  text-decoration: none;
+  color: #385898;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* You can add global styles to this file, and also import other style files */

@@ -1,0 +1,95 @@
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* App Header */
+.app-header {
+  background: #3b5998;
+  border-bottom: 1px solid #29487d;
+  height: 42px;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+/* Logo */
+.logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.logo-link {
+  color: #ffffff;
+}
+
+.logo-link:hover {
+  text-decoration: none;
+}
+
+/* Navigation Menu */
+.nav-menu {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-link {
+  padding: 4px 8px;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 2px;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+  text-decoration: none;
+}
+
+.nav-link.active {
+  background: #29487d;
+}
+
+.nav-link-login {
+  background: #42b72a;
+  color: #ffffff;
+}
+
+.nav-link-login:hover {
+  background: #36a420;
+}
+
+/* Main Content */
+.app-content {
+  min-height: calc(100vh - 42px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 4px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
+
+  .nav-menu {
+    gap: 4px;
+  }
+
+  .nav-link {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+}
