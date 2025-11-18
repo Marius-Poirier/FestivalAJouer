@@ -2,6 +2,12 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.2.1.
 
+# Lancement
+
+```bash
+docker compose -f docker-compose.prod.yml up --build
+```
+
 ## Development server
 
 To start a local development server, run:
