@@ -6,19 +6,28 @@ import { requireAdmin } from '../middleware/auth-admin.js'
 
 const router = Router()
 
-// Création d'un utilisateur
-router.post('/', async (req, res) => {
-    const { login, password } = req.body
+// Création d'un utilisateur (réservée aux admins)
+router.post('/', requireAdmin, async (req, res) => {
+    const { login, password, role } = req.body
     if (!login || !password) {
         return res.status(400).json({ error: 'Login et mot de passe requis' })
     }
+    
+    // Validation du rôle
+    const validRoles = ['user', 'admin']
+    const userRole = role || 'user'
+    
+    if (!validRoles.includes(userRole)) {
+        return res.status(400).json({ error: 'Rôle invalide. Rôles autorisés: user, admin' })
+    }
+    
     try {
         const hash = await bcrypt.hash(password, 10)
-        await pool.query(
-        'INSERT INTO users (login, password_hash) VALUES ($1, $2)',
-        [login, hash]
+        const { rows } = await pool.query(
+            'INSERT INTO users (login, password_hash, role) VALUES ($1, $2, $3) RETURNING id, login, role',
+            [login, hash, userRole]
         );
-        res.status(201).json({ message: 'Utilisateur créé' })
+        res.status(201).json({ message: 'Utilisateur créé', user: rows[0] })
     } catch (err: any) {
         if (err.code === '23505') {
             res.status(409).json({ error: 'Login déjà existant' })
