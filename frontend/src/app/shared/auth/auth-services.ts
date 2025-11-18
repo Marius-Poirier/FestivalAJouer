@@ -14,12 +14,14 @@ export class AuthService {
     private readonly _currentUser = signal<UserDto | null>(null)
     private readonly _isLoading = signal(false)
     private readonly _error = signal<string | null>(null)
+    private readonly _registerSuccess = signal(false)
     // --- État exposé (readonly, computed) ---
     readonly currentUser = this._currentUser.asReadonly()
     readonly isLoggedIn = computed(() => this._currentUser() != null)
     readonly isAdmin = computed(() => this.currentUser()?.role === 'admin')
     readonly isLoading = this._isLoading.asReadonly()
     readonly error = this._error.asReadonly()
+    readonly registerSuccess = this._registerSuccess.asReadonly()
     // --- Connexion ---
     login(login: string, password: string) {
         this._isLoading.set(true)
@@ -79,5 +81,42 @@ export class AuthService {
     refresh$() { // observable qui émet null en cas d'erreur
         return this.http.post(`${environment.apiUrl}/auth/refresh`,{}, { withCredentials: true } )
         .pipe( catchError(() => of(null)) )
+    }
+
+    resetRegisterSuccess() {
+        this._registerSuccess.set(false)
+    }
+
+    // --- Inscription ---
+    register(login: string, password: string) {
+    this._isLoading.set(true)
+    this._error.set(null)
+    this._registerSuccess.set(false)
+
+    this.http.post(
+        `${environment.apiUrl}/auth/register`,
+        { login, password },
+        { withCredentials: true }
+    ).pipe(
+        tap(() => {
+        // Succès : on marque que l'inscription est OK
+        this._registerSuccess.set(true)
+        }),
+        catchError((err) => {
+        console.error('Erreur HTTP register', err)
+
+        if (err.status === 409) {
+            this._error.set('Ce login est déjà utilisé')
+        } else if (err.status === 0) {
+            this._error.set('Serveur injoignable (vérifiez HTTPS ou CORS)')
+        } else {
+            this._error.set(`Erreur serveur (${err.status}) lors de l’inscription`)
+        }
+
+        this._registerSuccess.set(false)
+        return of(null)
+        }),
+        finalize(() => this._isLoading.set(false))
+    ).subscribe()
     }
 }

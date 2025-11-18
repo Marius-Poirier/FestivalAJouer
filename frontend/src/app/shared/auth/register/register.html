@@ -1,0 +1,86 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Inscription</h2>
+
+    @if (auth.registerSuccess()) {
+      <div class="alert alert-success">
+        Compte créé avec succès !<br />
+        Vous pouvez maintenant vous connecter.
+      </div>
+
+      <p class="redirect">
+        Déjà un compte ?
+        <a routerLink="/login">Se connecter</a>
+      </p>
+    } @else {
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <!-- Login -->
+        <div class="form-group">
+          <label for="login">Identifiant</label>
+          <input
+            id="login"
+            type="text"
+            formControlName="login"
+            placeholder="Choisissez un identifiant"
+            [class.invalid]="loginCtrl.invalid && (loginCtrl.dirty || loginCtrl.touched)"
+          />
+          @if (loginCtrl.invalid && (loginCtrl.dirty || loginCtrl.touched)) {
+            <span class="error-text">
+              Le login est requis.
+            </span>
+          }
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Choisissez un mot de passe"
+            [class.invalid]="passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)"
+          />
+          @if (passwordCtrl.invalid && (passwordCtrl.dirty || passwordCtrl.touched)) {
+            <span class="error-text">
+              Le mot de passe est requis.
+            </span>
+          }
+        </div>
+
+        <!-- Erreur API -->
+        @if (auth.error()) {
+          <div class="alert alert-error">
+            {{ auth.error() }}
+          </div>
+        }
+
+        <!-- Loading -->
+        @if (auth.isLoading()) {
+          <div class="alert alert-info">
+            <span class="spinner"></span>
+            Création du compte...
+          </div>
+        }
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="form.invalid || auth.isLoading()"
+        >
+          @if (auth.isLoading()) {
+            <span class="spinner-small"></span>
+          }
+          Créer un compte
+        </button>
+      </form>
+
+      <p class="redirect">
+        Déjà un compte ?
+        <a routerLink="/login">Se connecter</a>
+      </p>
+    }
+  </div>
+</div>

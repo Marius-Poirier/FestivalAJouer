@@ -18,6 +18,10 @@ export const routes: Routes = [
     canActivate: [adminGuard]
     },
     {
+    path: 'register',
+    loadComponent: () => import('./shared/auth/register/register').then(m => m.Register),
+    },
+    {
     path: '',
     redirectTo: '/login',
     pathMatch: 'full'
