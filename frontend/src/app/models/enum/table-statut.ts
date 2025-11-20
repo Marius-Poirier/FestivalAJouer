@@ -1,0 +1,6 @@
+export enum TableStatut {
+    DISPONIBLE = 'DISPONIBLE',
+    RESERVEE = 'RESERVEE',
+    OCCUPEE = 'OCCUPEE',
+    INDISPONIBLE = 'INDISPONIBLE'
+}
