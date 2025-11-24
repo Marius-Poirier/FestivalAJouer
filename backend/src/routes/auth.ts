@@ -6,69 +6,141 @@ import { verifyToken, createAccessToken, createRefreshToken } from '../middlewar
 import type { TokenPayload } from '../types/token-payload.js';
 
 const router = Router()
-router.post('/login', async (req, res) => { // --- LOGIN ---
-    const { login, password } = req.body
-    if (!login || !password) // si pas de login ou password dans la requête => ERREUR : fin du login
-        return res.status(400).json({ error: 'Identifiants manquants' })
-    const { rows } = await pool.query('SELECT * FROM users WHERE login=$1', [login])// on récupère le user dans la BD
+
+// --- LOGIN ---
+router.post('/login', async (req, res) => {
+    const { email, password } = req.body
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email et mot de passe manquants' })
+    }
+    
+    // Récupérer l'utilisateur
+    const { rows } = await pool.query(
+        'SELECT * FROM Utilisateur WHERE email=$1',
+        [email]
+    )
     const user = rows[0]
-    if (!user) return res.status(401).json({ error: 'Utilisateur inconnu' }) // pas dans la base => ERREUR : fin du login
-    const match = await bcrypt.compare(password, user.password_hash) // on vérifie le password
-    if (!match) return res.status(401).json({ error: 'Mot de passe incorrect' })// si pas de match => ERREUR : fin du login
-    const accessToken = createAccessToken({ id: user.id, role: user.role }) // création du token d'accès
-    const refreshToken = createRefreshToken({ id: user.id, role: user.role }) // création du refresh token
-    res.cookie('access_token', accessToken, { // --------------------------------- Cookies sécurisés pour le token d'accès
-    httpOnly: true, secure: true, sameSite: 'strict', maxAge: 15 * 60 * 1000,
+    
+    if (!user) {
+        return res.status(401).json({ error: 'Utilisateur inconnu' })
+    }
+    
+    // Vérifier le statut du compte
+    if (user.statut === 'en_attente') {
+        return res.status(403).json({ error: 'Votre compte est en attente de validation' })
+    }
+    
+    if (user.statut === 'refuse') {
+        return res.status(403).json({ error: 'Votre demande de compte a été refusée' })
+    }
+    
+    if (user.email_bloque) {
+        return res.status(403).json({ error: 'Votre compte a été bloqué' })
+    }
+    
+    // Vérifier le mot de passe
+    const match = await bcrypt.compare(password, user.password_hash)
+    if (!match) {
+        return res.status(401).json({ error: 'Mot de passe incorrect' })
+    }
+    
+    // Créer les tokens
+    const accessToken = createAccessToken({ id: user.id, role: user.role })
+    const refreshToken = createRefreshToken({ id: user.id, role: user.role })
+    
+    // Cookies sécurisés
+    res.cookie('access_token', accessToken, {
+        httpOnly: true, 
+        secure: true, 
+        sameSite: 'strict', 
+        maxAge: 15 * 60 * 1000
     })
-    res.cookie('refresh_token', refreshToken, { // --------------------------------- Cookies sécurisés pour le refresh token
-    httpOnly: true, secure: true, sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000,
+    
+    res.cookie('refresh_token', refreshToken, {
+        httpOnly: true, 
+        secure: true, 
+        sameSite: 'strict', 
+        maxAge: 7 * 24 * 60 * 60 * 1000
     })
-    res.json({ message: 'Authentification réussie', user: { login: user.login, role: user.role } })//connexion successful
+    
+    res.json({ 
+        message: 'Authentification réussie', 
+        user: { 
+            email: user.email, 
+            role: user.role,
+            statut: user.statut
+        } 
+    })
 })
-router.post('/logout', (_req, res) => { // --- LOGOUT ---
+
+// --- LOGOUT ---
+router.post('/logout', (_req, res) => {
     res.clearCookie('access_token')
     res.clearCookie('refresh_token')
     res.json({ message: 'Déconnexion réussie' })
 })
+
+// --- REGISTER (Demande de compte) ---
 router.post('/register', async (req, res) => {
-    const { login, password } = req.body
-    if (!login || !password)
-        return res.status(400).json({ error: 'Champs manquants' })
+    const { email, password } = req.body
+    
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email et mot de passe requis' })
+    }
+    
+    // Validation basique de l'email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: 'Format d\'email invalide' })
+    }
+    
+    // Hasher le mot de passe
     const hashed = await bcrypt.hash(password, 10)
+    
     try {
         const { rows } = await pool.query(
-            `INSERT INTO users (login, password_hash, role)
-            VALUES ($1, $2, 'user')
-            RETURNING id, login, role`,
-            [login, hashed]
+            `INSERT INTO Utilisateur (email, password_hash, role, statut)
+            VALUES ($1, $2, 'benevole', 'en_attente')
+            RETURNING id, email, role, statut, date_demande`,
+            [email, hashed]
         )
-        res.status(201).json({ message: 'Utilisateur créé', user: rows[0] })
+        
+        res.status(201).json({ 
+            message: 'Demande de compte créée avec succès. En attente de validation par un administrateur.',
+            user: rows[0] 
+        })
     } catch (err: any) {
-        if (err.code === '23505') // doublon PostgreSQL
-            return res.status(409).json({ error: 'Login déjà utilisé' })
-            console.error(err)
-            res.status(500).json({ error: 'Erreur serveur' })
+        if (err.code === '23505') {
+            return res.status(409).json({ error: 'Un compte avec cet email existe déjà' })
+        }
+        console.error(err)
+        res.status(500).json({ error: 'Erreur serveur' })
     }
 })
+
+// --- REFRESH TOKEN ---
 router.post('/refresh', (req, res) => {
     const refresh = req.cookies?.refresh_token
-    if (!refresh) return res.status(401).json({ error: 'Refresh token manquant' })
+    
+    if (!refresh) {
+        return res.status(401).json({ error: 'Refresh token manquant' })
+    }
+    
     try {
-        const decoded = jwt.verify(refresh, process.env.JWT_SECRET) as TokenPayload
-        const newAccess = createAccessToken({ id: decoded.id, role: decoded.role })
-        res.cookie('access_token', newAccess, {
-            httpOnly: true, secure: true, sameSite: 'strict', maxAge: 15 * 60 * 1000,
+        const decoded = jwt.verify(refresh, process.env.JWT_SECRET || '') as TokenPayload
+        const newAccessToken = createAccessToken({ id: decoded.id, role: decoded.role })
+        
+        res.cookie('access_token', newAccessToken, {
+            httpOnly: true, 
+            secure: true, 
+            sameSite: 'strict', 
+            maxAge: 15 * 60 * 1000
         })
-        res.json({ message: 'Token renouvelé' })
+        
+        res.json({ message: 'Token rafraîchi' })
     } catch {
         res.status(403).json({ error: 'Refresh token invalide ou expiré' })
     }
 })
-// ------ Exemple de route accessible uniquement avec un JWT valide ------
-router.get('/me', verifyToken, (req: Express.Request, res) => {
-    res.json({ message: 'Utilisateur authentifié', user: req.user, }) // req typée automatiquement => pas d'erreur dans VSCode
-})
-router.get('/whoami', verifyToken, (req, res) => {
-    res.json({ user: req.user })
-})
+
 export default router

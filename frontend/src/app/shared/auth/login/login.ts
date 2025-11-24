@@ -1,12 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '@auth/auth-services';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -21,7 +21,7 @@ export class Login {
 
   // Reactive form
   protected readonly loginForm = this.fb.nonNullable.group({
-    login: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.minLength(3)]],
     password: ['', [Validators.required, Validators.minLength(4)]]
   });
 
@@ -31,11 +31,11 @@ export class Login {
       return;
     }
 
-    const { login, password } = this.loginForm.getRawValue();
+    const { email, password } = this.loginForm.getRawValue();
     this.isSubmitting.set(true);
     this.errorMessage.set(null);
 
-    this.authService.login(login, password);
+    this.authService.login(email, password);
 
     // Poll auth state changes to detect success/error
     const checkAuthState = setInterval(() => {
@@ -64,7 +64,7 @@ export class Login {
   }
 
   protected get loginControl() {
-    return this.loginForm.controls.login;
+    return this.loginForm.controls.email;
   }
 
   protected get passwordControl() {
