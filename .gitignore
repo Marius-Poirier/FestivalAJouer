@@ -29,17 +29,23 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+*/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
 /libpeerconnection.log
 testem.log
 /typings
+*.tsbuildinfo
 
 # System files
 .DS_Store
 Thumbs.db
+
+# Backend
 /backend/certs
 /backend/node_modules
+/backend/.env
+
+# Frontend
 /frontend/node_modules
