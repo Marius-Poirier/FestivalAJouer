@@ -7,7 +7,19 @@ const router = Router()
 // Applique le garde super organisateur à toutes les routes du module
 router.use(requireSuperOrga)
 
-const FESTIVAL_FIELDS = 'id, nom, date_creation, created_at, updated_at'
+const FESTIVAL_FIELDS = 'id, nom, date_debut, date_fin, lieu, date_creation, created_at, updated_at'
+
+const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/
+
+function sanitizeString(value: unknown) {
+	return typeof value === 'string' ? value.trim() : ''
+}
+
+function validateDate(value: string, fieldName: string) {
+	if (!value || !DATE_REGEX.test(value) || Number.isNaN(Date.parse(value))) {
+		throw new Error(`Le champ ${fieldName} doit être une date valide au format AAAA-MM-JJ`)
+	}
+}
 
 // --- Liste de tous les festivals ---
 router.get('/', async (_req, res) => {
@@ -48,18 +60,34 @@ router.get('/:id', async (req, res) => {
 
 // --- Création d'un festival ---
 router.post('/', async (req, res) => {
-	const { nom } = req.body
-	const trimmedName = typeof nom === 'string' ? nom.trim() : ''
+	const trimmedName = sanitizeString(req.body?.nom)
+	const startDate = sanitizeString(req.body?.date_debut)
+	const endDate = sanitizeString(req.body?.date_fin)
+	const lieu = sanitizeString(req.body?.lieu)
 
 	if (!trimmedName) {
 		return res.status(400).json({ error: 'Le nom du festival est requis' })
 	}
+	if (!lieu) {
+		return res.status(400).json({ error: 'Le lieu du festival est requis' })
+	}
+
+	try {
+		validateDate(startDate, 'date_debut')
+		validateDate(endDate, 'date_fin')
+		if (new Date(startDate) > new Date(endDate)) {
+			return res.status(400).json({ error: 'La date de début doit être antérieure ou égale à la date de fin' })
+		}
+	} catch (validationError: any) {
+		return res.status(400).json({ error: validationError.message })
+	}
 
 	try {
 		const { rows } = await pool.query(
-			`INSERT INTO Festival (nom) VALUES ($1)
+			`INSERT INTO Festival (nom, date_debut, date_fin, lieu)
+			VALUES ($1, $2, $3, $4)
 			RETURNING ${FESTIVAL_FIELDS}`,
-			[trimmedName]
+			[trimmedName, startDate, endDate, lieu]
 		)
 
 		res.status(201).json({ message: 'Festival créé', festival: rows[0] })
@@ -80,20 +108,38 @@ router.put('/:id', async (req, res) => {
 		return res.status(400).json({ error: 'Identifiant de festival invalide' })
 	}
 
-	const { nom } = req.body
-	const trimmedName = typeof nom === 'string' ? nom.trim() : ''
+	const trimmedName = sanitizeString(req.body?.nom)
+	const startDate = sanitizeString(req.body?.date_debut)
+	const endDate = sanitizeString(req.body?.date_fin)
+	const lieu = sanitizeString(req.body?.lieu)
 
 	if (!trimmedName) {
 		return res.status(400).json({ error: 'Le nom du festival est requis' })
+	}
+	if (!lieu) {
+		return res.status(400).json({ error: 'Le lieu du festival est requis' })
+	}
+
+	try {
+		validateDate(startDate, 'date_debut')
+		validateDate(endDate, 'date_fin')
+		if (new Date(startDate) > new Date(endDate)) {
+			return res.status(400).json({ error: 'La date de début doit être antérieure ou égale à la date de fin' })
+		}
+	} catch (validationError: any) {
+		return res.status(400).json({ error: validationError.message })
 	}
 
 	try {
 		const { rows } = await pool.query(
 			`UPDATE Festival
-			SET nom = $1
-			WHERE id = $2
+			SET nom = $1,
+			    date_debut = $2,
+			    date_fin = $3,
+			    lieu = $4
+			WHERE id = $5
 			RETURNING ${FESTIVAL_FIELDS}`,
-			[trimmedName, festivalId]
+			[trimmedName, startDate, endDate, lieu, festivalId]
 		)
 
 		if (rows.length === 0) {

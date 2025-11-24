@@ -74,6 +74,9 @@ CREATE INDEX idx_utilisateur_role ON Utilisateur(role);
 CREATE TABLE Festival (
     id SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL UNIQUE,
+    date_debut DATE NOT NULL,
+    date_fin DATE NOT NULL,
+    lieu VARCHAR(255) NOT NULL,
     date_creation TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -552,7 +555,8 @@ GROUP BY zp.id, zp.nom, zp.festival_id, j.id, j.nom, e.nom;
 -- ============================================
 
 -- Festival exemple
-INSERT INTO Festival (nom) VALUES ('Festival du Jeu 2025')
+INSERT INTO Festival (nom, date_debut, date_fin, lieu)
+VALUES ('Festival du Jeu 2025', '2025-05-01', '2025-05-03', 'Parc des Expositions, Nantes')
 ON CONFLICT (nom) DO NOTHING;
 
 -- Zone tarifaire exemple
