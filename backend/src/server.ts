@@ -8,6 +8,7 @@ import cookieParser from 'cookie-parser'
 import publicRouter from './routes/public.js'
 import { ensureAdmin } from './db/initAdmin.js'
 import usersRouter from './routes/users.js'
+import festivalRouter from './routes/festival.js'
 import 'dotenv/config'
 
 import authRouter from './routes/auth.js'
@@ -65,6 +66,7 @@ app.use(cookieParser())
 app.use('/api/public', publicRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/users', verifyToken, usersRouter) // protégé
+app.use('/api/festivals', verifyToken, festivalRouter)
 app.use('/api/admin', verifyToken, requireAdmin, (req, res) => {
     res.json({ message: 'Bienvenue admin' });
 })
