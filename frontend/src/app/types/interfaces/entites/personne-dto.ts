@@ -5,4 +5,6 @@ export interface PersonneDto {
     telephone: string;
     email?: string;
     fonction?: string;
+    created_at? : Date;
+    updated_at? : Date;
 }

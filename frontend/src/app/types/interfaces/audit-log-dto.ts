@@ -1,4 +1,4 @@
-export interface AuditLogDtoDto {
+export interface AuditLogDto {
     id?: number;
     utilisateur_id?: number;
     action: string;

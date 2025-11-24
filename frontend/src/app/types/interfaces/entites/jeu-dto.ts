@@ -8,4 +8,6 @@ export interface JeuDto {
     age_max?: number;
     description?: string;
     lien_regles?: string;
+    created_at? : Date;
+    updated_at? : Date;
 }

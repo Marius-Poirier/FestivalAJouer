@@ -1,9 +1,9 @@
-import { ReservationStatut } from "../../enum/reservation-statut";
+import { StatutReservationWorkflow } from "../../enum/statut-workflow-reservation";
 export interface ReservationDto {
     id?: number;
     editeur_id: number;
     festival_id: number;
-    statut_workflow: ReservationStatut;
+    statut_workflow: StatutReservationWorkflow;
     editeur_presente_jeux: boolean;
     remise_pourcentage?: number;
     remise_montant?: number;

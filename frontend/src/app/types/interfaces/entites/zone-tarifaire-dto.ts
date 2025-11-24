@@ -4,4 +4,6 @@ export interface ZoneTarifaireDto {
     nom: string;
     nombre_tables_total: number;
     prix_table: number;
+    created_at? : Date;
+    updated_at? : Date;
 }

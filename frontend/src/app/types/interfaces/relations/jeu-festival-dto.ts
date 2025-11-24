@@ -6,4 +6,6 @@ export interface JeuFestivalDto {
     dans_liste_demandee: boolean;
     dans_liste_obtenue: boolean;
     jeux_recu: boolean;
+    created_at : Date;
+    updated_at?: Date;
 }
