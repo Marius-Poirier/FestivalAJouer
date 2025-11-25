@@ -7,3 +7,5 @@ export interface UserDto {
   date_demande?: string;
   created_at?: string;
 }
+
+// NE PLUS UTILISER -> utilisateur-dto.ts

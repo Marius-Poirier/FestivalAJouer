@@ -1,8 +1,10 @@
 import { computed, inject, Injectable, signal } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
-import { UserDto } from '../../types/user-dto'
 import { environment } from '@env/environment'
 import { catchError, finalize, of, tap } from 'rxjs'
+import { UtilisateurDto } from '../../types/interfaces/entites/utilisateur-dto'
+import { RoleUtilisateur } from '../../types/enum/role-utilisateur'
+import { StatutUtilisateur } from '../../types/enum/statut-utilisateur'
 
 @Injectable({
     providedIn: 'root'
@@ -11,30 +13,36 @@ import { catchError, finalize, of, tap } from 'rxjs'
 export class AuthService {
     private readonly http = inject(HttpClient)
     // --- État interne (signaux) ---
-    private readonly _currentUser = signal<UserDto | null>(null)
+    private readonly _currentUser = signal<UtilisateurDto | null>(null)
     private readonly _isLoading = signal(false)
     private readonly _error = signal<string | null>(null)
     private readonly _registerSuccess = signal(false);
     // --- État exposé (readonly, computed) ---
     readonly currentUser = this._currentUser.asReadonly()
     readonly isLoggedIn = computed(() => this._currentUser() != null)
-    readonly isAdmin = computed(() => this.currentUser()?.role === 'admin')
+    readonly isAdmin = computed(() => this.currentUser()?.role === RoleUtilisateur.ADMIN)
     readonly isLoading = this._isLoading.asReadonly()
     readonly error = this._error.asReadonly()
     readonly registerSuccess = this._registerSuccess.asReadonly();
+
     // --- Connexion ---
     login(email: string, password: string) {
         this._isLoading.set(true)
         this._error.set(null)
-        this.http.post<{ user: UserDto }>(
+        this.http.post<{ user: UtilisateurDto }>(
                 `${environment.apiUrl}/auth/login`,
                 { email, password },
                 { withCredentials: true }
         ).pipe(
             tap(res => {
             if (res?.user) {
+
+                    // Normalisation rôle + statut
+                    res.user.role = res.user.role.toUpperCase() as RoleUtilisateur;
+                    res.user.statut_utilisateur = res.user.statut_utilisateur.toUpperCase() as StatutUtilisateur;
+
                     this._currentUser.set(res.user)
-                    console.log(`Utilisateur connecté : ${JSON.stringify(res.user)}`) // DEBUG
+                    console.log(`Utilisateur connecté : ${JSON.stringify(res.user)}`)
                 } else {
                     this._error.set('Identifiants invalides')
                     this._currentUser.set(null)
@@ -50,8 +58,9 @@ export class AuthService {
                 return of(null)
             }),
             finalize(() => this._isLoading.set(false))
-        ).subscribe() //on utilise ça pour "lancer" la pipeline sinno rien ne se passe    
+        ).subscribe()  
     }
+
     // --- Déconnexion ---
     logout() {
         this._isLoading.set(true) ; this._error.set(null)
@@ -100,19 +109,36 @@ export class AuthService {
     // --- Vérifie la session actuelle (cookie httpOnly) ---
     whoami() {
         this._isLoading.set(true) ; this._error.set(null)
-        this.http.get<{ user: UserDto }>(`${environment.apiUrl}/auth/whoami`, { withCredentials: true })
+        this.http.get<UtilisateurDto>(`${environment.apiUrl}/users/me`, { withCredentials: true })
             .pipe(
-                tap(res => { this._currentUser.set(res?.user ?? null) }),
-                catchError(err => {
-                    this._error.set('Session expirée') ; this._currentUser.set(null) ; return of(null)
+                tap(res => { 
+                    
+                    if (!res) {
+                        this._currentUser.set(null);
+                        return;
+                    }
+
+                    // Normalisation rôle + statut
+                    const normalized: UtilisateurDto = {
+                        ...res,
+                        role: res.role?.toUpperCase() as RoleUtilisateur,
+                        statut_utilisateur: res.statut_utilisateur?.toUpperCase() as StatutUtilisateur
+                    };
+
+                    this._currentUser.set(normalized);
                 }),
-                finalize(() => this._isLoading.set(false)),
-                catchError(() => of(null))
+                catchError(err => {
+                    console.error('whoami failed', err);
+                    this._currentUser.set(null);
+                    return of(null);
+                }),
+                finalize(() => this._isLoading.set(false))
             )
-        .subscribe(res => this._currentUser.set(res?.user ?? null))
+        .subscribe()
     }
+
     // --- Rafraîchissement pour l'interceptor ---
-    refresh$() { // observable qui émet null en cas d'erreur
+    refresh$() { 
         return this.http.post(`${environment.apiUrl}/auth/refresh`,{}, { withCredentials: true } )
         .pipe( catchError(() => of(null)) )
     }

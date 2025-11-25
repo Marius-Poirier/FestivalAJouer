@@ -1,8 +1,10 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
-import { UserDto } from '../types/user-dto';
 import { catchError, finalize, of, tap } from 'rxjs';
+import { RoleUtilisateur } from '../types/enum/role-utilisateur';
+import { UtilisateurDto } from '../types/interfaces/entites/utilisateur-dto';
+import { StatutUtilisateur } from '../types/enum/statut-utilisateur';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +13,7 @@ export class UserService {
   private readonly http = inject(HttpClient);
 
   // --- Internal state (signals) ---
-  private readonly _users = signal<UserDto[]>([]);
+  private readonly _users = signal<UtilisateurDto[]>([]);
   private readonly _isLoading = signal(false);
   private readonly _error = signal<string | null>(null);
 
@@ -25,16 +27,29 @@ export class UserService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.get<UserDto[]>(
+    this.http.get<any[]>(
       `${environment.apiUrl}/users`,
       { withCredentials: true }
     ).pipe(
-      tap(users => {
-        this._users.set(users);
-        console.log(`${users.length} utilisateurs chargés`);
+      tap(rawUsers => {
+        const normalized: UtilisateurDto[] = rawUsers.map(u => ({
+          ...u,
+
+          // normalisation du rôle du backend -> enum Angular
+          role: (u.role as string).toUpperCase() as RoleUtilisateur,
+
+          // conversion backend `statut` -> frontend `statut_utilisateur`
+          // en uppercase car ton enum est en majuscules
+          statut_utilisateur: (u.statut as string).toUpperCase() as StatutUtilisateur,
+        }));
+
+        this._users.set(normalized);
+        console.log(`${normalized.length} utilisateurs chargés`);
       }),
+
       catchError((err) => {
         console.error('Erreur lors du chargement des utilisateurs', err);
+
         if (err.status === 403) {
           this._error.set('Accès refusé : privilèges administrateur requis');
         } else if (err.status === 401) {
@@ -44,32 +59,35 @@ export class UserService {
         } else {
           this._error.set(`Erreur serveur (${err.status})`);
         }
+
         this._users.set([]);
-        return of([]);
+        return of<UtilisateurDto[]>([]);
       }),
+
       finalize(() => this._isLoading.set(false))
-    ).subscribe();
+    )
+    .subscribe();
   }
 
-  // --- Create a new user ---
-  createUser(login: string, password: string): void {
+  // --- Create a new user (admin) ---
+  createUser(email: string, password: string, role: RoleUtilisateur = RoleUtilisateur.BENEVOLE): void {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.post(
+    this.http.post<UtilisateurDto>(
       `${environment.apiUrl}/users`,
-      { login, password },
+      { email, password, role },
       { withCredentials: true }
     ).pipe(
-      tap(() => {
-        console.log(`Utilisateur ${login} créé avec succès`);
+      tap((created) => {
+        console.log(`Utilisateur ${created.email} créé avec succès`);
         // Refresh the user list after creation
         this.getAllUsers();
       }),
       catchError((err) => {
         console.error('Erreur lors de la création', err);
         if (err.status === 409) {
-          this._error.set('Ce login est déjà utilisé');
+          this._error.set('Cet email est déjà utilisé');
         } else if (err.status === 400) {
           this._error.set('Données invalides');
         } else {
@@ -82,7 +100,7 @@ export class UserService {
   }
 
   // --- Get a user by ID (helper method) ---
-  getUserById(id: number): UserDto | undefined {
+  getUserById(id: number): UtilisateurDto | undefined {
     return this._users().find(user => user.id === id);
   }
 
@@ -98,15 +116,16 @@ export class UserService {
     this._isLoading.set(false);
   }
 
-
-  // --- Validé la création de compte d'un user ---
-  validateUser(id: number, role: UserDto['role'] = 'benevole'): void {
+  // --- Valider la création de compte d'un user ---
+  validateUser(id: number, role: RoleUtilisateur | string = RoleUtilisateur.BENEVOLE): void {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.patch<UserDto>(
+    const backendRole = this.mapRoleToBackend(role);
+
+    this.http.patch<UtilisateurDto>(
       `${environment.apiUrl}/users/${id}/validate`,
-      { role },
+      { role: backendRole },
       { withCredentials: true }
     ).pipe(
       tap(() => {
@@ -122,12 +141,12 @@ export class UserService {
     ).subscribe();
   }
 
-  // --- Rejeté la création de compte d'un user ---
+  // --- Refuser la création de compte d'un user ---
   rejectUser(id: number): void {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.patch<UserDto>(
+    this.http.patch<UtilisateurDto>(
       `${environment.apiUrl}/users/${id}/reject`,
       {},
       { withCredentials: true }
@@ -143,5 +162,53 @@ export class UserService {
       }),
       finalize(() => this._isLoading.set(false))
     ).subscribe();
+  }
+
+  // --- Modifier le rôle d'un user ---
+  updateUserRole(id: number, role: RoleUtilisateur | string): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const backendRole = this.mapRoleToBackend(role);
+
+    this.http.patch<UtilisateurDto>(
+      `${environment.apiUrl}/users/${id}/role`,
+      { role: backendRole },
+      { withCredentials: true }
+    )
+    .pipe(
+      tap(updatedUser => {
+        if (updatedUser) {
+          this._users.update(users =>
+            users.map(u => (u.id === updatedUser.id ? updatedUser : u))
+          );
+        }
+      }),
+      catchError(err => {
+        console.error('Erreur lors de la mise à jour du rôle', err);
+        this._error.set('Impossible de mettre à jour le rôle');
+        return of(null);
+      }),
+      finalize(() => this._isLoading.set(false))
+    )
+    .subscribe();
+  }
+
+  // Convertir un rôle en string pour le back
+  private mapRoleToBackend(role: RoleUtilisateur | string | undefined): string {
+    if (!role) return 'benevole';
+
+    switch (role) {
+      case RoleUtilisateur.ADMIN:
+        return 'admin';
+      case RoleUtilisateur.SUPER_ORGANISATEUR:
+        return 'super_organisateur';
+      case RoleUtilisateur.ORGANISATEUR:
+        return 'organisateur';
+      case RoleUtilisateur.BENEVOLE:
+        return 'benevole';
+      default:
+        return (role as string).toLowerCase();
+    }
   }
 }

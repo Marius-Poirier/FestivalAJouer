@@ -165,4 +165,36 @@ router.patch('/:id/block', requireAdmin, async (req, res) => {
     }
 })
 
+// Modifier le rôle d'un user (réservée aux admins)
+router.patch('/:id/role', requireAdmin, async (req, res) => {
+    const { id } = req.params;
+    const { role } = req.body;
+
+    const validRoles = ['benevole', 'organisateur', 'super_organisateur', 'admin'];
+
+    if (!validRoles.includes(role)) {
+        return res.status(400).json({ error: 'Rôle invalide' });
+    }
+
+    try {
+        const { rows } = await pool.query(
+            `UPDATE Utilisateur 
+             SET role = $1
+             WHERE id = $2
+             RETURNING id, email, role, statut, email_bloque`,
+            [role, id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Utilisateur introuvable' });
+        }
+
+        res.json({ message: 'Rôle mis à jour', user: rows[0] });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
 export default router

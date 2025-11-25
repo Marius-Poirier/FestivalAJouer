@@ -264,3 +264,34 @@
   color: #606770;
 }
 
+.role-filter {
+  margin-right: 12px;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #ccd0d5;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.role-filter:focus {
+  outline: none;
+  border-color: #1877f2;
+  box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+}
+
+.btn-update {
+  padding: 6px 10px;
+  background: #1877f2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-update:hover {
+  background: #166fe5;
+}
+
+

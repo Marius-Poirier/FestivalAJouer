@@ -11,4 +11,9 @@ import { AuthService } from '@auth/auth-services';
 })
 export class App {
   protected readonly authService = inject(AuthService);
+
+  constructor() {
+    this.authService.whoami();
+  }
+
 }
