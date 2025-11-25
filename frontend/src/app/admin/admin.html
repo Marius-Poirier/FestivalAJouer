@@ -98,7 +98,20 @@
       <div class="table-section">
         <h2 class="section-title">Tous les utilisateurs</h2>
 
-        @if (otherUsers().length > 0) {
+        <!-- 🔍 Barre de recherche -->
+        <div class="toolbar">
+          <div class="search-box">
+            <input
+              type="text"
+              placeholder="Rechercher par email..."
+              [value]="searchTerm()"
+              (input)="onSearchChange($event)"
+            />
+            <span class="search-icon"> 🔍 </span>
+          </div>
+        </div>
+
+        @if (filteredOtherUsers().length > 0) {
           <div class="table-container">
             <table class="users-table">
               <thead>
@@ -110,7 +123,7 @@
                 </tr>
               </thead>
               <tbody>
-                @for (user of otherUsers(); track user.id) {
+                @for (user of filteredOtherUsers(); track user.id) {
                   <tr>
                     <td>{{ user.id }}</td>
                     <td>{{ user.email }}</td>
@@ -130,12 +143,12 @@
             </table>
 
             <div class="table-footer">
-              <p>Total: {{ otherUsers().length }} utilisateur(s)</p>
+              <p>Total: {{ filteredOtherUsers().length }} utilisateur(s)</p>
             </div>
           </div>
         } @else {
           <div class="empty-section">
-            <p>Aucun utilisateur (hors demandes) pour l’instant.</p>
+            <p>Aucun utilisateur trouvé avec ce filtre.</p>
           </div>
         }
       </div>
