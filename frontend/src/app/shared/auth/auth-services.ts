@@ -14,12 +14,14 @@ export class AuthService {
     private readonly _currentUser = signal<UserDto | null>(null)
     private readonly _isLoading = signal(false)
     private readonly _error = signal<string | null>(null)
+    private readonly _registerSuccess = signal(false);
     // --- État exposé (readonly, computed) ---
     readonly currentUser = this._currentUser.asReadonly()
     readonly isLoggedIn = computed(() => this._currentUser() != null)
     readonly isAdmin = computed(() => this.currentUser()?.role === 'admin')
     readonly isLoading = this._isLoading.asReadonly()
     readonly error = this._error.asReadonly()
+    readonly registerSuccess = this._registerSuccess.asReadonly();
     // --- Connexion ---
     login(email: string, password: string) {
         this._isLoading.set(true)
@@ -61,6 +63,40 @@ export class AuthService {
             )
         .subscribe()
     }
+
+    resetRegisterSuccess() {
+        this._registerSuccess.set(false);
+    }
+
+    register(login: string, password: string) {
+        this._isLoading.set(true);
+        this._error.set(null);
+        this._registerSuccess.set(false);
+
+        this.http.post(
+            `${environment.apiUrl}/auth/register`,
+            { email: login, password },
+            { withCredentials: true }
+        ).pipe(
+            tap(() => {
+            this._registerSuccess.set(true);
+            }),
+            catchError(err => {
+            console.error('Erreur register', err);
+            if (err.status === 409) {
+                this._error.set('Un compte avec cet email existe déjà');
+            } else if (err.status === 400) {
+                this._error.set('Email ou mot de passe invalide');
+            } else {
+                this._error.set('Erreur lors de la création du compte');
+            }
+            this._registerSuccess.set(false);
+            return of(null);
+            }),
+            finalize(() => this._isLoading.set(false))
+        ).subscribe();
+    }
+    
     // --- Vérifie la session actuelle (cookie httpOnly) ---
     whoami() {
         this._isLoading.set(true) ; this._error.set(null)

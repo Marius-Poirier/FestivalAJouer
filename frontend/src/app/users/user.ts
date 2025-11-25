@@ -97,4 +97,51 @@ export class UserService {
     this._error.set(null);
     this._isLoading.set(false);
   }
+
+
+  // --- Validé la création de compte d'un user ---
+  validateUser(id: number, role: UserDto['role'] = 'benevole'): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    this.http.patch<UserDto>(
+      `${environment.apiUrl}/users/${id}/validate`,
+      { role },
+      { withCredentials: true }
+    ).pipe(
+      tap(() => {
+        // Après validation, on recharge la liste complète
+        this.getAllUsers();
+      }),
+      catchError(err => {
+        console.error('Erreur lors de la validation du compte', err);
+        this._error.set('Impossible de valider ce compte');
+        return of(null);
+      }),
+      finalize(() => this._isLoading.set(false))
+    ).subscribe();
+  }
+
+  // --- Rejeté la création de compte d'un user ---
+  rejectUser(id: number): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    this.http.patch<UserDto>(
+      `${environment.apiUrl}/users/${id}/reject`,
+      {},
+      { withCredentials: true }
+    ).pipe(
+      tap(() => {
+        // Après refus, on recharge la liste complète
+        this.getAllUsers();
+      }),
+      catchError(err => {
+        console.error('Erreur lors du refus du compte', err);
+        this._error.set('Impossible de refuser ce compte');
+        return of(null);
+      }),
+      finalize(() => this._isLoading.set(false))
+    ).subscribe();
+  }
 }

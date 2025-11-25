@@ -2,8 +2,8 @@
   <div class="admin-card">
     <!-- Header -->
     <div class="header">
-      <h1>Gestion des Utilisateurs</h1>
-      <p class="subtitle">Liste des utilisateurs et leurs rôles</p>
+      <h1>Gestion des comptes</h1>
+      <p class="subtitle">Demandes de compte et gestion des utilisateurs</p>
     </div>
 
     <!-- Loading State -->
@@ -21,42 +21,123 @@
       </div>
     }
 
-    <!-- Users Table -->
-    @if (!userService.isLoading() && userService.users().length > 0) {
-      <div class="table-container">
-        <table class="users-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Login</th>
-              <th>Rôle</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (user of userService.users(); track user.id) {
-              <tr>
-                <td>{{ user.id }}</td>
-                <td class="user-login">{{ user.login }}</td>
-                <td>
-                  <span class="role-badge" [class.admin]="user.role === 'admin'">
-                    {{ user.role === 'admin' ? 'Admin' : 'User' }}
-                  </span>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-        
-        <div class="table-footer">
-          <p>Total: {{ userService.users().length }} utilisateur(s)</p>
-        </div>
-      </div>
-    }
+    <!-- Contenu principal -->
+    @if (!userService.isLoading() && !userService.error()) {
 
-    <!-- Empty State -->
-    @if (!userService.isLoading() && !userService.error() && userService.users().length === 0) {
-      <div class="empty-state">
-        <p>Aucun utilisateur trouvé</p>
+      <!-- ========================= -->
+      <!-- 1. Demandes de compte     -->
+      <!-- ========================= -->
+      <div class="table-section">
+        <h2 class="section-title">Demandes de compte (en attente)</h2>
+
+        @if (pendingUsers().length > 0) {
+          <div class="table-container">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Email</th>
+                  <th>Rôle à attribuer</th>
+                  <th>Statut</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of pendingUsers(); track user.id) {
+                  <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+
+                    <!-- Choix du rôle au moment de la validation -->
+                    <td>
+                      <select #roleSelect [value]="user.role">
+                        <option value="benevole">Bénévole</option>
+                        <option value="organisateur">Organisateur</option>
+                        <option value="super_organisateur">Super organisateur</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+
+                    <td>
+                      <span class="status-badge pending">En attente</span>
+                    </td>
+
+                    <!-- Boutons Valider / Refuser -->
+                    <td class="actions-cell">
+                      <button
+                        type="button"
+                        class="btn-validate"
+                        (click)="onValidateUser(user.id, roleSelect.value)"
+                      >
+                        Valider
+                      </button>
+
+                      <button
+                        type="button"
+                        class="btn-reject"
+                        (click)="onRejectUser(user.id)"
+                      >
+                        Refuser
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        } @else {
+          <div class="empty-section">
+            <p>Aucune demande de compte en attente.</p>
+          </div>
+        }
+      </div>
+
+      <!-- ========================= -->
+      <!-- 2. Tous les utilisateurs  -->
+      <!-- ========================= -->
+      <div class="table-section">
+        <h2 class="section-title">Tous les utilisateurs</h2>
+
+        @if (otherUsers().length > 0) {
+          <div class="table-container">
+            <table class="users-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Email</th>
+                  <th>Rôle</th>
+                  <th>Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (user of otherUsers(); track user.id) {
+                  <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                      @if (user.statut === 'en_attente') {
+                        <span class="status-badge pending">En attente</span>
+                      } @else if (user.statut === 'valide') {
+                        <span class="status-badge active">Validé</span>
+                      } @else {
+                        <span class="status-badge refused">Refusé</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+
+            <div class="table-footer">
+              <p>Total: {{ otherUsers().length }} utilisateur(s)</p>
+            </div>
+          </div>
+        } @else {
+          <div class="empty-section">
+            <p>Aucun utilisateur (hors demandes) pour l’instant.</p>
+          </div>
+        }
       </div>
     }
   </div>
