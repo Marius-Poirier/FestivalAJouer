@@ -15,5 +15,4 @@ export class App {
   constructor() {
     this.authService.whoami();
   }
-
 }

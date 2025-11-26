@@ -18,7 +18,6 @@ export class AdminComponent {
   protected readonly userService = inject(UserService);
   protected readonly authService = inject(AuthService);
 
-  // Exposer les enums au template
   protected readonly RoleUtilisateur = RoleUtilisateur;
   protected readonly StatutUtilisateur = StatutUtilisateur;
 
@@ -30,16 +29,12 @@ export class AdminComponent {
     this.userService.getAllUsers();
   }
 
-
-
   // SECTION : Comptes en attente
   protected readonly pendingUsers = computed(() =>
     this.userService.users().filter(
       (u) => u.statut_utilisateur === StatutUtilisateur.EN_ATTENTE
     )
   );
-
-
 
   // SECTION : Tous les utilisateurs
   protected readonly otherUsers = computed(() =>

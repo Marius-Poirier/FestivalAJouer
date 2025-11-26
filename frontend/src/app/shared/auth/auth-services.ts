@@ -20,10 +20,19 @@ export class AuthService {
     // --- État exposé (readonly, computed) ---
     readonly currentUser = this._currentUser.asReadonly()
     readonly isLoggedIn = computed(() => this._currentUser() != null)
-    readonly isAdmin = computed(() => this.currentUser()?.role === RoleUtilisateur.ADMIN)
     readonly isLoading = this._isLoading.asReadonly()
     readonly error = this._error.asReadonly()
     readonly registerSuccess = this._registerSuccess.asReadonly();
+    readonly isAdmin = computed(() => {
+        const user = this.currentUser();
+        if (!user) return false;
+        const role: any = user.role;
+        if (!role) return false;
+        if (typeof role === 'string') {
+            return role.toLowerCase() === 'admin';
+        }
+        return role === RoleUtilisateur.ADMIN;
+        });
 
     // --- Connexion ---
     login(email: string, password: string) {
@@ -141,5 +150,24 @@ export class AuthService {
     refresh$() { 
         return this.http.post(`${environment.apiUrl}/auth/refresh`,{}, { withCredentials: true } )
         .pipe( catchError(() => of(null)) )
+    }
+
+    whoamiOnce(): Promise<void> {
+        return new Promise(resolve => {
+            this.http.get<any>(`${environment.apiUrl}/users/me`, {
+            withCredentials: true
+            })
+            .pipe(
+            tap(user => {
+                this._currentUser.set(user ?? null);
+            }),
+            catchError(err => {
+                this._currentUser.set(null);
+                return of(null);
+            }),
+            finalize(() => resolve())
+            )
+            .subscribe();
+        });
     }
 }

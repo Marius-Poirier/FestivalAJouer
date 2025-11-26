@@ -31,22 +31,10 @@ export class UserService {
       `${environment.apiUrl}/users`,
       { withCredentials: true }
     ).pipe(
-      tap(rawUsers => {
-        const normalized: UtilisateurDto[] = rawUsers.map(u => ({
-          ...u,
-
-          // normalisation du rôle du backend -> enum Angular
-          role: (u.role as string).toUpperCase() as RoleUtilisateur,
-
-          // conversion backend `statut` -> frontend `statut_utilisateur`
-          // en uppercase car ton enum est en majuscules
-          statut_utilisateur: (u.statut as string).toUpperCase() as StatutUtilisateur,
-        }));
-
+      tap(rows => {
+        const normalized = rows.map(raw => this.normalizeUser(raw));
         this._users.set(normalized);
-        console.log(`${normalized.length} utilisateurs chargés`);
       }),
-
       catchError((err) => {
         console.error('Erreur lors du chargement des utilisateurs', err);
 
@@ -164,41 +152,24 @@ export class UserService {
     ).subscribe();
   }
 
-  // --- Modifier le rôle d'un user ---
-  updateUserRole(id: number, role: RoleUtilisateur | string): void {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    const backendRole = this.mapRoleToBackend(role);
-
-    this.http.patch<UtilisateurDto>(
-      `${environment.apiUrl}/users/${id}/role`,
-      { role: backendRole },
-      { withCredentials: true }
-    )
-    .pipe(
-      tap(updatedUser => {
-        if (updatedUser) {
-          this._users.update(users =>
-            users.map(u => (u.id === updatedUser.id ? updatedUser : u))
-          );
-        }
-      }),
-      catchError(err => {
-        console.error('Erreur lors de la mise à jour du rôle', err);
-        this._error.set('Impossible de mettre à jour le rôle');
-        return of(null);
-      }),
-      finalize(() => this._isLoading.set(false))
-    )
-    .subscribe();
+  // normalise un user venant du backend
+  private normalizeUser(raw: any): UtilisateurDto {
+    return {
+      id: raw.id,
+      email: raw.email,
+      role: (raw.role as string)?.toUpperCase() as RoleUtilisateur,
+      statut_utilisateur: (raw.statut ?? raw.statut_utilisateur ?? 'EN_ATTENTE').toUpperCase() as StatutUtilisateur,
+      date_demande: raw.date_demande ? new Date(raw.date_demande) : undefined,
+      valide_par: raw.valide_par ?? undefined,
+      email_bloque: !!raw.email_bloque,
+      created_at: raw.created_at ? new Date(raw.created_at) : undefined,
+      updated_at: raw.updated_at ? new Date(raw.updated_at) : undefined
+    };
   }
 
-  // Convertir un rôle en string pour le back
-  private mapRoleToBackend(role: RoleUtilisateur | string | undefined): string {
-    if (!role) return 'benevole';
-
-    switch (role) {
+  // map enum FRONT -> string BACK
+  private mapRoleToBackend(role: string): string {
+    switch (role as RoleUtilisateur) {
       case RoleUtilisateur.ADMIN:
         return 'admin';
       case RoleUtilisateur.SUPER_ORGANISATEUR:
@@ -206,9 +177,8 @@ export class UserService {
       case RoleUtilisateur.ORGANISATEUR:
         return 'organisateur';
       case RoleUtilisateur.BENEVOLE:
-        return 'benevole';
       default:
-        return (role as string).toLowerCase();
+        return 'benevole';
     }
   }
 }
