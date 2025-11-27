@@ -1,10 +1,9 @@
 import { Component, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserService } from '@users/user';
-import { AuthService } from '@auth/auth-services';
-import { UtilisateurDto } from '../types/interfaces/entites/utilisateur-dto';
-import { RoleUtilisateur } from '../types/enum/role-utilisateur';
-import { StatutUtilisateur } from '../types/enum/statut-utilisateur';
+import { AuthService } from 'src/app/core/services/auth-services';
+import { RoleUtilisateur } from '@enum/role-utilisateur';
+import { StatutUtilisateur } from '@enum/statut-utilisateur';
 
 @Component({
   selector: 'app-admin',

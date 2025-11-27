@@ -2,9 +2,9 @@ import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
 import { catchError, finalize, of, tap } from 'rxjs';
-import { RoleUtilisateur } from '../types/enum/role-utilisateur';
-import { UtilisateurDto } from '../types/interfaces/entites/utilisateur-dto';
-import { StatutUtilisateur } from '../types/enum/statut-utilisateur';
+import { RoleUtilisateur } from '@enum/role-utilisateur';
+import { UtilisateurDto } from '@interfaces/entites/utilisateur-dto';
+import { StatutUtilisateur } from '@enum/statut-utilisateur';
 
 @Injectable({
   providedIn: 'root'

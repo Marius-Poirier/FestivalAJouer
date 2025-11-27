@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { AuthService } from '@auth/auth-services'
+import { AuthService } from 'src/app/core/services/auth-services'
 import { catchError, switchMap, throwError } from 'rxjs'
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {

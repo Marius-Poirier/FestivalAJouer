@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '@auth/auth-services';
+import { AuthService } from 'src/app/core/services/auth-services';
 
 @Component({
   selector: 'app-home',
