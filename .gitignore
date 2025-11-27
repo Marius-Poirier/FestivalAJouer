@@ -29,7 +29,7 @@ yarn-error.log
 .history/*
 
 # Miscellaneous
-/.angular/cache
+*/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
@@ -42,4 +42,5 @@ testem.log
 Thumbs.db
 /backend/certs
 /backend/node_modules
+/backend/.env
 /frontend/node_modules
