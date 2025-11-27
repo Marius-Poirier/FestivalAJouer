@@ -22,7 +22,8 @@
       "@users/*": ["src/app/features/users/*"],
       "@admin/*": ["src/app/features/admin/*"],
       "@interfaces/*": ["src/app/types/interfaces/*"],
-      "@enum/*" : ["src/app/types/enum/*"]
+      "@enum/*" : ["src/app/types/enum/*"],
+      "@mockdata/*":["src/mockdata/*"]
     }
   },
   "angularCompilerOptions": {
