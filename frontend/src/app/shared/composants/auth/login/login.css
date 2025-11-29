@@ -139,3 +139,20 @@
     padding: 12px;
   }
 }
+
+.redirect {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 13px;
+  color: #606770;
+}
+
+.redirect a {
+  color: #1877f2;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.redirect a:hover {
+  text-decoration: underline;
+}
