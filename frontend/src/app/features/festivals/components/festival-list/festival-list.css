@@ -1,0 +1,25 @@
+ul{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 0;
+    margin: 0;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+li {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+}
+
+button {
+    text-align: right;
+    background-color: #ec407a;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}

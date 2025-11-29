@@ -23,7 +23,8 @@
       "@admin/*": ["src/app/features/admin/*"],
       "@interfaces/*": ["src/app/types/interfaces/*"],
       "@enum/*" : ["src/app/types/enum/*"],
-      "@mockdata/*":["src/mockdata/*"]
+      "@mockdata/*":["src/mockdata/*"],
+      "@festivals/*":["src/app/features/festivals/*"],
     }
   },
   "angularCompilerOptions": {

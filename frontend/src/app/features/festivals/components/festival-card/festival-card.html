@@ -1,0 +1,16 @@
+@if(festival()){
+    @let fest = festival()!;
+    <mat-card (click)="update.emit(fest.id!)">
+        <mat-card-header>
+            <h2>{{fest.nom}}</h2>
+        </mat-card-header>
+        <mat-card-content>
+            <!-- <p>Localisation : <a href="">{{fest.localisation}}</a></p> -->
+            <!-- <p>Year : {{fest.year}}</p> -->
+        </mat-card-content>
+        <mat-card-actions>
+            <button (click)="delete.emit(fest.id!)">Delete</button> 
+        </mat-card-actions>
+    </mat-card>
+}
+

@@ -1,0 +1,18 @@
+<ul class="festivals-list">
+    @for (fest of festivales(); track fest.nom){
+        <li>
+            @let hiddenFestival = false;
+            <app-festival-card 
+            [festival]="fest"
+       
+            [hidden]="hiddenFestival">
+            </app-festival-card>
+        </li>
+    }
+</ul>
+<!-- <button (click)="show()">Add</button> -->
+
+@if(showstate()){
+    <!-- <app-form-add></app-form-add> -->
+}
+

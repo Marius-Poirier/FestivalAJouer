@@ -3,54 +3,53 @@
         <div class="logo">
             <a routerLink="/home" class="logo-link">Festival à jouer</a>
         </div>
-
-        <nav class="nav-menu-left">
-            <div class="festivals">
-                <a routerLink="/festivals" routerLinkActive="active" class="nav-link">
-                    Festivals
-                </a>
-            </div>
-            <div class="editeurs">
-                <a routerLink="/editeurs" routerLinkActive="active" class="nav-link">
-                    Éditeurs
-                </a>
-            </div>
-            <div class="jeux">
-                <a routerLink="/jeux"routerLinkActive="active" class="nav-link">
-                    Jeux
-                </a>
-            </div>
-        </nav>
-
-        <nav class="nav-menu-right">
-            @if(authService.isLoggedIn()){
-                <button 
-                class="btn-logout" 
-                (click)="onLogout()"
-                [disabled]="authService.isLoading()"
-                >
-                Déconnexion
-                </button>
-
-                @if (authService.isAdmin()) {
-                    <a 
-                    routerLink="/admin" 
-                    routerLinkActive="active"
-                    class="btn"
-                    >
-                    Administration
+        @if(authService.isLoggedIn()){
+            <nav class="nav-menu-left">
+                <div class="festivals">
+                    <a routerLink="/festivals" routerLinkActive="active" class="nav-link">
+                        Festivals
                     </a>
-                }
+                </div>
+                <div class="editeurs">
+                    <a routerLink="/editeurs" routerLinkActive="active" class="nav-link">
+                        Éditeurs
+                    </a>
+                </div>
+                <div class="jeux">
+                    <a routerLink="/jeux"routerLinkActive="active" class="nav-link">
+                        Jeux
+                    </a>
+                </div>
+            </nav>
 
-            }@else{
+            <nav class="nav-menu-right">
+
+                    <button 
+                    class="btn-logout" 
+                    (click)="onLogout()"
+                    [disabled]="authService.isLoading()"
+                    >
+                    Déconnexion
+                    </button>
+
+                    @if (authService.isAdmin()) {
+                        <a 
+                        routerLink="/admin" 
+                        routerLinkActive="active"
+                        class="btn"
+                        >
+                        Administration
+                        </a>
+                    }
+
+            </nav>
+        }@else{
                 <div class="not-connected">
                     <a routerLink="/login" routerLinkActive="active" class="btn-login">
                     Se connecter
                     </a>
                 </div>
             }
-
-        </nav>
 
         @if (authService.error()) {
             <div class="alert alert-error">
