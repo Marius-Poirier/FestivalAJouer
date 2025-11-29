@@ -1,5 +1,5 @@
-import { RoleUtilisateur } from "@enum/role-utilisateur";
-import { StatutUtilisateur } from "@enum/statut-utilisateur";
+import { RoleUtilisateur } from "../../enum/role-utilisateur";
+import { StatutUtilisateur } from "../../enum/statut-utilisateur";
 
 export interface UtilisateurDto {
     id?: number;

@@ -68,7 +68,7 @@ router.post('/login', async (req, res) => {
         user: { 
             email: user.email, 
             role: user.role,
-            statut_utilisateur: user.statut
+            statut: user.statut
         } 
     })
 })
@@ -142,25 +142,5 @@ router.post('/refresh', (req, res) => {
         res.status(403).json({ error: 'Refresh token invalide ou expiré' })
     }
 })
-
-// --- whoami ---
-router.get('/whoami', verifyToken, async (req, res) => {
-    if (!req.user) {
-        return res.json({ user: null });
-    }
-    try {
-        const { rows } = await pool.query(
-            `SELECT id, email, role, statut 
-             FROM Utilisateur 
-             WHERE id = $1`,
-            [req.user.id]
-        );
-
-        res.json({ user: rows[0] ?? null });
-    } catch (err) {
-        console.error('whoami error:', err);
-        res.json({ user: null });
-    }
-});
 
 export default router

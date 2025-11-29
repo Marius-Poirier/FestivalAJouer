@@ -9,18 +9,6 @@ import publicRouter from './routes/public.js'
 import { ensureAdmin } from './db/initAdmin.js'
 import usersRouter from './routes/users.js'
 import festivalRouter from './routes/festival.js'
-import zoneTarifaireRouter from './routes/zone-tarifaire.js'
-import zoneDuPlanRouter from './routes/zone-du-plan.js'
-import tablesRouter from './routes/tables.js'
-import editeursRouter from './routes/editeurs.js'
-import personnesRouter from './routes/personnes.js'
-import jeuxRouter from './routes/jeux.js'
-import reservationsRouter from './routes/reservations.js'
-import reservationTablesRouter from './routes/reservation-tables.js'
-import jeuFestivalRouter from './routes/jeu-festival.js'
-import jeuFestivalTablesRouter from './routes/jeu-festival-tables.js'
-import contactsRouter from './routes/contacts.js'
-import auditRouter from './routes/audit.js'
 import 'dotenv/config'
 
 import authRouter from './routes/auth.js'
@@ -64,7 +52,7 @@ app.use(cors({
       }
    },
    credentials: true,
-   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 
@@ -79,18 +67,6 @@ app.use('/api/public', publicRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/users', verifyToken, usersRouter) // protégé
 app.use('/api/festivals', verifyToken, festivalRouter)
-app.use('/api/zones-tarifaires', verifyToken, zoneTarifaireRouter)
-app.use('/api/zones-du-plan', verifyToken, zoneDuPlanRouter)
-app.use('/api/tables', verifyToken, tablesRouter)
-app.use('/api/editeurs', verifyToken, editeursRouter)
-app.use('/api/personnes', verifyToken, personnesRouter)
-app.use('/api/jeux', verifyToken, jeuxRouter)
-app.use('/api/reservations', verifyToken, reservationsRouter)
-app.use('/api/reservation-tables', verifyToken, reservationTablesRouter)
-app.use('/api/jeu-festival', verifyToken, jeuFestivalRouter)
-app.use('/api/jeu-festival-tables', verifyToken, jeuFestivalTablesRouter)
-app.use('/api/contacts', verifyToken, contactsRouter)
-app.use('/api/audit', verifyToken, auditRouter)
 app.use('/api/admin', verifyToken, requireAdmin, (req, res) => {
     res.json({ message: 'Bienvenue admin' });
 })

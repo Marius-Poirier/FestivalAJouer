@@ -1,4 +1,4 @@
-import { StatutReservationWorkflow } from "@enum/statut-workflow-reservation";
+import { StatutReservationWorkflow } from "../../enum/statut-workflow-reservation";
 export interface ReservationDto {
     id?: number;
     editeur_id: number;

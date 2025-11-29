@@ -1,0 +1,246 @@
+header {
+  background-color: var(--bleu-roi);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.header-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.logo {
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  
+}
+
+.logo-link {
+  color: var(--blanc);
+  text-decoration: none;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.nav-menu-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.festival,
+.editeurs, .jeux {
+  display: flex;
+}
+
+.nav-menu-left a {
+  text-decoration: none;
+  color: var(--blanc);
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+}
+
+.nav-menu-left a:hover {
+  background-color: var(--fond-transparent-moyen);
+}
+
+.nav-menu-left a.active {
+  background-color: var(--fond-transparent-fort);
+  border-bottom: 3px solid var(--jaune-accent);
+}
+
+
+.nav-menu-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.name-user {
+  color: var(--blanc);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  background-color: var(--fond-transparent-leger);
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.3s;
+}
+
+.name-user:hover {
+  background-color: var(--fond-transparent-fort);
+}
+
+.btn-logout {
+  background-color: var(--bleu-vif);
+  color: var(--blanc);
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  transition: background-color 0.3s;
+}
+
+.btn-logout:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.btn-logout:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-login {
+  background-color: var(--bleu-vif);
+  color: var(--blanc);
+  text-decoration: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 0.95rem;
+  display: inline-block;
+  transition: background-color 0.3s;
+}
+
+.btn-login:hover {
+  background-color: var(--bleu-roi-clair);
+}
+
+.btn-login.active {
+  background-color: var(--bleu-roi-clair);
+}
+
+.not-connected {
+  display: flex;
+}
+
+.alert {
+  width: 100%;
+  padding: 0.875rem 1.25rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  color: var(--rouge-danger);
+  border-left: 4px solid var(--rouge-danger);
+}
+
+/* 
+ RESPONSIVE - TABLETTES 
+ */
+@media (max-width: 1024px) {
+  .header-container {
+    padding: 1rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  .name {
+    font-size: 1.5rem;
+  }
+
+  .nav-menu-left {
+    gap: 1rem;
+  }
+
+  .nav-menu-left a {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.875rem;
+  }
+}
+
+/* 
+  RESPONSIVE - MOBILES 
+*/
+@media (max-width: 768px) {
+  .header-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .name {
+    font-size: 1.25rem;
+    order: 1;
+  }
+
+  .nav-menu-left {
+    flex: 1 1 100%;
+    justify-content: center;
+    gap: 0.75rem;
+    order: 3;
+  }
+
+  .nav-menu-left a {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .nav-menu-right {
+    order: 2;
+    gap: 0.75rem;
+  }
+
+  .btn-logout,
+  .btn-login {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .name-user {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-container {
+    padding: 0.75rem;
+    gap: 0.875rem;
+  }
+
+  .name {
+    font-size: 1.125rem;
+  }
+
+  .nav-menu-left {
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .nav-menu-left a {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.6rem;
+    flex: 1;
+    text-align: center;
+  }
+
+  .nav-menu-right {
+    gap: 0.5rem;
+  }
+
+  .btn-logout,
+  .btn-login,
+  .name-user {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.75rem;
+  }
+}

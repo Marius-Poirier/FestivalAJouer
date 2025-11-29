@@ -17,13 +17,8 @@
     "baseUrl": "./",
     "paths": {
       "@env/*": ["src/environments/*"],
-      "@core/*":["src/app/core/*"],
-      "@auth/*": ["src/app/shared/composants/auth/*"],
-      "@users/*": ["src/app/features/users/*"],
-      "@admin/*": ["src/app/features/admin/*"],
-      "@interfaces/*": ["src/app/types/interfaces/*"],
-      "@enum/*" : ["src/app/types/enum/*"],
-      "@mockdata/*":["src/mockdata/*"]
+      "@auth/*": ["src/app/shared/auth/*"],
+      "@users/*": ["src/app/users/*"]
     }
   },
   "angularCompilerOptions": {
