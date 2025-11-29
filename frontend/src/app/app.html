@@ -1,5 +1,45 @@
-<app-header>
-</app-header>
+<!-- <header class="app-header">
+  <div class="container">
+    <div class="logo">
+      <a routerLink="/home" class="logo-link">MariusApp</a>
+    </div>
+    
+    <nav class="nav-menu">
+
+      <a 
+        routerLink="/home" 
+        routerLinkActive="active"
+        class="nav-link"
+      >
+        Accueil
+      </a>
+      
+
+      @if (authService.isAdmin()) {
+        <a 
+          routerLink="/admin" 
+          routerLinkActive="active"
+          class="nav-link"
+        >
+          Administration
+        </a>
+      }
+      
+
+      @if (!authService.isLoggedIn()) {
+        <a 
+          routerLink="/login" 
+          routerLinkActive="active"
+          class="nav-link nav-link-login"
+        >
+          Se connecter
+        </a>
+      }
+    </nav>
+  </div>
+</header> -->
+
+<app-header></app-header>
 
 <main class="app-content">
   <router-outlet />

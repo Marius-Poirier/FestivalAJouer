@@ -1,0 +1,55 @@
+<div class="home-container">
+  <div class="home-card">
+    
+    @if (authService.isLoading()) {
+      <!-- Loading State -->
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+      </div>
+    } @else if (authService.isLoggedIn()) {
+      <!-- User Connected -->
+      <div class="user-section">
+        <h1>Welcome</h1>
+        
+        <div class="user-info">
+          <div class="info-row">
+            <span class="label">User:</span>
+            <span class="value">{{ authService.currentUser()?.email }}</span>
+          </div>
+          
+          <div class="info-row">
+            <span class="label">Role:</span>
+            <span class="value role" [class.admin]="authService.isAdmin()">
+              {{ authService.isAdmin() ? 'Administrator' : 'User' }}
+            </span>
+          </div>
+        </div>
+
+        <button 
+          class="btn-logout" 
+          (click)="onLogout()"
+          [disabled]="authService.isLoading()"
+        >
+          Déconnexion
+        </button>
+      </div>
+    } @else {
+      <!-- Not Connected -->
+      <div class="not-connected">
+        <h1>Home</h1>
+        <p>You are not logged in</p>
+        <a routerLink="/login" class="btn-login">
+          Se connecter
+        </a>
+      </div>
+    }
+
+    <!-- Error Display -->
+    @if (authService.error()) {
+      <div class="alert alert-error">
+        {{ authService.error() }}
+      </div>
+    }
+  </div>
+</div>

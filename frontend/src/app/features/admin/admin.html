@@ -1,0 +1,158 @@
+<div class="admin-container">
+  <div class="admin-card">
+
+    <div class="header">
+      <h1>Gestion des comptes</h1>
+      <p class="subtitle">Demandes de compte et gestion des utilisateurs</p>
+    </div>
+
+    @if (userService.error()) {
+      <div class="alert alert-error">
+        {{ userService.error() }}
+      </div>
+    }
+
+    @if (userService.isLoading()) {
+      <div class="loading-state">
+        <span class="spinner"></span>
+        <p>Chargement...</p>
+      </div>
+    }
+
+    <!-- ===================================== -->
+    <!-- 1. DEMANDES EN ATTENTE -->
+    <!-- ===================================== -->
+    <div class="table-section">
+      <h2 class="section-title">Demandes de compte</h2>
+
+      @if (pendingUsers().length > 0) {
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Attribuer rôle</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (user of pendingUsers(); track user.id) {
+              <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+
+                <td>
+                  <select #roleSelect>
+                    <option [value]="RoleUtilisateur.BENEVOLE">Bénévole</option>
+                    <option [value]="RoleUtilisateur.ORGANISATEUR">Organisateur</option>
+                    <option [value]="RoleUtilisateur.SUPER_ORGANISATEUR">Super-organisateur</option>
+                    <option [value]="RoleUtilisateur.ADMIN">Admin</option>
+                  </select>
+                </td>
+
+                <td class="actions-cell">
+                  <button
+                    type="button"
+                    class="btn-validate"
+                    (click)="onValidateUser(user.id!, roleSelect.value)"
+                  >
+                    Valider
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn-reject"
+                    (click)="onRejectUser(user.id!)"
+                  >
+                    Refuser
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <p class="empty-section">Aucune demande en attente.</p>
+      }
+    </div>
+
+    <!-- ===================================== -->
+    <!-- 2. TOUS LES UTILISATEURS -->
+    <!-- ===================================== -->
+    <div class="table-section">
+      <h2 class="section-title">Tous les utilisateurs</h2>
+
+      <!-- Barre d’outils -->
+      <div class="toolbar">
+
+        <!-- FILTRE ROLE -->
+        <select class="role-filter" (change)="onRoleFilterChange($event)">
+          <option value="all">Tous les rôles</option>
+          <option [value]="RoleUtilisateur.BENEVOLE">Bénévole</option>
+          <option [value]="RoleUtilisateur.ORGANISATEUR">Organisateur</option>
+          <option [value]="RoleUtilisateur.SUPER_ORGANISATEUR">Super-organisateur</option>
+          <option [value]="RoleUtilisateur.ADMIN">Admin</option>
+        </select>
+
+        <!-- RECHERCHE -->
+        <div class="search-box">
+          <input
+            type="text"
+            placeholder="Rechercher un utilisateur..."
+            [value]="searchTerm()"
+            (input)="onSearchChange($event)"
+          />
+        </div>
+      </div>
+
+      <!-- TABLEAU FILTRÉ -->
+      @if (filteredOtherUsers().length > 0) {
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Rôle</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (user of filteredOtherUsers(); track user.id) {
+              <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+
+                <td>
+                  <span class="role-badge" [class.admin]="user.role === RoleUtilisateur.ADMIN">
+                    {{ user.role }}
+                  </span>
+                </td>
+
+                <td>
+                  <span
+                    class="status-badge"
+                    [class.active]="user.statut_utilisateur === StatutUtilisateur.VALIDE"
+                    [class.refused]="user.statut_utilisateur === StatutUtilisateur.REFUSE"
+                    [class.pending]="user.statut_utilisateur === StatutUtilisateur.EN_ATTENTE"
+                  >
+                    {{ user.statut_utilisateur }}
+                  </span>
+                </td>
+
+              </tr>
+            }
+          </tbody>
+        </table>
+
+        <div class="table-footer">
+          <p>Total : {{ filteredOtherUsers().length }} utilisateur(s)</p>
+        </div>
+
+      } @else {
+        <p class="empty-section">Aucun résultat.</p>
+      }
+    </div>
+  </div>
+</div>

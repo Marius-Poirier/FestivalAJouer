@@ -1,12 +1,12 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http'
 import { inject } from '@angular/core'
-import { AuthService } from '@auth/auth-services'
+import { AuthService } from 'src/app/core/services/auth-services'
 import { catchError, switchMap, throwError } from 'rxjs'
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService)
   // --- Ne pas intercepter les requêtes d'auth elles-mêmes ---
-  const excluded = ['/auth/login', '/auth/logout', '/auth/refresh']
+  const excluded = ['/auth/login', '/auth/logout', '/auth/refresh', '/auth/whoami']
   if (excluded.some(path => req.url.includes(path))) { return next(req) } // passe directement
   // --- Interception des autres requêtes ---
   return next(req).pipe(

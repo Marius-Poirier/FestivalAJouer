@@ -1,0 +1,82 @@
+<div class="login-container">
+    <div class="login-card">
+    <h2>Connexion</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <!-- Login Field -->
+        <div class="form-group">
+        <label for="login">Identifiant</label>
+        <input
+            type="text"
+            id="email"
+            formControlName="email"
+            [class.invalid]="loginControl.invalid && loginControl.touched"
+            placeholder="Entrez votre email"
+        />
+        @if (loginControl.invalid && loginControl.touched) {
+            <span class="error-text">
+            @if (loginControl.errors?.['required']) {
+                L'identifiant est requis
+            }
+            @if (loginControl.errors?.['minlength']) {
+                L'identifiant doit contenir au moins 3 caractères
+            }
+            </span>
+        }
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+        <label for="password">Mot de passe</label>
+        <input
+            type="password"
+            id="password"
+            formControlName="password"
+            [class.invalid]="passwordControl.invalid && passwordControl.touched"
+            placeholder="Entrez votre mot de passe"
+        />
+        @if (passwordControl.invalid && passwordControl.touched) {
+            <span class="error-text">
+            @if (passwordControl.errors?.['required']) {
+                Le mot de passe est requis
+            }
+            @if (passwordControl.errors?.['minlength']) {
+                Le mot de passe doit contenir au moins 4 caractères
+            }
+            </span>
+        }
+        </div>
+
+        <!-- Error Message -->
+        @if (errorMessage()) {
+        <div class="alert alert-error">
+            {{ errorMessage() }}
+        </div>
+        }
+
+        <!-- Loading Message -->
+        @if (isSubmitting()) {
+        <div class="alert alert-info">
+            <span class="spinner"></span>
+            Connexion en cours...
+        </div>
+        }
+
+        <!-- Submit Button -->
+        <button
+        type="submit"
+        class="btn-submit"
+        [disabled]="loginForm.invalid || isSubmitting()"
+        >
+        @if (isSubmitting()) {
+            <span class="spinner-small"></span>
+        }
+        Se connecter
+        </button>
+
+        <p class="redirect">
+            Pas de compte ? <a routerLink="/register">Créer un compte</a>
+        </p>
+    </form>
+    </div>
+</div>
