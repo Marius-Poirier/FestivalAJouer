@@ -5,31 +5,6 @@
   box-sizing: border-box;
 }
 
-:root {
-  /* Couleurs principales */
-  --bleu-roi: #1e40af;
-  --bleu-roi-fonce: #1e3a8a;
-  --bleu-roi-clair: #2563eb;
-  --bleu-vif: #3b82f6;
-  
-  /* Couleurs d'action */
-  --vert-succes: #059669;
-  --rouge-danger: #dc2626;
-  --jaune-accent: #eab308;
-  
-  /* Couleurs neutres */
-  --blanc: #ffffff;
-  --gris-tres-clair: #f3f4f6;
-  --gris-clair: #e5e7eb;
-  --gris-moyen: #6b7280;
-  --gris-fonce: #1f2937;
-  
-  /* Fonds transparents */
-  --fond-transparent-leger: rgba(255, 255, 255, 0.1);
-  --fond-transparent-moyen: rgba(255, 255, 255, 0.15);
-  --fond-transparent-fort: rgba(255, 255, 255, 0.2);
-}
-
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   background: #e9ebee;
