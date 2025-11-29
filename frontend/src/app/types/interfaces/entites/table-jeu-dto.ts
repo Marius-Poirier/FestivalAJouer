@@ -1,4 +1,4 @@
-import { StatutTable } from "../../enum/statut-table";
+import { StatutTable } from "@enum/statut-table";
 
 export interface TableJeuDto {
   id?: number;

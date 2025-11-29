@@ -1,6 +1,6 @@
 export enum StatutTable {
     LIBRE = 'LIBRE',
-    RESERVE = 'RESERVEE',
-    PLEIN = 'OCCUPEE',
+    RESERVEE = 'RESERVEE',
+    OCCUPEE = 'OCCUPEE',
     HORS_SERVICE = 'HORS_SERVICE'
 }
