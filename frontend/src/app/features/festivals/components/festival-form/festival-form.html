@@ -1,0 +1,26 @@
+<div class="from-festival-container" (click)="close()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" (click)="$event.stopPropagation()">
+        <h2 class="add">Ajouter un festival</h2>
+        
+        <mat-form-field appearance="fill">
+            <mat-label>Nom festival</mat-label>
+            <input matInput type="text" formControlName="nom" placeholder="Nom">
+        </mat-form-field>
+
+        <!-- <mat-form-field appearance="fill">
+            <mat-label>Location</mat-label>
+            <input matInput type="text" formControlName="location" placeholder="Localisation">
+
+        </mat-form-field> -->
+
+        <!-- <mat-form-field appearance="fill">
+            <mat-label>Year</mat-label>
+            <input matInput type="text" formControlName="year" placeholder="Year">
+
+        </mat-form-field> -->
+
+        <button type="submit" mat-raised-button color="primary">Enregistrer</button>
+        <button type="button" (click)="close()" mat-raised-button>Fermer</button>
+    </form>
+
+</div>

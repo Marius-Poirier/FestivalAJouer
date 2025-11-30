@@ -1,18 +1,24 @@
-<ul class="festivals-list">
-    @for (fest of festivales(); track fest.nom){
-        <li>
-            @let hiddenFestival = false;
-            <app-festival-card 
-            [festival]="fest"
-       
-            [hidden]="hiddenFestival">
-            </app-festival-card>
-        </li>
-    }
-</ul>
-<!-- <button (click)="show()">Add</button> -->
+<div class="list-container">
+    <div class="header-actions">
+        <button class="btn-add" (click)="show()">+ Ajouter un festival</button>
+    </div>
 
-@if(showstate()){
-    <!-- <app-form-add></app-form-add> -->
-}
+    <ul class="festivals-list">
+        @for (fest of festivales(); track fest.nom){
+            <li>
+                @let hiddenFestival = false;
+                <app-festival-card 
+                [festival]="fest"
+                [hidden]="hiddenFestival">
+                </app-festival-card>
+            </li>
+        }
+    </ul>
+
+    @if(showForm()){
+        <app-festival-form (closeForm)="show()"></app-festival-form>
+    }
+    
+</div>
+
 

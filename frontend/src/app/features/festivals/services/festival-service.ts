@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { FestivalDto } from '@interfaces/entites/festival-dto';
 import { MOCK_FESTIVALS } from 'src/mock_data/mock_festivals'; 
 
@@ -6,6 +7,8 @@ import { MOCK_FESTIVALS } from 'src/mock_data/mock_festivals';
   providedIn: 'root'
 })
 export class FestivalService {
+  private readonly http = inject(HttpClient)
+  // private readonly baseUrl = 'https://localhost:4000/festivals'
 
   private readonly _festivales = signal<FestivalDto[]>(MOCK_FESTIVALS)
   readonly festivales = this._festivales.asReadonly()
@@ -13,21 +16,21 @@ export class FestivalService {
   private readonly _showform = signal(false)
   readonly showform = this._showform.asReadonly()
 
-  // public add(nom: string, localisation : string, year : number){
-  //   const alreadyAdded = this._festivales().find((f)=> f.nom === nom && f.localisation === localisation && f.year === year)
-  //   try{
-  //     if(alreadyAdded === undefined){
-  //       const id = this._festivales().length > 0 ? Math.max(...this._festivales().map( f => f.id || 0)) + 1 : 1
-  //       const newfestival : Festival = {id : id , nom : nom, localisation: localisation , year : year}
-  //       this._festivales.update(festivales => [...festivales, newfestival])
-  //       console.log('Festivale ajouter avec succée', id)
-  //     }
-  //     else{console.log('Festivale déjà ajouter')}
-  //   }catch(error){
-  //     console.log("Error lors de l'ajout", error)
-  //   }
+  public add(nom: string, localisation : string, year : number){
+    const alreadyAdded = this._festivales().find((f)=> f.nom === nom )
+    try{
+      if(alreadyAdded === undefined){
+        const id = this._festivales().length > 0 ? Math.max(...this._festivales().map( f => f.id || 0)) + 1 : 1
+        const newfestival : FestivalDto = {id : id , nom : nom}
+        this._festivales.update(festivales => [...festivales, newfestival])
+        console.log('Festivale ajouter avec succée', id)
+      }
+      else{console.log('Festivale déjà ajouter')}
+    }catch(error){
+      console.log("Error lors de l'ajout", error)
+    }
 
-  // }
+  }
 
 //   public delete(id : number){
 //     try{

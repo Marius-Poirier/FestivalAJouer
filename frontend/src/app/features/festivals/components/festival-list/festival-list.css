@@ -1,25 +1,64 @@
-ul{
+.list-container {
+    padding: 12px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.header-actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.btn-add {
+    background: #1877f2;
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-add:hover {
+    background: #166fe5;
+}
+
+.btn-add:active {
+    background: #1564d6;
+}
+
+ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 320px));
+    gap: 12px;
+    justify-content: center;
+    list-style: none;
     padding: 0;
     margin: 0;
-    justify-content: flex-start;
-    align-items: stretch;
 }
 
 li {
     display: flex;
-    justify-content: center;
+    justify-content: stretch;
     align-items: stretch;
 }
 
-button {
-    text-align: right;
-    background-color: #ec407a;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 6px;
-    cursor: pointer;
+/* Responsive adaptations */
+@media (max-width: 768px) {
+    ul {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    ul {
+        grid-template-columns: 1fr;
+        gap: 12px;
+
+     
+    }
 }
