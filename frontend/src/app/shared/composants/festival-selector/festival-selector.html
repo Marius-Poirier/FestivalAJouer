@@ -1,0 +1,28 @@
+<div class="festival-selector">
+    <div class="contenent">
+        <label for="">Festival courant :</label>
+        <select 
+            [value]="currentFestival()?.id ?? ''"
+            (change)="onFestivalChange($any($event.target).value)">
+            
+            <option value="">{{currentFestival()?.nom}}</option>
+            
+            @for (festival of festivals(); track festival.id) {
+            <option [value]="festival.id">
+                {{ festival.nom }}
+            </option>
+            }
+        </select>
+
+        <!-- Affichage du festival actif -->
+        @if (currentFestival(); as festival) {
+            <div class="festival-actif">
+                <span>{{ festival.nom }}</span>
+            </div>
+        }
+
+    </div>
+   
+
+
+</div>

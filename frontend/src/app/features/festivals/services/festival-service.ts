@@ -95,21 +95,22 @@ export class FestivalService {
 
   public update(partial : Partial<FestivalDto> &{id: number}) : void{
     this._festivals.update(fest=>fest.map(f => (f.id === partial.id ? {...f, ...partial} : f)))
-    //fusioner avec partial
   }
 
   public findById(id : number){
     return this._festivals().find((f)=>f.id === id)
   }
 
-// //methode avec service mais on peut utiliser model() dans le composant fest list
-//   public show(){
-//     this._showform.update(f => !f)
-//   }
-
-//   public close(){
-//     this._showform.set(false)
-//   }
+  public getLastFestival(): FestivalDto | undefined {
+    const festivals = this._festivals();
+    if (festivals.length === 0) return undefined;
+    
+    return festivals.reduce((latest, current) => {
+      const latestDate = new Date(latest.created_at || 0);
+      const currentDate = new Date(current.created_at || 0);
+      return currentDate > latestDate ? current : latest;
+    });
+  }
 
   
 }

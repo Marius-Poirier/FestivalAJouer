@@ -19,6 +19,7 @@
       "@env/*": ["src/environments/*"],
       "@core/*":["src/app/core/*"],
       "@auth/*": ["src/app/shared/composants/auth/*"],
+      "@sharedComponent/*":["src/app/shared/composants/*"],
       "@users/*": ["src/app/features/users/*"],
       "@admin/*": ["src/app/features/admin/*"],
       "@interfaces/*": ["src/app/types/interfaces/*"],
