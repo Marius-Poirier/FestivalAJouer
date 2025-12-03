@@ -1,18 +1,1 @@
-@if(festival()){
-    @let fest = festival()!;
-    <mat-card (click)="update.emit(fest.id!)">
-        <mat-card-header>
-            <h2>{{fest.nom}}</h2>
-        </mat-card-header>
-        <mat-card-content>
-            <p>Localisation : <a href="">{{fest.lieu}}</a></p>
-            <p>Début : <span style="text-transform: capitalize;">{{fest.date_debut | date: 'fullDate':'':'fr-FR' }}</span></p>
-            <p>Fin : <span style="text-transform: capitalize;">{{fest.date_fin | date: 'fullDate':'':'fr-FR'}}</span></p>
-        </mat-card-content>
-        <mat-card-actions>
-            <button (click)="delete.emit(fest.id!)">Supprimer</button> 
-            <button (click)="update.emit(fest.id!)">Modifier</button> 
-        </mat-card-actions>
-    </mat-card>
-}
-
+<app-card [data]="festival()?.nom" [fields]="attributs()" [actions]="actions()" />
