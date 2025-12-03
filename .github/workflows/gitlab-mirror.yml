@@ -1,0 +1,23 @@
+name: Mirror to Polytech GitLab
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required to sync history properly
+
+      - name: Push to GitLab
+        uses: wangchucheng/git-repo-sync@v0.1.0
+        with:
+          # Your specific Polytech GitLab URL
+          target-url: https://gitlab.polytech.umontpellier.fr/marius.poirier/festivalajouergitlab.git
+          target-username: marius.poirier
+          target-token: ${{ secrets.GITLAB_TOKEN }}
