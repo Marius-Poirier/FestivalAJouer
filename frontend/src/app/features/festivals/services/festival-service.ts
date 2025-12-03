@@ -27,74 +27,80 @@ export class FestivalService {
   readonly error = this._error.asReadonly();
 
 
- loadAll(): void {
-  this._isLoading.set(true);
-  this._error.set(null);
-  
-  this.http.get<FestivalDto[]>(this.baseUrl, {withCredentials:true})
-    .pipe(
-      tap(data => { this._festivals.set(data ?? []) }),
-      catchError(err => {
-        this._error.set('Erreur lors du chargement des festivals');
-        this._festivals.set([]);
-        return of(null);
-      }),
-      finalize(() => this._isLoading.set(false)),
-      catchError(() => of(null))
-    )
-    .subscribe(data => this._festivals.set(data ?? []));
-}
+    
+  loadAll(): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+    
+    this.http.get<FestivalDto[]>(this.baseUrl, {withCredentials:true})
+      .pipe(
+        tap(data => { this._festivals.set(data ?? []) }),
+        catchError(err => {
+          this._error.set('Erreur lors du chargement des festivals');
+          this._festivals.set([]);
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false)),
+        catchError(() => of(null))
+      )
+      .subscribe(data => this._festivals.set(data ?? []));
+  }
 
-add(festival: FestivalDto): void {
-  this._isLoading.set(true);
-  this._error.set(null);
-  
-  this.http.post<{ message: string; festival: FestivalDto }>(this.baseUrl, festival, { withCredentials: true })
-    .pipe(
-      tap(response => {
-        if (response?.festival) {
-          this._festivals.update(list => [response.festival, ...list]);
-          console.log(`Festival ajouté : ${JSON.stringify(response.festival)}`);
-        } else {
-          this._error.set('Erreur lors de l\'ajout du festival');
-        }
-      }),
-      catchError((err) => {
-        console.error('Erreur HTTP', err);
-        if (err?.status === 401) {
-          this._error.set('Vous devez être connecté en tant que super organisateur');
-        } else if (err?.status === 400) {
-          this._error.set('Données invalides');
-        } else if (err?.status === 409) {
-          this._error.set('Ce festival existe déjà');
-        } else {
-          this._error.set('Erreur serveur');
-        }
-        return of(null);
-      }),
-      finalize(() => this._isLoading.set(false))
-    )
-    .subscribe();
-}
+  add(festival: FestivalDto): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+    
+    this.http.post<{ message: string; festival: FestivalDto }>(this.baseUrl, festival, { withCredentials: true })
+      .pipe(
+        tap(response => {
+          if (response?.festival) {
+            this._festivals.update(list => [response.festival, ...list]);
+            console.log(`Festival ajouté : ${JSON.stringify(response.festival)}`);
+          } else {
+            this._error.set('Erreur lors de l\'ajout du festival');
+          }
+        }),
+        catchError((err) => {
+          console.error('Erreur HTTP', err);
+          if (err?.status === 401) {
+            this._error.set('Vous devez être connecté en tant que super organisateur');
+          } else if (err?.status === 400) {
+            this._error.set('Données invalides');
+          } else if (err?.status === 409) {
+            this._error.set('Ce festival existe déjà');
+          } else {
+            this._error.set('Erreur serveur');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      )
+      .subscribe();
+  }
 
-//   public delete(id : number){
-//     try{
-//       this._festivales.update(festivales => festivales.filter(f  => f.id != id))
-//       console.log("Festivale supprimée :", id)
-//     }catch(error){
-//       console.error("Erreur lors de la suppression :", error)
-//     }
+  public delete(id : number){
+    this._isLoading.set(true);
+    this._error.set(null);
+    this.http.post<{ message: string; festival: FestivalDto }>(this.baseUrl, id, { withCredentials: true })
 
-//   }
 
-//   public update(partial : Partial<FestivalDto> &{id: number}) : void{
-//     this._festivales.update(list=>list.map(f => (f.id === partial.id ? {...f, ...partial} : f)))
-//     //fusioner avec partial
-//   }
+    try{
+      this._festivals.update(fest => fest.filter(f  => f.id != id))
+      console.log("Festivale supprimée :", id)
+    }catch(error){
+      console.error("Erreur lors de la suppression :", error)
+    }
 
-//   public findById(id : number){
-//     return this._festivales().find((f)=>f.id === id)
-//   }
+  }
+
+  public update(partial : Partial<FestivalDto> &{id: number}) : void{
+    this._festivals.update(fest=>fest.map(f => (f.id === partial.id ? {...f, ...partial} : f)))
+    //fusioner avec partial
+  }
+
+  public findById(id : number){
+    return this._festivals().find((f)=>f.id === id)
+  }
 
 // //methode avec service mais on peut utiliser model() dans le composant fest list
 //   public show(){
