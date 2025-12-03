@@ -26,6 +26,7 @@ import 'dotenv/config'
 import authRouter from './routes/auth.js'
 import { verifyToken } from './middleware/token-management.js'
 import { requireAdmin } from './middleware/auth-admin.js'
+import { populateDatabase } from './services/bggService.js'
 
 // Création de l’application Express
 const app = express()
@@ -102,4 +103,5 @@ const cert = fs.readFileSync('./certs/localhost.pem')
 // Lancement du serveur HTTPS
 https.createServer({ key, cert }, app).listen(4000, () => {
     console.log('Serveur API démarré sur https://localhost:4000')
+    populateDatabase().catch(err => console.error(err));
 })
