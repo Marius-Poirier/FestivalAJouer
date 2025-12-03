@@ -22,8 +22,8 @@ export const routes: Routes = [
     loadComponent: () => import('@auth/register/register').then(m => m.Register),
     },
     {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full'
+    path: 'festivals',
+    loadComponent: () => import('@festivals/components/festival-list/festival-list').then(m => m.FestivalList),
+    canActivate: [authGuard]
     }
 ];

@@ -1,0 +1,73 @@
+<div class="from-festival-container" (click)="close()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" (click)="$event.stopPropagation()">
+        <h2 class="add">Ajouter un festival</h2>
+        
+        <!-- Affichage des erreurs -->
+        @if (festivalService.error()) {
+            <div class="error-message">
+                {{ festivalService.error() }}
+            </div>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Nom festival</mat-label>
+            <input matInput type="text" formControlName="nom" placeholder="Nom du festival" [disabled]="festivalService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.nom.invalid && form.controls.nom.touched) {
+            <span class="error-text-input">Le nom doit contenir au moins 5 caractères</span>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Lieu</mat-label>
+            <input matInput type="text" formControlName="lieu" placeholder="Lieu du festival" [disabled]="festivalService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.lieu.invalid && form.controls.lieu.touched) {
+            <span class="error-text-input">Le lieu doit contenir au moins 5 caractères</span>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Date de début</mat-label>
+            <input matInput type="date" formControlName="date_debut" [disabled]="festivalService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.date_debut.invalid && form.controls.date_debut.touched) {
+            @if (form.controls.date_debut.hasError('required')) {
+                <span class="error-text-input">La date de début est requise</span>
+            } @else if (form.controls.date_debut.hasError('pastDate')) {
+                <span class="error-text-input">La date de début ne peut pas être dans le passé</span>
+            }
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Date de fin</mat-label>
+            <input matInput type="date" formControlName="date_fin" [disabled]="festivalService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.date_fin.invalid && form.controls.date_fin.touched) {
+            @if (form.controls.date_fin.hasError('required')) {
+                <span class="error-text-input">La date de fin est requise</span>
+            } @else if (form.controls.date_fin.hasError('endDateBeforeStart')) {
+                <span class="error-text-input">La date de fin doit être après la date de début</span>
+            }
+        }
+
+        <button 
+            type="submit" 
+            mat-raised-button 
+            color="primary" 
+            [disabled]="form.invalid || festivalService.isLoading()">
+            @if (festivalService.isLoading()) {
+                Enregistrement...
+            } @else {
+                Enregistrer
+            }
+        </button>
+        
+        <button 
+            type="button" 
+            (click)="close()" 
+            mat-raised-button
+            [disabled]="festivalService.isLoading()">
+            Fermer
+        </button>
+    </form>
+
+</div>
