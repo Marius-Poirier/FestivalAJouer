@@ -1,10 +1,11 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, input, output } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+import { FestivalDto } from '@interfaces/entites/festival-dto';
+import { FestivalService } from '../../services/festival-service';
+import { notPastDateValidator, endDateAfterStartDateValidator } from '../../utils/validators';
 
 @Component({
   selector: 'app-festival-form',
@@ -14,17 +15,39 @@ import { RouterLink } from '@angular/router';
 })
 export class FestivalForm {
   private readonly fb = inject(FormBuilder)
+  protected readonly festivalService = inject(FestivalService)
+  
   public closeForm = output<void>()
 
   protected readonly form = this.fb.group({
     nom : ['', [Validators.required, Validators.minLength(5)]],
-    // nbZoneTarifaire : ['']
+    lieu : ['', [Validators.required, Validators.minLength(5)]], 
+    date_debut : ['', [Validators.required, notPastDateValidator()]],
+    date_fin : ['', [Validators.required, endDateAfterStartDateValidator('date_debut')]]
   })
+
+
 
   protected close() {
     this.closeForm.emit()
   }
 
-  protected onSubmit(){}
+  protected onSubmit() {
+    if (this.form.valid) {
+      const festivalData: FestivalDto = {
+        nom: this.form.value.nom!,
+        lieu: this.form.value.lieu!,
+        date_debut: this.form.value.date_debut!, 
+        date_fin: this.form.value.date_fin!       
+      };
+      
+      this.festivalService.add(festivalData);
+      if(this.festivalService.error() != null){
+        return
+      }
+      this.form.reset();
+      this.closeForm.emit();
+    }
+  }
 
 }

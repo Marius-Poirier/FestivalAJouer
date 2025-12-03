@@ -1,19 +1,29 @@
 <div class="list-container">
+    @if (festivalService.error()) {
+        <div class="error-banner">
+            {{ festivalService.error() }}
+        </div>
+    }
+
     <div class="header-actions">
         <button class="btn-add" (click)="show()">+ Ajouter un festival</button>
     </div>
 
-    <ul class="festivals-list">
-        @for (fest of festivales(); track fest.nom){
-            <li>
-                @let hiddenFestival = false;
-                <app-festival-card 
-                [festival]="fest"
-                [hidden]="hiddenFestival">
-                </app-festival-card>
-            </li>
-        }
-    </ul>
+    @if (festivalService.isLoading()) {
+        <p class="loading">Chargement des festivals...</p>
+    } @else {
+        <ul class="festivals-list">
+            @for (fest of festivalService.festivals(); track fest.id) {
+                <li>
+                    @let hiddenFestival = false;
+                    <app-festival-card 
+                    [festival]="fest"
+                    [hidden]="hiddenFestival">
+                    </app-festival-card>
+                </li>
+            }
+        </ul>
+    }
 
     @if(showForm()){
         <app-festival-form (closeForm)="show()"></app-festival-form>

@@ -14,40 +14,65 @@
 
 .from-festival-container form {
   background: #ffffff;
-  border: 1px solid #dddfe2;
-  border-radius: 8px;
-  padding: 20px;
+  border: 0.0625rem solid #dddfe2;
+  border-radius: 0.5rem;
+  padding: 1.25rem;
   width: 90%;
-  max-width: 450px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  max-width: 28.125rem;
+  box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-out;
 }
 
 .add {
-  margin: 0 0 16px 0;
+  margin: 0 0 1rem 0;
   color: #1c1e21;
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: bold;
   text-align: center;
 }
 
 mat-form-field {
   width: 100%;
-  margin-bottom: 12px;
+}
+
+.error-text-input {
+  display: block;
+  color: #c41e3a;
+  font-size: 0.6875rem;
+  margin-top: -1.25rem;
+  margin-bottom: 0.9375rem;
+  padding-left: 0.25rem;
+}
+
+.error-message {
+  background-color: #ffebe9;
+  color: #c41e3a;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.1875rem;
+  border: 0.0625rem solid #f5c2c7;
+  font-size: 0.75rem;
+  animation: fadeInOut 20s ease-in-out forwards;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-0.625rem); }
+  5% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-0.625rem); visibility: hidden; }
 }
 
 button[type="submit"] {
   width: 100%;
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   background: #1877f2;
   color: #ffffff;
   border: none;
-  border-radius: 8px;
-  font-size: 14px;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 
 button[type="submit"]:hover {
@@ -66,16 +91,16 @@ button[type="submit"]:disabled {
 
 button[type="button"] {
   width: 100%;
-  padding: 8px 12px;
+  padding: 0.5rem 0.75rem;
   background: #e4e6eb;
   color: #1c1e21;
-  border: 1px solid #ccd0d5;
-  border-radius: 4px;
-  font-size: 14px;
+  border: 0.0625rem solid #ccd0d5;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 
 button[type="button"]:hover {
@@ -97,7 +122,7 @@ button[type="button"]:active {
 
 @keyframes slideIn {
   from {
-    transform: translateY(-50px);
+    transform: translateY(-3.125rem);
     opacity: 0;
   }
   to {
@@ -106,13 +131,13 @@ button[type="button"]:active {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .from-festival-container form {
     width: 95%;
-    padding: 16px;
+    padding: 1rem;
   }
 
   .add {
-    font-size: 18px;
+    font-size: 1.125rem;
   }
 }
