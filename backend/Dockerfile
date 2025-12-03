@@ -6,6 +6,7 @@ RUN npm ci
 COPY tsconfig.json ./
 COPY src ./src
 COPY db ./db
+COPY ressources ./ressources
 RUN npx tsc -p tsconfig.json --pretty false --noEmitOnError false && \
 echo "👍 Compilation TS terminée" && \
 ls -la dist
@@ -15,6 +16,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/db ./db
+COPY --from=build /app/ressources ./ressources
 COPY package*.json ./
 RUN npm ci --omit=dev
 EXPOSE 4000

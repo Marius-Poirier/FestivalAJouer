@@ -4,15 +4,18 @@
 
 -- Suppression des tables si elles existent (pour réinitialisation)
 DROP TABLE IF EXISTS AuditLog CASCADE;
+DROP TABLE IF EXISTS ContactEditeur CASCADE;
 DROP TABLE IF EXISTS JeuFestivalTable CASCADE;
 DROP TABLE IF EXISTS JeuFestival CASCADE;
 DROP TABLE IF EXISTS ReservationTable CASCADE;
 DROP TABLE IF EXISTS Reservation CASCADE;
-DROP TABLE IF EXISTS ContactEditeur CASCADE;
+DROP TABLE IF EXISTS JeuMecanisme CASCADE; -- Nouvelle table
 DROP TABLE IF EXISTS JeuAuteur CASCADE;
 DROP TABLE IF EXISTS JeuEditeur CASCADE;
 DROP TABLE IF EXISTS EditeurContact CASCADE;
 DROP TABLE IF EXISTS Jeu CASCADE;
+DROP TABLE IF EXISTS Mecanisme CASCADE; -- Nouvelle table
+DROP TABLE IF EXISTS TypeJeu CASCADE; -- Nouvelle table
 DROP TABLE IF EXISTS Personne CASCADE;
 DROP TABLE IF EXISTS Editeur CASCADE;
 DROP TABLE IF EXISTS Table_Jeu CASCADE;
@@ -189,25 +192,58 @@ CREATE TABLE EditeurContact (
 CREATE INDEX idx_editeurcontact_editeur ON EditeurContact(editeur_id);
 CREATE INDEX idx_editeurcontact_personne ON EditeurContact(personne_id);
 
--- ============================================
--- TABLE: Jeu
--- Jeux de société
--- ============================================
+CREATE TABLE TypeJeu (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE Mecanisme (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(255) NOT NULL UNIQUE,
+    description TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE Jeu (
     id SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL,
+    type_jeu_id INTEGER NULL, -- Ajouté pour le CSV typeJeu
     nb_joueurs_min INTEGER NULL,
     nb_joueurs_max INTEGER NULL,
     duree_minutes INTEGER NULL,
     age_min INTEGER NULL,
     age_max INTEGER NULL,
+    theme VARCHAR(255) NULL, -- Ajouté
     description TEXT NULL,
     lien_regles VARCHAR(500) NULL,
+    url_image VARCHAR(500) NULL, -- Ajouté
+    url_video VARCHAR(500) NULL, -- Ajouté
+    prototype BOOLEAN DEFAULT FALSE, -- Ajouté
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (type_jeu_id) REFERENCES TypeJeu(id) ON DELETE SET NULL
 );
 
 CREATE INDEX idx_jeu_nom ON Jeu(nom);
+CREATE INDEX idx_jeu_type ON Jeu(type_jeu_id);
+
+-- ============================================
+-- TABLE: JeuMecanisme
+-- Relation N-N entre Jeu et Mécanisme
+-- ============================================
+CREATE TABLE JeuMecanisme (
+    jeu_id INTEGER NOT NULL,
+    mecanisme_id INTEGER NOT NULL,
+    PRIMARY KEY (jeu_id, mecanisme_id),
+    FOREIGN KEY (jeu_id) REFERENCES Jeu(id) ON DELETE CASCADE,
+    FOREIGN KEY (mecanisme_id) REFERENCES Mecanisme(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_jeumecanisme_jeu ON JeuMecanisme(jeu_id);
+CREATE INDEX idx_jeumecanisme_mecanisme ON JeuMecanisme(mecanisme_id);
 
 -- ============================================
 -- TABLE: JeuEditeur
@@ -399,6 +435,12 @@ CREATE TRIGGER trg_editeur_updated_at BEFORE UPDATE ON Editeur
 CREATE TRIGGER trg_personne_updated_at BEFORE UPDATE ON Personne
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER trg_typejeu_updated_at BEFORE UPDATE ON TypeJeu
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_mecanisme_updated_at BEFORE UPDATE ON Mecanisme
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER trg_jeu_updated_at BEFORE UPDATE ON Jeu
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
@@ -528,7 +570,7 @@ LEFT JOIN Reservation r ON r.festival_id = f.id AND r.editeur_id = e.id
 LEFT JOIN ReservationTable rt ON rt.reservation_id = r.id
 GROUP BY f.id, f.nom, e.id, e.nom, r.statut_workflow, r.prix_total, r.prix_final;
 
--- Vue: Jeux par zone du plan
+-- Vue: Jeux par zone du plan (MISE À JOUR)
 CREATE OR REPLACE VIEW v_jeux_par_zone_plan AS
 SELECT 
     zp.id AS zone_plan_id,
@@ -536,43 +578,44 @@ SELECT
     zp.festival_id,
     j.id AS jeu_id,
     j.nom AS jeu_nom,
+    tj.nom AS type_jeu, -- Ajouté
     e.nom AS editeur_nom,
     STRING_AGG(DISTINCT p.nom, ', ' ORDER BY p.nom) AS auteurs,
+    STRING_AGG(DISTINCT m.nom, ', ' ORDER BY m.nom) AS mecanismes, -- Ajouté
     COUNT(DISTINCT jft.table_id) AS nombre_tables
 FROM ZoneDuPlan zp
 LEFT JOIN Table_Jeu t ON t.zone_du_plan_id = zp.id
 LEFT JOIN JeuFestivalTable jft ON jft.table_id = t.id
 LEFT JOIN JeuFestival jf ON jf.id = jft.jeu_festival_id
 LEFT JOIN Jeu j ON j.id = jf.jeu_id
+LEFT JOIN TypeJeu tj ON j.type_jeu_id = tj.id -- Ajouté
 LEFT JOIN JeuEditeur je ON je.jeu_id = j.id
 LEFT JOIN Editeur e ON e.id = je.editeur_id
 LEFT JOIN JeuAuteur ja ON ja.jeu_id = j.id
 LEFT JOIN Personne p ON p.id = ja.personne_id
-GROUP BY zp.id, zp.nom, zp.festival_id, j.id, j.nom, e.nom;
+LEFT JOIN JeuMecanisme jm ON jm.jeu_id = j.id -- Ajouté
+LEFT JOIN Mecanisme m ON m.id = jm.mecanisme_id -- Ajouté
+GROUP BY zp.id, zp.nom, zp.festival_id, j.id, j.nom, tj.nom, e.nom;
 
 -- ============================================
--- DONNÉES D'EXEMPLE (optionnel)
+-- DONNÉES D'EXEMPLE
 -- ============================================
 
--- Festival exemple
 INSERT INTO Festival (nom, date_debut, date_fin, lieu)
 VALUES ('Festival du Jeu 2025', '2025-05-01', '2025-05-03', 'Parc des Expositions, Nantes')
 ON CONFLICT (nom) DO NOTHING;
 
--- Zone tarifaire exemple
 INSERT INTO ZoneTarifaire (festival_id, nom, nombre_tables_total, prix_table)
 SELECT 1, 'Zone Premium', 50, 200.00
 WHERE EXISTS (SELECT 1 FROM Festival WHERE id = 1)
 ON CONFLICT (festival_id, nom) DO NOTHING;
 
--- Zone du plan exemple
 INSERT INTO ZoneDuPlan (festival_id, nom, nombre_tables, zone_tarifaire_id)
 SELECT 1, 'Hall Principal', 50, 1
 WHERE EXISTS (SELECT 1 FROM Festival WHERE id = 1)
   AND EXISTS (SELECT 1 FROM ZoneTarifaire WHERE id = 1)
 ON CONFLICT (festival_id, nom) DO NOTHING;
 
--- Tables exemple
 INSERT INTO Table_Jeu (zone_du_plan_id, zone_tarifaire_id, capacite_jeux, statut)
 SELECT 1, 1, 2, 'libre'
 FROM generate_series(1, 5)
