@@ -21,11 +21,14 @@ import jeuFestivalRouter from './routes/jeu-festival.js'
 import jeuFestivalTablesRouter from './routes/jeu-festival-tables.js'
 import contactsRouter from './routes/contacts.js'
 import auditRouter from './routes/audit.js'
+import metadataRouter from './routes/metadata.js'
 import 'dotenv/config'
 
 import authRouter from './routes/auth.js'
 import { verifyToken } from './middleware/token-management.js'
 import { requireAdmin } from './middleware/auth-admin.js'
+import { populateDatabase } from './services/bggService.js'
+import { importCsvData } from './services/csvImportService.js';
 
 // Création de l’application Express
 const app = express()
@@ -94,6 +97,7 @@ app.use('/api/audit', verifyToken, auditRouter)
 app.use('/api/admin', verifyToken, requireAdmin, (req, res) => {
     res.json({ message: 'Bienvenue admin' });
 })
+app.use('/api/metadata', metadataRouter)
 
 // Chargement du certificat et clé générés par mkcert (étape 0)
 const key = fs.readFileSync('./certs/localhost-key.pem')
@@ -102,4 +106,8 @@ const cert = fs.readFileSync('./certs/localhost.pem')
 // Lancement du serveur HTTPS
 https.createServer({ key, cert }, app).listen(4000, () => {
     console.log('Serveur API démarré sur https://localhost:4000')
+    importCsvData()
+        .then(() => console.log('CSV Import process finished.'))
+        .catch(err => console.error('CSV Import failed:', err));
+    //populateDatabase().catch(err => console.error(err));
 })

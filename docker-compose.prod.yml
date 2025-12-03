@@ -13,6 +13,8 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports: # to delete in production
+      - "5432:5432"
     networks:
       - festival_net
     healthcheck:
@@ -40,6 +42,7 @@ services:
       JWT_EXPIRATION: "15m"
       REFRESH_EXPIRATION: "7d"
       FRONTEND_URL: "https://localhost:8080"
+      BGG_TOKEN: "PASTE_YOUR_LONG_BGG_TOKEN_HERE"
     volumes:
       - ./backend/certs:/app/certs:ro
     ports:
