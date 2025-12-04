@@ -3,6 +3,7 @@ import pool from '../db/database.js'
 import bcrypt from 'bcryptjs'
 
 import { requireAdmin } from '../middleware/auth-admin.js'
+import { sanitizeString } from '../utils/validation.js'
 
 const router = Router()
 
@@ -65,11 +66,25 @@ router.get('/pending', requireAdmin, async (_req, res) => {
 })
 
 // Liste de tous les utilisateurs (réservée aux admins)
-router.get('/', requireAdmin, async (_req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
+    const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
+    const filters: string[] = []
+    const params: unknown[] = []
+
+    if (search) {
+        params.push(`%${search}%`)
+        filters.push(`email ILIKE $${params.length}`)
+    }
+
+    const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+
     const { rows } = await pool.query(
         `SELECT id, email, role, statut, date_demande, email_bloque, created_at 
         FROM Utilisateur 
-        ORDER BY id`
+        ${whereClause}
+        ORDER BY id`,
+        params
     )
     res.json(rows)
 })

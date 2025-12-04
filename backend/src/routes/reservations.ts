@@ -33,6 +33,12 @@ router.get('/', async (req, res) => {
     try {
         const params: unknown[] = []
         const clauses: string[] = []
+        const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
+        if (search) {
+            params.push(`%${search}%`)
+            clauses.push(`CAST(id AS TEXT) ILIKE $${params.length}`)
+        }
         if (req.query.festivalId) {
             const id = Number.parseInt(String(req.query.festivalId), 10)
             if (!Number.isInteger(id)) {

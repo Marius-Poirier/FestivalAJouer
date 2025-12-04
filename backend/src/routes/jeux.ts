@@ -13,14 +13,28 @@ const GAME_FIELDS = `
     j.created_at, j.updated_at
 `
 
-router.get('/', async (_req, res) => {
+router.get('/', async (req, res) => {
+    const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
     try {
+        const filters: string[] = []
+        const params: unknown[] = []
+
+        if (search) {
+            params.push(`%${search}%`)
+            filters.push(`j.nom ILIKE $${params.length}`)
+        }
+
+        const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+
         // Left Join to get the Type name directly
         const { rows } = await pool.query(
             `SELECT ${GAME_FIELDS}, t.nom as type_jeu_nom
              FROM Jeu j
              LEFT JOIN TypeJeu t ON j.type_jeu_id = t.id
-             ORDER BY j.nom ASC`
+             ${whereClause}
+             ORDER BY j.nom ASC`,
+            params
         )
         res.json(rows)
     } catch (err) {

@@ -6,10 +6,23 @@ import { sanitizeString } from '../utils/validation.js'
 const router = Router()
 const PERSON_FIELDS = 'id, nom, prenom, telephone, email, fonction, created_at, updated_at'
 
-router.get('/', async (_req, res) => {
+router.get('/', async (req, res) => {
+    const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
     try {
+        const filters: string[] = []
+        const params: unknown[] = []
+
+        if (search) {
+            params.push(`%${search}%`)
+            filters.push(`nom ILIKE $${params.length}`)
+        }
+
+        const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+
         const { rows } = await pool.query(
-            `SELECT ${PERSON_FIELDS} FROM Personne ORDER BY nom ASC`
+            `SELECT ${PERSON_FIELDS} FROM Personne ${whereClause} ORDER BY nom ASC`,
+            params
         )
         res.json(rows)
     } catch (err) {
