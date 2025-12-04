@@ -15,6 +15,16 @@ const GAME_FIELDS = `
 
 router.get('/', async (req, res) => {
     const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+    const sortByParam = typeof req.query?.sortBy === 'string' ? req.query.sortBy.toLowerCase() : 'name'
+    const sortOrderParam = typeof req.query?.sortOrder === 'string' ? req.query.sortOrder.toLowerCase() : 'asc'
+
+    const sortFields: Record<string, string> = {
+        name: 'j.nom',
+        playersmin: 'j.nb_joueurs_min',
+        agemin: 'j.age_min'
+    }
+    const sortField = sortFields[sortByParam] ?? sortFields.name
+    const sortDirection = sortOrderParam === 'desc' ? 'DESC' : 'ASC'
 
     try {
         const filters: string[] = []
@@ -33,7 +43,7 @@ router.get('/', async (req, res) => {
              FROM Jeu j
              LEFT JOIN TypeJeu t ON j.type_jeu_id = t.id
              ${whereClause}
-             ORDER BY j.nom ASC`,
+             ORDER BY ${sortField} ${sortDirection}, j.nom ASC`,
             params
         )
         res.json(rows)
