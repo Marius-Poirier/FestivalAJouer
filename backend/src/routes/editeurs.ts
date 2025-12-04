@@ -6,6 +6,7 @@ import { sanitizeString } from '../utils/validation.js'
 const router = Router()
 const EDITOR_FIELDS = 'id, nom, created_at, updated_at'
 
+// GET /api/editeurs?search=ludo
 router.get('/', async (req, res) => {
     const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
 
@@ -31,6 +32,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET /api/editeurs/:id
 router.get('/:id', async (req, res) => {
     const editorId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(editorId)) {
@@ -51,6 +53,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/editeurs
 router.post('/', requireOrganisateur, async (req, res) => {
     const nom = sanitizeString(req.body?.nom)
     if (!nom) {
@@ -72,6 +75,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/editeurs/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const editorId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(editorId)) {
@@ -99,6 +103,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/editeurs/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const editorId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(editorId)) {

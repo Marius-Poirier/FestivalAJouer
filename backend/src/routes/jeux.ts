@@ -13,6 +13,7 @@ const GAME_FIELDS = `
     j.created_at, j.updated_at
 `
 
+// GET /api/jeux?search=azul&sortBy=playersMin&sortOrder=desc
 router.get('/', async (req, res) => {
     const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
     const sortByParam = typeof req.query?.sortBy === 'string' ? req.query.sortBy.toLowerCase() : 'name'
@@ -53,6 +54,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET /api/jeux/:id
 router.get('/:id', async (req, res) => {
     const gameId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(gameId)) {
@@ -101,6 +103,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/jeux
 router.post('/', requireOrganisateur, async (req, res) => {
     const nom = sanitizeString(req.body?.nom)
     if (!nom) {
@@ -173,6 +176,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/jeux/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const gameId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(gameId)) {
@@ -266,6 +270,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/jeux/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const gameId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(gameId)) {

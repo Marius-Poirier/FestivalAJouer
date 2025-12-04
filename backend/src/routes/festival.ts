@@ -21,7 +21,7 @@ function validateDate(value: string, fieldName: string) {
 	}
 }
 
-// --- Liste de tous les festivals ---
+// GET /api/festivals
 router.get('/', async (_req, res) => {
 	try {
 		const { rows } = await pool.query(
@@ -34,7 +34,7 @@ router.get('/', async (_req, res) => {
 	}
 })
 
-// --- Récupération d'un festival par ID ---
+// GET /api/festivals/:id
 router.get('/:id', async (req, res) => {
 	const festivalId = Number.parseInt(req.params.id, 10)
 	if (!Number.isInteger(festivalId)) {
@@ -58,7 +58,7 @@ router.get('/:id', async (req, res) => {
 	}
 })
 
-// --- Création d'un festival ---
+// POST /api/festivals
 router.post('/', async (req, res) => {
 	const trimmedName = sanitizeString(req.body?.nom)
 	const startDate = sanitizeString(req.body?.date_debut)
@@ -101,7 +101,7 @@ router.post('/', async (req, res) => {
 	}
 })
 
-// --- Mise à jour d'un festival ---
+// PUT /api/festivals/:id
 router.put('/:id', async (req, res) => {
 	const festivalId = Number.parseInt(req.params.id, 10)
 	if (!Number.isInteger(festivalId)) {
@@ -157,7 +157,7 @@ router.put('/:id', async (req, res) => {
 	}
 })
 
-// --- Suppression d'un festival ---
+// DELETE /api/festivals/:id
 router.delete('/:id', async (req, res) => {
 	const festivalId = Number.parseInt(req.params.id, 10)
 	if (!Number.isInteger(festivalId)) {

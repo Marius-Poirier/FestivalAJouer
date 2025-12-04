@@ -6,6 +6,7 @@ import { sanitizeString } from '../utils/validation.js'
 const router = Router()
 const PERSON_FIELDS = 'id, nom, prenom, telephone, email, fonction, created_at, updated_at'
 
+// GET /api/personnes?search=dupont
 router.get('/', async (req, res) => {
     const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
 
@@ -31,6 +32,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET /api/personnes/:id
 router.get('/:id', async (req, res) => {
     const personId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(personId)) {
@@ -51,6 +53,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/personnes
 router.post('/', requireOrganisateur, async (req, res) => {
     const nom = sanitizeString(req.body?.nom)
     const prenom = sanitizeString(req.body?.prenom)
@@ -79,6 +82,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/personnes/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const personId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(personId)) {
@@ -119,6 +123,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/personnes/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const personId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(personId)) {
