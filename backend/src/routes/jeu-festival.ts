@@ -6,6 +6,7 @@ import { parsePositiveInteger } from '../utils/validation.js'
 const router = Router()
 const FIELDS = `id, jeu_id, reservation_id, festival_id, dans_liste_demandee, dans_liste_obtenue, jeux_recu, created_at, updated_at`
 
+// GET /api/jeu-festival
 router.get('/', async (req, res) => {
     try {
         const params: unknown[] = []
@@ -38,6 +39,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// POST /api/jeu-festival
 router.post('/', requireOrganisateur, async (req, res) => {
     try {
         const jeuId = parsePositiveInteger(req.body?.jeu_id, 'jeu_id')
@@ -63,6 +65,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/jeu-festival/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const recordId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(recordId)) {
@@ -92,6 +95,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/jeu-festival/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const recordId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(recordId)) {

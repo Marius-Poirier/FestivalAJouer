@@ -3,10 +3,11 @@ import pool from '../db/database.js'
 import bcrypt from 'bcryptjs'
 
 import { requireAdmin } from '../middleware/auth-admin.js'
+import { sanitizeString } from '../utils/validation.js'
 
 const router = Router()
 
-// Création d'un utilisateur avec rôle spécifique (réservée aux admins)
+// POST /api/users
 router.post('/', requireAdmin, async (req, res) => {
     const { email, password, role } = req.body
     
@@ -43,7 +44,7 @@ router.post('/', requireAdmin, async (req, res) => {
     }
 })
 
-// Récupération du profil utilisateur connecté
+// GET /api/users/me
 router.get('/me', async (req, res) => {
     const user = req.user
     const { rows } = await pool.query(
@@ -53,7 +54,7 @@ router.get('/me', async (req, res) => {
     res.json(rows[0]);
 })
 
-// Liste de toutes les demandes en attente (réservée aux admins)
+// GET /api/users/pending
 router.get('/pending', requireAdmin, async (_req, res) => {
     const { rows } = await pool.query(
         `SELECT id, email, role, statut, date_demande, created_at 
@@ -64,17 +65,31 @@ router.get('/pending', requireAdmin, async (_req, res) => {
     res.json(rows)
 })
 
-// Liste de tous les utilisateurs (réservée aux admins)
-router.get('/', requireAdmin, async (_req, res) => {
+// GET /api/users?search=benevole@festival.com
+router.get('/', requireAdmin, async (req, res) => {
+    const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
+    const filters: string[] = []
+    const params: unknown[] = []
+
+    if (search) {
+        params.push(`%${search}%`)
+        filters.push(`email ILIKE $${params.length}`)
+    }
+
+    const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+
     const { rows } = await pool.query(
         `SELECT id, email, role, statut, date_demande, email_bloque, created_at 
         FROM Utilisateur 
-        ORDER BY id`
+        ${whereClause}
+        ORDER BY id`,
+        params
     )
     res.json(rows)
 })
 
-// Valider une demande de compte (réservée aux admins)
+// PATCH /api/users/:id/validate
 router.patch('/:id/validate', requireAdmin, async (req, res) => {
     const { id } = req.params
     const { role } = req.body
@@ -109,7 +124,7 @@ router.patch('/:id/validate', requireAdmin, async (req, res) => {
     }
 })
 
-// Refuser une demande de compte (réservée aux admins)
+// PATCH /api/users/:id/reject
 router.patch('/:id/reject', requireAdmin, async (req, res) => {
     const { id } = req.params
     
@@ -133,7 +148,7 @@ router.patch('/:id/reject', requireAdmin, async (req, res) => {
     }
 })
 
-// Bloquer/débloquer un email (réservée aux admins)
+// PATCH /api/users/:id/block
 router.patch('/:id/block', requireAdmin, async (req, res) => {
     const { id } = req.params
     const { blocked } = req.body

@@ -7,6 +7,7 @@ router.use(requireAdmin)
 
 const AUDIT_FIELDS = 'id, utilisateur_id, action, entite_type, entite_id, date_action, details'
 
+// GET /api/audit
 router.get('/', async (_req, res) => {
     try {
         const { rows } = await pool.query(

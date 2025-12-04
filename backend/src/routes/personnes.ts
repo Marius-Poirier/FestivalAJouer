@@ -6,10 +6,24 @@ import { sanitizeString } from '../utils/validation.js'
 const router = Router()
 const PERSON_FIELDS = 'id, nom, prenom, telephone, email, fonction, created_at, updated_at'
 
-router.get('/', async (_req, res) => {
+// GET /api/personnes?search=dupont
+router.get('/', async (req, res) => {
+    const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
     try {
+        const filters: string[] = []
+        const params: unknown[] = []
+
+        if (search) {
+            params.push(`%${search}%`)
+            filters.push(`nom ILIKE $${params.length}`)
+        }
+
+        const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+
         const { rows } = await pool.query(
-            `SELECT ${PERSON_FIELDS} FROM Personne ORDER BY nom ASC`
+            `SELECT ${PERSON_FIELDS} FROM Personne ${whereClause} ORDER BY nom ASC`,
+            params
         )
         res.json(rows)
     } catch (err) {
@@ -18,6 +32,7 @@ router.get('/', async (_req, res) => {
     }
 })
 
+// GET /api/personnes/:id
 router.get('/:id', async (req, res) => {
     const personId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(personId)) {
@@ -38,6 +53,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/personnes
 router.post('/', requireOrganisateur, async (req, res) => {
     const nom = sanitizeString(req.body?.nom)
     const prenom = sanitizeString(req.body?.prenom)
@@ -66,6 +82,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/personnes/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const personId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(personId)) {
@@ -106,6 +123,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/personnes/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const personId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(personId)) {
