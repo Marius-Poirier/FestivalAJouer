@@ -25,6 +25,7 @@
       "@enum/*" : ["src/app/types/enum/*"],
       "@mockdata/*":["src/mockdata/*"],
       "@festivals/*":["src/app/features/festivals/*"],
+      "@editeurs/*":["src/app/features/editeurs/*"],
     }
   },
   "angularCompilerOptions": {

@@ -25,5 +25,16 @@ export const routes: Routes = [
     path: 'festivals',
     loadComponent: () => import('@festivals/components/festival-list/festival-list').then(m => m.FestivalList),
     canActivate: [authGuard]
+    },
+    {
+    path: 'editeurs',
+    loadComponent: () => import('@editeurs/components/editeur-list/editeur-list').then(m => m.EditeurList),
+    canActivate: [authGuard]
+    },
+    {
+    path: 'editeurs/:id',
+    loadComponent: () => import('@editeurs/components/editeur-detail/editeur-detail').then(m => m.EditeurDetail),
+    canActivate: [authGuard]
     }
+
 ];

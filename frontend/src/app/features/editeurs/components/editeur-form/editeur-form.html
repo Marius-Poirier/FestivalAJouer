@@ -1,0 +1,61 @@
+<div class="from-editeur-container" (click)="close()">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    (click)="$event.stopPropagation()"
+  >
+    <h2 class="add">Ajouter un éditeur</h2>
+
+    <!-- Affichage des erreurs globales du service -->
+    @if (editeurService.error()) {
+      <div class="error-message">
+        {{ editeurService.error() }}
+      </div>
+    }
+
+    <mat-form-field appearance="fill">
+      <mat-label>Nom éditeur</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="nom"
+        placeholder="Nom de l'éditeur"
+        [disabled]="editeurService.isLoading()"
+      />
+    </mat-form-field>
+
+    @if (form.controls.nom.invalid && form.controls.nom.touched) {
+      @if (form.controls.nom.hasError('required')) {
+        <span class="error-text-input">
+          Le nom est requis
+        </span>
+      } @else if (form.controls.nom.hasError('minlength')) {
+        <span class="error-text-input">
+          Le nom doit contenir au moins 3 caractères
+        </span>
+      }
+    }
+
+    <button
+      type="submit"
+      mat-raised-button
+      color="primary"
+      [disabled]="form.invalid || editeurService.isLoading()"
+    >
+      @if (editeurService.isLoading()) {
+        Enregistrement...
+      } @else {
+        Enregistrer
+      }
+    </button>
+
+    <button
+      type="button"
+      (click)="close()"
+      mat-raised-button
+      [disabled]="editeurService.isLoading()"
+    >
+      Fermer
+    </button>
+  </form>
+</div>
