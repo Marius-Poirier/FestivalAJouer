@@ -25,5 +25,9 @@ export const routes: Routes = [
     path: 'festivals',
     loadComponent: () => import('@festivals/components/festival-list/festival-list').then(m => m.FestivalList),
     canActivate: [authGuard]
+    },
+    {
+    path: 'workflow',
+    loadComponent: ()=> import('@festivals/components/workflow-festival/workflow-festival').then(m=>m.WorkflowFestival)
     }
 ];

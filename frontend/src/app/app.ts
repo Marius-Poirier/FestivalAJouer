@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '@core/services/auth-services';
 import { Header } from '@sharedComponent/header/header';
 import { Footer } from '@sharedComponent/footer/footer';
-import { FestivalSelector } from '@sharedComponent/festival-selector/festival-selector';
+import { FestivalSelector } from '@festivals/components/festival-selector/festival-selector';
 
 @Component({
   selector: 'app-root',

@@ -26,6 +26,7 @@
       "@enum/*" : ["src/app/types/enum/*"],
       "@mockdata/*":["src/mockdata/*"],
       "@festivals/*":["src/app/features/festivals/*"],
+      "@zoneTarifaires/*":["src/app/features/zone-tarifaires/*"],
     }
   },
   "angularCompilerOptions": {
