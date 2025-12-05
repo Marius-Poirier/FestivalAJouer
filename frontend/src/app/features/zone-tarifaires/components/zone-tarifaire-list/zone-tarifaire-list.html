@@ -1,0 +1,51 @@
+<!-- <h2>Zones Tarifaires</h2>
+
+@if (zones().length === 0) {
+  <p>Aucune zone tarifaire trouvée pour ce festival</p>
+} @else {
+  <div class="zones-list">
+    @for (zone of zones(); track zone.id) {
+      <app-zone-tarifaire-card [zone]="zone"></app-zone-tarifaire-card>
+    }
+  </div>
+} -->
+
+<div class="list-container">
+    @if (error()) {
+        <div class="error-banner">
+            {{error() }}
+        </div>
+    }
+
+    <div class="header-actions">
+        <button class="btn-add" (click)="show()">+ Ajouter un festival</button>
+    </div>
+
+    @if (isLoading()) {
+        <p class="loading">Chargement des festivals...</p>
+    } @else {
+        @if(zonestarifaires().length === 0){
+              <p>Aucune zone tarifaire trouvée pour ce festival</p>
+        }
+        @else{
+            <ul class="items-list">
+                @for (zone of zonestarifaires(); track zone.id) {
+                    <li>
+                        <app-zone-tarifaire-card
+                        [idZoneTarif]="zone.id">
+                        </app-zone-tarifaire-card>
+                    </li>
+                }
+            </ul>
+        }
+
+    }
+
+    @if(showForm()){
+        <app-zone-tarifaire-form (closeForm)="show()"></app-zone-tarifaire-form>
+    }
+    
+</div>
+
+
+

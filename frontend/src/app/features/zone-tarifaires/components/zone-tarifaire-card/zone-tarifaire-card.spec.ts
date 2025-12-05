@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FestivalSelector } from './festival-selector';
+import { ZoneTarifaireCard } from './zone-tarifaire-card';
 
-describe('FestivalSelector', () => {
-  let component: FestivalSelector;
-  let fixture: ComponentFixture<FestivalSelector>;
+describe('ZoneTarifaireCard', () => {
+  let component: ZoneTarifaireCard;
+  let fixture: ComponentFixture<ZoneTarifaireCard>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FestivalSelector]
+      imports: [ZoneTarifaireCard]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(FestivalSelector);
+    fixture = TestBed.createComponent(ZoneTarifaireCard);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

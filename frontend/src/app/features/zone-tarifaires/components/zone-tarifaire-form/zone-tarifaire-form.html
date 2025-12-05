@@ -1,0 +1,57 @@
+<div class="from-zone-tarifaire-container" (click)="close()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" (click)="$event.stopPropagation()">
+        <h2 class="add">Ajouter une zone tarifaire</h2>
+        
+        <!-- Affichage des erreurs -->
+        @if (zoneTarifaireService.error()) {
+            <div class="error-message">
+                {{ zoneTarifaireService.error() }}
+            </div>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Nom de la zone</mat-label>
+            <input matInput type="text" formControlName="nom" placeholder="Nom de la zone" [disabled]="zoneTarifaireService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.nom.invalid && form.controls.nom.touched) {
+            <span class="error-text-input">Le nom doit contenir au moins 3 caractères</span>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Nombre de tables total</mat-label>
+            <input matInput type="number" formControlName="nombre_tables_total" placeholder="Nombre de tables" [disabled]="zoneTarifaireService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.nombre_tables_total.invalid && form.controls.nombre_tables_total.touched) {
+            <span class="error-text-input">Le nombre de tables doit être au moins 1</span>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Prix par table</mat-label>
+            <input matInput type="number" step="0.01" formControlName="prix_table" placeholder="Prix par table" [disabled]="zoneTarifaireService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.prix_table.invalid && form.controls.prix_table.touched) {
+            <span class="error-text-input">Le prix doit être supérieur à 0</span>
+        }
+
+        <button 
+            type="submit" 
+            mat-raised-button 
+            color="primary" 
+            [disabled]="form.invalid || zoneTarifaireService.isLoading()">
+            @if (zoneTarifaireService.isLoading()) {
+                Enregistrement...
+            } @else {
+                Enregistrer
+            }
+        </button>
+        
+        <button 
+            type="button" 
+            (click)="close()" 
+            mat-raised-button
+            [disabled]="zoneTarifaireService.isLoading()">
+            Fermer
+        </button>
+    </form>
+
+</div>
