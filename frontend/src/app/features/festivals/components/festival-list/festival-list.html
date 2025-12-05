@@ -12,7 +12,7 @@
     @if (festivalService.isLoading()) {
         <p class="loading">Chargement des festivals...</p>
     } @else {
-        <ul class="festivals-list">
+        <ul class="items-list">
             @for (fest of festivalService.festivals(); track fest.id) {
                 <li>
                     @let hiddenFestival = false;

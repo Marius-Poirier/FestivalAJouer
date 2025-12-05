@@ -3,7 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { FestivalDto } from '@interfaces/entites/festival-dto';
 // import { MOCK_FESTIVALS } from 'src/mock_data/mock_festivals'; 
 import { environment } from 'src/environments/environment';
-import { Observable, catchError, finalize, of, tap } from 'rxjs';
+import { catchError, finalize, of, tap } from 'rxjs';
 
 
 @Injectable({
