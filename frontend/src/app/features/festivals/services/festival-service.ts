@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, computed } from '@angular/core';
 import { FestivalDto } from '@interfaces/entites/festival-dto';
 // import { MOCK_FESTIVALS } from 'src/mock_data/mock_festivals'; 
 import { environment } from 'src/environments/environment';
@@ -25,6 +25,17 @@ export class FestivalService {
 
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
+
+  readonly lastFestival = computed(() => {
+    const festivals = this._festivals();
+    if (festivals.length === 0) return undefined;
+    
+    return festivals.reduce((latest, current) => {
+      const latestDate = new Date(latest.created_at || 0);
+      const currentDate = new Date(current.created_at || 0);
+      return currentDate > latestDate ? current : latest;
+    });
+  });
 
 
     
@@ -113,17 +124,6 @@ export class FestivalService {
 
   public findById(id : number){
     return this._festivals().find((f)=>f.id === id)
-  }
-
-  public getLastFestival(): FestivalDto | undefined {
-    const festivals = this._festivals();
-    if (festivals.length === 0) return undefined;
-    
-    return festivals.reduce((latest, current) => {
-      const latestDate = new Date(latest.created_at || 0);
-      const currentDate = new Date(current.created_at || 0);
-      return currentDate > latestDate ? current : latest;
-    });
   }
 
   

@@ -18,8 +18,8 @@ export class FestivalSelector {
   public listselected = output<number>()
 
   ngOnInit(){
-    this.currentfestsvc.loadFestivalFromStorage();
     this.festsvc.loadAll();
+    this.currentfestsvc.loadFestivalFromStorage();
   }
 
   onFestivalChange(value: string) {
