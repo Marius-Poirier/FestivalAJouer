@@ -81,7 +81,10 @@ export class AuthService {
         this._isLoading.set(true) ; this._error.set(null)
         this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true })
             .pipe(
-                tap(() => { this._currentUser.set(null) }),
+                tap(() => { 
+                    this._currentUser.set(null);
+                    localStorage.clear();
+                }),
                 catchError( err => {this._error.set('Erreur de déconnexion') ; return of(null)} ),
                 finalize(() => this._isLoading.set(false))
             )

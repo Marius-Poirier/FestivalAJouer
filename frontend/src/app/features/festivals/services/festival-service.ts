@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, computed } from '@angular/core';
 import { FestivalDto } from '@interfaces/entites/festival-dto';
 // import { MOCK_FESTIVALS } from 'src/mock_data/mock_festivals'; 
 import { environment } from 'src/environments/environment';
@@ -25,6 +25,17 @@ export class FestivalService {
 
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
+
+  readonly lastFestival = computed(() => {
+    const festivals = this._festivals();
+    if (festivals.length === 0) return undefined;
+    
+    return festivals.reduce((latest, current) => {
+      const latestDate = new Date(latest.created_at || 0);
+      const currentDate = new Date(current.created_at || 0);
+      return currentDate > latestDate ? current : latest;
+    });
+  });
 
 
     
@@ -78,19 +89,33 @@ export class FestivalService {
       .subscribe();
   }
 
-  public delete(id : number){
+  public delete(id: number): void {
     this._isLoading.set(true);
     this._error.set(null);
-    this.http.post<{ message: string; festival: FestivalDto }>(this.baseUrl, id, { withCredentials: true })
-
-
-    try{
-      this._festivals.update(fest => fest.filter(f  => f.id != id))
-      console.log("Festivale supprimée :", id)
-    }catch(error){
-      console.error("Erreur lors de la suppression :", error)
-    }
-
+    this.http.delete<{ message: string; festival: FestivalDto }>(`${this.baseUrl}/${id}`, { withCredentials: true })
+      .pipe(
+        tap(response => {
+          if (response?.festival) {
+            this._festivals.update(fest => fest.filter(f => f.id !== id));
+            console.log(`Festival supprimé : ${JSON.stringify(response.festival)}`);
+          } else {
+            this._error.set('Erreur lors de la suppression du festival');
+          }
+        }),
+        catchError((err) => {
+          console.error('Erreur HTTP', err);
+          if (err?.status === 401) {
+            this._error.set('Vous devez être connecté en tant que super organisateur');
+          } else if (err?.status === 404) {
+            this._error.set('Festival non trouvé');
+          } else {
+            this._error.set('Erreur serveur');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      )
+      .subscribe();
   }
 
   public update(partial : Partial<FestivalDto> &{id: number}) : void{
@@ -99,17 +124,6 @@ export class FestivalService {
 
   public findById(id : number){
     return this._festivals().find((f)=>f.id === id)
-  }
-
-  public getLastFestival(): FestivalDto | undefined {
-    const festivals = this._festivals();
-    if (festivals.length === 0) return undefined;
-    
-    return festivals.reduce((latest, current) => {
-      const latestDate = new Date(latest.created_at || 0);
-      const currentDate = new Date(current.created_at || 0);
-      return currentDate > latestDate ? current : latest;
-    });
   }
 
   
