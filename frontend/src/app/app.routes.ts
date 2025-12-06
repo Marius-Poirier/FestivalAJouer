@@ -35,6 +35,10 @@ export const routes: Routes = [
     path: 'editeurs/:id',
     loadComponent: () => import('@editeurs/components/editeur-detail/editeur-detail').then(m => m.EditeurDetail),
     canActivate: [authGuard]
+    },
+    {
+    path: 'workflow',
+    loadComponent: ()=> import('@festivals/components/workflow-festival/workflow-festival').then(m=>m.WorkflowFestival)
     }
 
 ];

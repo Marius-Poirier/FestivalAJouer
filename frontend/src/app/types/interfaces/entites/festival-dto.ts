@@ -4,7 +4,6 @@ export interface FestivalDto {
     lieu : string;
     date_debut: string;  
     date_fin: string;    
-    date_creation?: string;
     created_at?: string;
     updated_at?: string;
 }

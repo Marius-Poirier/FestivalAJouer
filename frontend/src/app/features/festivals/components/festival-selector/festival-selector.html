@@ -1,0 +1,37 @@
+<div class="festival-selector">
+    <div class="contenent">
+        <label for="">Festival courant :</label>
+        <select 
+            [value]="currentFestival()?.id ?? ''"
+            (change)="onFestivalChange($any($event.target).value)">
+            
+            <option value="">{{currentFestival()?.nom}}</option>
+            
+            @for (festival of festivals(); track festival.id) {
+            <option [value]="festival.id">
+                {{ festival.nom }}
+            </option>
+            }
+        </select>
+
+        <!-- Affichage du festival actif -->
+        @if (currentFestival(); as festival) {
+            <div class="festival-actif">
+                <span>{{ festival.nom }}</span>
+            </div>
+        }
+
+    </div>
+    <div class="radio-button">
+        <mat-radio-group aria-label="Select an option" [value]="'1'" (change)="onRadioChange($any($event).value)">
+            <mat-radio-button value="1">Editeur</mat-radio-button>
+            <mat-radio-button value="2">Jeux</mat-radio-button>
+            <mat-radio-button value="3">Zone du tarifaire</mat-radio-button>
+
+        </mat-radio-group>
+
+    </div>
+   
+
+
+</div>
