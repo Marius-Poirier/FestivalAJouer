@@ -1,0 +1,22 @@
+name: Mirror to Polytech GitLab (SSH)
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Required for full history
+
+      - name: Mirror to GitLab via SSH
+        uses: pixta-dev/repository-mirroring-action@v1
+        with:
+          # We use the SSH URL format now (git@...)
+          target_repo_url: git@gitlab.polytech.umontpellier.fr:marius.poirier/festivalajouergitlab.git
+          ssh_private_key: ${{ secrets.GITLAB_SSH_PRIVATE_KEY }}

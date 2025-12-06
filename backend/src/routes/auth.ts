@@ -7,7 +7,7 @@ import type { TokenPayload } from '../types/token-payload.js';
 
 const router = Router()
 
-// --- LOGIN ---
+// POST /api/auth/login
 router.post('/login', async (req, res) => {
     const { email, password } = req.body
     if (!email || !password) {
@@ -73,14 +73,14 @@ router.post('/login', async (req, res) => {
     })
 })
 
-// --- LOGOUT ---
+// POST /api/auth/logout
 router.post('/logout', (_req, res) => {
     res.clearCookie('access_token')
     res.clearCookie('refresh_token')
     res.json({ message: 'Déconnexion réussie' })
 })
 
-// --- REGISTER (Demande de compte) ---
+// POST /api/auth/register
 router.post('/register', async (req, res) => {
     const { email, password } = req.body
     
@@ -118,7 +118,7 @@ router.post('/register', async (req, res) => {
     }
 })
 
-// --- REFRESH TOKEN ---
+// POST /api/auth/refresh
 router.post('/refresh', (req, res) => {
     const refresh = req.cookies?.refresh_token
     
@@ -143,7 +143,7 @@ router.post('/refresh', (req, res) => {
     }
 })
 
-// --- whoami ---
+// GET /api/auth/whoami
 router.get('/whoami', verifyToken, async (req, res) => {
     if (!req.user) {
         return res.json({ user: null });

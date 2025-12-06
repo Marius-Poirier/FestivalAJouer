@@ -1,0 +1,30 @@
+@if (editeur()) {
+  @let edi = editeur()!;
+
+  <mat-card class="card-container">
+
+    @if (canManage()) {
+      <button
+        class="delete-btn"
+        (click)="delete.emit(edi.id!); $event.stopPropagation()"
+        aria-label="Supprimer"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+
+    <mat-card-header>
+      <h2>{{ edi.nom }}</h2>
+    </mat-card-header>
+
+    <mat-card-actions>
+      <button
+        type="button"
+        class="btn-detail"
+        (click)="detail.emit(edi.id!)">
+        Détail
+      </button>
+    </mat-card-actions>
+
+  </mat-card>
+}

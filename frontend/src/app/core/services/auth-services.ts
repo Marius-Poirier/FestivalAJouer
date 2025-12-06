@@ -23,16 +23,22 @@ export class AuthService {
     readonly isLoading = this._isLoading.asReadonly()
     readonly error = this._error.asReadonly()
     readonly registerSuccess = this._registerSuccess.asReadonly();
-    readonly isAdmin = computed(() => {
+
+    // --- Rôle courant ---
+    readonly currentRole = computed<RoleUtilisateur | null>(() => {
         const user = this.currentUser();
-        if (!user) return false;
-        const role: any = user.role;
-        if (!role) return false;
-        if (typeof role === 'string') {
-            return role.toLowerCase() === 'admin';
-        }
-        return role === RoleUtilisateur.ADMIN;
-        });
+        if (!user || !user.role) return null;
+        return user.role as RoleUtilisateur;
+    });
+
+    // --- Checks rôles ---
+    readonly isAdmin = computed(() => this.currentRole() === RoleUtilisateur.ADMIN );
+    readonly isOrganisateur = computed(() => this.currentRole() === RoleUtilisateur.ORGANISATEUR );
+    readonly isSuperOrganisateur = computed(() => this.currentRole() === RoleUtilisateur.SUPER_ORGANISATEUR );
+    readonly isBenevole = computed(() => this.currentRole() === RoleUtilisateur.BENEVOLE );
+
+    readonly isAdminSuperorgaOrga = computed(() => this.isAdmin() || this.isOrganisateur() || this.isSuperOrganisateur() );
+    readonly isAdminSuperorga = computed(() => this.isAdmin() || this.isSuperOrganisateur() );
 
     // --- Connexion ---
     login(email: string, password: string) {
@@ -154,14 +160,26 @@ export class AuthService {
 
     whoamiOnce(): Promise<void> {
         return new Promise(resolve => {
-            this.http.get<any>(`${environment.apiUrl}/users/me`, {
+            this.http.get<UtilisateurDto | null>(`${environment.apiUrl}/users/me`, {
             withCredentials: true
             })
             .pipe(
             tap(user => {
-                this._currentUser.set(user ?? null);
+                if (!user) {
+                this._currentUser.set(null);
+                return;
+                }
+
+                const normalized: UtilisateurDto = {
+                ...user,
+                role: user.role?.toUpperCase() as RoleUtilisateur,
+                statut_utilisateur: user.statut_utilisateur?.toUpperCase() as StatutUtilisateur
+                };
+
+                this._currentUser.set(normalized);
             }),
             catchError(err => {
+                console.error('whoamiOnce failed', err);
                 this._currentUser.set(null);
                 return of(null);
             }),

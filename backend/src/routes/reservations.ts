@@ -29,10 +29,17 @@ function validateWorkflow(value: unknown): Workflow {
     return value as Workflow
 }
 
+// GET /api/reservations?search=102
 router.get('/', async (req, res) => {
     try {
         const params: unknown[] = []
         const clauses: string[] = []
+        const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
+        if (search) {
+            params.push(`%${search}%`)
+            clauses.push(`CAST(id AS TEXT) ILIKE $${params.length}`)
+        }
         if (req.query.festivalId) {
             const id = Number.parseInt(String(req.query.festivalId), 10)
             if (!Number.isInteger(id)) {
@@ -68,6 +75,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET /api/reservations/:id
 router.get('/:id', async (req, res) => {
     const reservationId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(reservationId)) {
@@ -88,6 +96,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/reservations
 router.post('/', requireOrganisateur, async (req, res) => {
     try {
         const editeurId = parsePositiveInteger(req.body?.editeur_id, 'editeur_id')
@@ -134,6 +143,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/reservations/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const reservationId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(reservationId)) {
@@ -190,6 +200,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/reservations/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const reservationId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(reservationId)) {

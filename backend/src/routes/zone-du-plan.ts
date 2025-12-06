@@ -8,6 +8,7 @@ router.use(requireSuperOrga)
 
 const ZONE_PLAN_FIELDS = 'id, festival_id, nom, nombre_tables, zone_tarifaire_id, created_at, updated_at'
 
+// GET /api/zones-du-plan
 router.get('/', async (req, res) => {
     try {
         const params: unknown[] = []
@@ -31,6 +32,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET /api/zones-du-plan/:id
 router.get('/:id', async (req, res) => {
     const zoneId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(zoneId)) {
@@ -51,6 +53,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/zones-du-plan
 router.post('/', async (req, res) => {
     try {
         const festivalId = parsePositiveInteger(req.body?.festival_id, 'festival_id')
@@ -82,6 +85,7 @@ router.post('/', async (req, res) => {
     }
 })
 
+// PUT /api/zones-du-plan/:id
 router.put('/:id', async (req, res) => {
     const zoneId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(zoneId)) {
@@ -121,6 +125,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
+// DELETE /api/zones-du-plan/:id
 router.delete('/:id', async (req, res) => {
     const zoneId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(zoneId)) {

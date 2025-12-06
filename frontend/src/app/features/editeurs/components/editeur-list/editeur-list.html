@@ -1,0 +1,34 @@
+<div class="list-container">
+
+  @if (editeurService.error()) {
+    <div class="error-banner">
+      {{ editeurService.error() }}
+    </div>
+  }
+
+  @if (authService.isAdminSuperorgaOrga()) {
+    <div class="header-actions">
+      <button class="btn-add" (click)="toggleForm()">+ Ajouter un éditeur</button>
+    </div>
+  }
+
+  <h1 class="list-title">Liste des éditeurs</h1>
+
+  <ul class="editeurs-list">
+    @for (edi of editeurService.editeurs(); track edi.id) {
+      <li>
+        <app-editeur-card
+          [editeur]="edi"
+          [canManage]="authService.isAdminSuperorgaOrga()"
+          (delete)="onDelete($event)"
+          (update)="onUpdate($event)"
+          (detail)="onDetail($event)"
+        ></app-editeur-card>
+      </li>
+    }
+  </ul>
+
+  @if (showForm() && authService.isAdminSuperorgaOrga()) {
+    <app-editeur-form (closeForm)="toggleForm()"></app-editeur-form>
+  }
+</div>

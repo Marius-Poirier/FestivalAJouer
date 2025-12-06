@@ -27,6 +27,7 @@
       "@mockdata/*":["src/mockdata/*"],
       "@festivals/*":["src/app/features/festivals/*"],
       "@zoneTarifaires/*":["src/app/features/zone-tarifaires/*"],
+      "@editeurs/*":["src/app/features/editeurs/*"],
     }
   },
   "angularCompilerOptions": {
