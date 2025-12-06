@@ -13,8 +13,8 @@
 }
 
 .from-editeur-container form {
-  background: #ffffff;
-  border: 0.0625rem solid #dddfe2;
+  background: var(--fond-carte);
+  border: 0.0625rem solid var(--gris-clair);
   border-radius: 0.5rem;
   padding: 1.25rem;
   width: 90%;
@@ -25,7 +25,7 @@
 
 .add {
   margin: 0 0 1rem 0;
-  color: #1c1e21;
+  color: var(--gris-fonce);
   font-size: 1.25rem;
   font-weight: bold;
   text-align: center;
@@ -37,7 +37,7 @@ mat-form-field {
 
 .error-text-input {
   display: block;
-  color: #c41e3a;
+  color: var(--rouge-danger);
   font-size: 0.6875rem;
   margin-top: -1.25rem;
   margin-bottom: 0.9375rem;
@@ -46,7 +46,7 @@ mat-form-field {
 
 .error-message {
   background-color: #ffebe9;
-  color: #c41e3a;
+  color: var(--rouge-danger);
   padding: 0.625rem 0.75rem;
   border-radius: 0.1875rem;
   border: 0.0625rem solid #f5c2c7;
@@ -64,8 +64,8 @@ mat-form-field {
 button[type="submit"] {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  background: #1877f2;
-  color: #ffffff;
+  background: var(--couleur-bouton);
+  color: var(--blanc);
   border: none;
   border-radius: 0.5rem;
   font-size: 0.875rem;
@@ -76,25 +76,25 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background: #166fe5;
+  background: var(--couleur-terciere);
 }
 
 button[type="submit"]:active {
-  background: #1564d6;
+  background: var(--couleur-secondaire);
 }
 
 button[type="submit"]:disabled {
-  background: #e4e6eb;
-  color: #bcc0c4;
+  background: var(--gris-clair);
+  color: var(--gris-moyen);
   cursor: not-allowed;
 }
 
 button[type="button"] {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  background: #e4e6eb;
-  color: #1c1e21;
-  border: 0.0625rem solid #ccd0d5;
+  background: var(--gris-clair);
+  color: var(--gris-fonce);
+  border: 0.0625rem solid var(--gris-moyen);
   border-radius: 0.25rem;
   font-size: 0.875rem;
   font-weight: bold;
@@ -104,11 +104,11 @@ button[type="button"] {
 }
 
 button[type="button"]:hover {
-  background: #d8dadf;
+  background: var(--gris-tres-clair);
 }
 
 button[type="button"]:active {
-  background: #ccd0d5;
+  background: var(--gris-moyen);
 }
 
 @keyframes fadeIn {

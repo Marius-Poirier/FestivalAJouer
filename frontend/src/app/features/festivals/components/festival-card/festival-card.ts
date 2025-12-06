@@ -20,8 +20,8 @@ export class FestivalCard {
   // public festival = input<FestivalDto>();
   private festsvc = inject(FestivalService)
   public readonly idFestival = input<number>();
-  public delete = output<number>();
   public update = output<number>();
+  public canManage = input<boolean>(false);
 
   // Signals pour la popup
   public deleteType = signal<string | null>(null);

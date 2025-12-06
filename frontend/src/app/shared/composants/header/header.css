@@ -1,5 +1,5 @@
 header {
-  background-color: var(--bleu-roi);
+  background-color: var(--couleur-primaire);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
@@ -73,31 +73,36 @@ header {
   text-decoration: none;
   padding: 0.5rem 1rem;
   border-radius: 8px;
-  background-color: var(--fond-transparent-leger);
+  background-color: var(--couleur-secondaire);
   font-weight: 500;
   white-space: nowrap;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .btn:hover {
-  background-color: var(--fond-transparent-fort);
+  background-color: var(--couleur-terciere);
+  transform: translateY(-2px);
 }
 
 .btn-logout {
-  background-color: var(--bleu-vif);
+  background-color: var(--couleur-secondaire);
   color: var(--blanc);
   border: none;
-  padding: 0.625rem 1.25rem;
+  padding: 0.5rem 0.75rem;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
-  font-size: 0.95rem;
-  transition: background-color 0.3s;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-logout:hover:not(:disabled) {
-  background-color: #b91c1c;
+  background-color: var(--rouge-danger);
+  transform: translateY(-2px);
 }
 
 .btn-logout:disabled {
@@ -106,7 +111,7 @@ header {
 }
 
 .btn-login {
-  background-color: var(--bleu-vif);
+  background-color: var(--couleur-bouton);
   color: var(--blanc);
   text-decoration: none;
   padding: 0.625rem 1.25rem;
@@ -115,15 +120,16 @@ header {
   white-space: nowrap;
   font-size: 0.95rem;
   display: inline-block;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
 }
 
 .btn-login:hover {
-  background-color: var(--bleu-roi-clair);
+  background-color: var(--couleur-terciere);
+  transform: translateY(-2px);
 }
 
 .btn-login.active {
-  background-color: var(--bleu-roi-clair);
+  background-color: var(--couleur-terciere);
 }
 
 .not-connected {

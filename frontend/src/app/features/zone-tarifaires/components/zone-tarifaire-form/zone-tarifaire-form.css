@@ -12,7 +12,7 @@
 }
 
 form {
-  background-color: white;
+  background-color: var(--fond-carte);
   padding: 2rem;
   border-radius: 8px;
   width: 90%;
@@ -24,19 +24,19 @@ form {
 
 .add {
   margin: 0 0 1rem 0;
-  color: #333;
+  color: var(--gris-fonce);
 }
 
 .error-message {
   background-color: #ffebee;
-  color: #c62828;
+  color: var(--rouge-danger);
   padding: 0.75rem;
   border-radius: 4px;
   font-size: 0.9rem;
 }
 
 .error-text-input {
-  color: #c62828;
+  color: var(--rouge-danger);
   font-size: 0.75rem;
   margin-top: -0.5rem;
 }

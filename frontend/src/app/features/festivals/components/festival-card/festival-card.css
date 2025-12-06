@@ -1,6 +1,6 @@
 mat-card {
-  background-color: #ffffff; 
-  border: 1px solid #dddfe2;
+  background-color: var(--fond-carte); 
+  border: 1px solid var(--gris-clair);
   border-radius: 8px;
   padding: 16px;
   width: 100%;
@@ -14,7 +14,7 @@ mat-card {
 }
 
 mat-card-header h2 {
-  color: #1c1e21; 
+  color: var(--gris-fonce); 
   margin: 0;
   font-size: 1.25rem;
   font-weight: bold;
@@ -26,7 +26,7 @@ mat-card-content {
 
 mat-card-content p {
   margin: 8px 0;
-  color: #606770;
+  color: var(--gris-moyen);
   font-size: 0.875rem;
 }
 
@@ -39,8 +39,8 @@ mat-card-actions {
 }
 
 mat-card-actions button {
-  background-color: #1877f2;
-  color: #ffffff;
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
   border: none;
   padding: 6px 12px;
   border-radius: 4px;
@@ -51,16 +51,16 @@ mat-card-actions button {
 }
 
 mat-card-actions button:hover {
-  background-color: #166fe5;
+  background-color: var(--couleur-terciere);
 }
 
 mat-card-actions button:active {
-  background-color: #1564d6;
+  background-color: var(--couleur-secondaire);
 }
 
 .highlight {
-  box-shadow: 0 0 0 2px #1877f2;
-  border-color: #1877f2;
+  box-shadow: 0 0 0 2px var(--couleur-bouton);
+  border-color: var(--couleur-bouton);
 }
 
 /* Container pour laisser de la place en haut */
@@ -75,8 +75,8 @@ mat-card-actions button:active {
   top: 0.35rem;
   right: 0.35rem;
 
-  background: #e53935;
-  color: white;
+  background: var(--rouge-danger);
+  color: var(--blanc);
 
   border: none;
   border-radius: 50%;
@@ -105,9 +105,9 @@ mat-card-actions button:active {
 }
 
 .delete-btn:hover {
-  background: #d32f2f;
+  background: #b91c1c;
 }
 
 .delete-btn:active {
-  background: #b71c1c;
+  background: #991b1b;
 }

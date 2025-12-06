@@ -1,7 +1,7 @@
 <header>
     <div class="header-container">
         <div class="logo">
-            <a routerLink="/home" class="logo-link">Festival à jouer</a>
+            <a routerLink="/home" class="logo-link">FESTIVAL À JOUER</a>
         </div>
         @if(authService.isLoggedIn()){
             <nav class="nav-menu-left">
@@ -20,36 +20,36 @@
                         Jeux
                     </a>
                 </div>
+                
                 <div class="workflow">
                     <a routerLink="/workflow" [class.active]="isActive('/workflow')">
                         Workflow
                     </a>
                 </div>
             </nav>
-
-            <!-- <button class="hamburger-btn" (click)="toggleMenu()" type="button">
-                <span class="hamburger-icon">☰</span>
-            </button> -->
-
             <nav class="nav-menu-right">
-
-                    <button 
-                    class="btn-logout" 
-                    (click)="onLogout()"
-                    [disabled]="authService.isLoading()"
+                @if (authService.isAdmin()) {
+                    <a 
+                    routerLink="/admin" 
+                    routerLinkActive="active"
+                    class="btn"
                     >
-                    Déconnexion
-                    </button>
+                    Administration
+                    </a>
+                }
 
-                    @if (authService.isAdmin()) {
-                        <a 
-                        routerLink="/admin" 
-                        routerLinkActive="active"
-                        class="btn"
-                        >
-                        Administration
-                        </a>
-                    }
+                <button 
+                class="btn-logout" 
+                (click)="onLogout()"
+                [disabled]="authService.isLoading()"
+                title="Déconnexion"
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                </button>
 
             </nav>
         }@else{
