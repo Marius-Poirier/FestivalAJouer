@@ -78,19 +78,33 @@ export class FestivalService {
       .subscribe();
   }
 
-  public delete(id : number){
+  public delete(id: number): void {
     this._isLoading.set(true);
     this._error.set(null);
-    this.http.post<{ message: string; festival: FestivalDto }>(this.baseUrl, id, { withCredentials: true })
-
-
-    try{
-      this._festivals.update(fest => fest.filter(f  => f.id != id))
-      console.log("Festivale supprimée :", id)
-    }catch(error){
-      console.error("Erreur lors de la suppression :", error)
-    }
-
+    this.http.delete<{ message: string; festival: FestivalDto }>(`${this.baseUrl}/${id}`, { withCredentials: true })
+      .pipe(
+        tap(response => {
+          if (response?.festival) {
+            this._festivals.update(fest => fest.filter(f => f.id !== id));
+            console.log(`Festival supprimé : ${JSON.stringify(response.festival)}`);
+          } else {
+            this._error.set('Erreur lors de la suppression du festival');
+          }
+        }),
+        catchError((err) => {
+          console.error('Erreur HTTP', err);
+          if (err?.status === 401) {
+            this._error.set('Vous devez être connecté en tant que super organisateur');
+          } else if (err?.status === 404) {
+            this._error.set('Festival non trouvé');
+          } else {
+            this._error.set('Erreur serveur');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      )
+      .subscribe();
   }
 
   public update(partial : Partial<FestivalDto> &{id: number}) : void{
