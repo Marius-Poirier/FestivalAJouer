@@ -4,11 +4,7 @@ stages:
 deploy_school_vm:
   stage: deploy
   image: alpine/git:latest
-  tags:
-    - docker
   before_script:
-    # REMOVED: apk add --no-cache openssh-client (We don't need to download it anymore)
-    
     - eval $(ssh-agent -s)
     - chmod 400 $SSH_PRIVATE_KEY
     - ssh-add $SSH_PRIVATE_KEY
