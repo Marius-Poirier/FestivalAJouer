@@ -1,31 +1,27 @@
 stages:
   - deploy
 
-deploy_to_vm:
+deploy_school_vm:
   stage: deploy
-  image: alpine:latest
+  image: alpine/git:latest
+  tags:
+    - docker
   before_script:
-    # 1. Install SSH client
-    - apk add --no-cache openssh-client
+    # REMOVED: apk add --no-cache openssh-client (We don't need to download it anymore)
     
-    # 2. Setup SSH Agent with the Private Key
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    
-    # 3. Create .ssh directory and disable host checking
-    # (We disable host checking to avoid the "Are you sure?" prompt blocking the automation)
+    - chmod 400 $SSH_PRIVATE_KEY
+    - ssh-add $SSH_PRIVATE_KEY
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 
   script:
-    - echo "🚀 Connecting to VM and deploying..."
-    # The commands to run on the remote VM:
+    - echo "Connecting to School VM..."
     - ssh marius.poirier@162.38.111.37 "
-        cd /FestivalAJouer &&
+        cd ~/FestivalAJouer &&
         git pull origin main &&
         docker compose -f docker-compose.prod.yml up --build -d
       "
-  
   only:
     - main
