@@ -1,0 +1,31 @@
+stages:
+  - deploy
+
+deploy_to_vm:
+  stage: deploy
+  image: alpine:latest
+  before_script:
+    # 1. Install SSH client
+    - apk add --no-cache openssh-client
+    
+    # 2. Setup SSH Agent with the Private Key
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    
+    # 3. Create .ssh directory and disable host checking
+    # (We disable host checking to avoid the "Are you sure?" prompt blocking the automation)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
+
+  script:
+    - echo "🚀 Connecting to VM and deploying..."
+    # The commands to run on the remote VM:
+    - ssh marius.poirier@162.38.111.37 "
+        cd /FestivalAJouer &&
+        git pull origin main &&
+        docker compose -f docker-compose.prod.yml up --build -d
+      "
+  
+  only:
+    - main
