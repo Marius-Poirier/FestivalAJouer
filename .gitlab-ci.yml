@@ -8,26 +8,17 @@ deploy_school_vm:
   script:
     - cd ~/FestivalAJouer
     - git pull origin main
-    
-    # --- THE FIX: USE DOCKER TO DELETE LOCKED FILES ---
-    # We mount the 'backend' folder into a temporary Alpine container
-    # and tell it to 'rm -rf' the certs folder.
-    # Docker has root access, so it succeeds where 'rm' fails.
-    - docker run --rm -v "$HOME/FestivalAJouer/backend:/clean_target" alpine rm -rf /clean_target/certs
-    # --------------------------------------------------
 
-    # 1. Now the folder is gone. Recreate it as YOUR user.
+    - docker run --rm -v "$HOME/FestivalAJouer/backend:/clean_target" alpine rm -rf /clean_target/certs
+
     - mkdir -p backend/certs
     
-    # 2. Inject Certificate AND Key from GitLab Variables
     - cp "$BACKEND_CERT" backend/certs/localhost.pem
     - cp "$BACKEND_KEY" backend/certs/localhost-key.pem
     
-    # 3. Set permissions (Keys need strict permissions)
     - chmod 644 backend/certs/localhost.pem
     - chmod 600 backend/certs/localhost-key.pem
     
-    # 4. Restart containers
     - docker compose -f docker-compose.prod.yml up --build -d
   only:
     - main
