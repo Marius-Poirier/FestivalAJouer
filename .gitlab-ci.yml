@@ -17,7 +17,7 @@ deploy_school_vm:
     - cp "$BACKEND_KEY" backend/certs/localhost-key.pem
     
     - chmod 644 backend/certs/localhost.pem
-    - chmod 600 backend/certs/localhost-key.pem
+    - chmod 644 backend/certs/localhost-key.pem
     
     - docker compose -f docker-compose.prod.yml up --build -d
   only:
