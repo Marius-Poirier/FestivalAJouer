@@ -1,0 +1,26 @@
+<div class="detail-container">
+  <a routerLink="/editeurs" class="back-link">← Retour à la liste des éditeurs</a>
+
+  @if (isLoading()) {
+    <p>Chargement de l’éditeur…</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else if (editeur()) {
+    @let edi = editeur()!;
+
+    <h1>Détail de l’éditeur</h1>
+
+    <section class="card">
+      <h2>{{ edi.nom }}</h2>
+      <p><strong>ID :</strong> {{ edi.id }}</p>
+
+    </section>
+
+    <section class="games">
+      <h2>Jeux de cet éditeur</h2>
+      <p>(À venir : liste des jeux, quand jeux sera crée)</p>
+    </section>
+  } @else {
+    <p>Éditeur introuvable.</p>
+  }
+</div>

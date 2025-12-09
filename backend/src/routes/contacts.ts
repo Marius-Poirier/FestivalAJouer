@@ -6,6 +6,7 @@ import { parsePositiveInteger, sanitizeString } from '../utils/validation.js'
 const router = Router()
 const CONTACT_FIELDS = 'id, editeur_id, festival_id, utilisateur_id, date_contact, notes'
 
+// GET /api/contacts
 router.get('/', async (req, res) => {
     try {
         const params: unknown[] = []
@@ -38,6 +39,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// POST /api/contacts
 router.post('/', requireOrganisateur, async (req, res) => {
     try {
         const editeurId = parsePositiveInteger(req.body?.editeur_id, 'editeur_id')
@@ -61,6 +63,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/contacts/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const contactId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(contactId)) {

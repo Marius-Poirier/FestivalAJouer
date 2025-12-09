@@ -1,0 +1,15 @@
+  <app-festival-selector (listselected)="onListSelected($event)"></app-festival-selector>
+  <!-- Affichage conditionnel selon la valeur -->
+@switch (listselected()) {
+  @case (1) {
+    <div>Editeurs</div>
+  }
+  @case (2) {
+    <div>jeux</div>
+  }
+  @case (3) {
+    <!-- <div>zone</div> -->
+     <app-zone-tarifaire-list></app-zone-tarifaire-list>
+  }
+}
+

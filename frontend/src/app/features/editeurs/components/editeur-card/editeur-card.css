@@ -1,0 +1,107 @@
+mat-card {
+  background-color: #ffffff; 
+  border: 1px solid #dddfe2;
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  min-width: 260px;
+  max-width: 320px;
+  margin: 0 auto;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+mat-card-header h2 {
+  color: #1c1e21; 
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+mat-card-content p {
+  margin: 8px 0;
+  color: #606770;
+  font-size: 0.875rem;
+}
+
+mat-card-actions {
+  margin-top: 12px;
+  text-align: right;
+  gap: 0.5rem;
+}
+
+mat-card-actions button {
+  background-color: #1877f2;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+mat-card-actions button:hover {
+  background-color: #166fe5;
+}
+
+mat-card-actions button:active {
+  background-color: #1564d6;
+}
+
+.highlight {
+  box-shadow: 0 0 0 2px #1877f2;
+  border-color: #1877f2;
+}
+
+/* Container pour laisser de la place en haut */
+.card-container {
+  position: relative;
+  padding-top: 1.2rem;
+}
+
+/* Bouton delete réduit et centré */
+.delete-btn {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+
+  background: #e53935;
+  color: white;
+
+  border: none;
+  border-radius: 50%;
+
+  width: 1.3rem;
+  height: 1.3rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  /* fix Material icon vertical alignment */
+  line-height: 0;
+}
+
+.delete-btn mat-icon {
+  font-size: 0.9rem;   /* 👈 plus petit */
+  width: 0.9rem;
+  height: 0.9rem;
+  line-height: 1;
+}
+
+.delete-btn:hover {
+  background: #d32f2f;
+}
+
+.delete-btn:active {
+  background: #b71c1c;
+}
+
+
+

@@ -22,8 +22,23 @@ export const routes: Routes = [
     loadComponent: () => import('@auth/register/register').then(m => m.Register),
     },
     {
-    path: '',
-    redirectTo: '/login',
-    pathMatch: 'full'
+    path: 'festivals',
+    loadComponent: () => import('@festivals/components/festival-list/festival-list').then(m => m.FestivalList),
+    canActivate: [authGuard]
+    },
+    {
+    path: 'editeurs',
+    loadComponent: () => import('@editeurs/components/editeur-list/editeur-list').then(m => m.EditeurList),
+    canActivate: [authGuard]
+    },
+    {
+    path: 'editeurs/:id',
+    loadComponent: () => import('@editeurs/components/editeur-detail/editeur-detail').then(m => m.EditeurDetail),
+    canActivate: [authGuard]
+    },
+    {
+    path: 'workflow',
+    loadComponent: ()=> import('@festivals/components/workflow-festival/workflow-festival').then(m=>m.WorkflowFestival)
     }
+
 ];

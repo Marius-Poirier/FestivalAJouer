@@ -13,14 +13,39 @@ const GAME_FIELDS = `
     j.created_at, j.updated_at
 `
 
-router.get('/', async (_req, res) => {
+// GET /api/jeux?search=azul&sortBy=playersMin&sortOrder=desc
+router.get('/', async (req, res) => {
+    const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+    const sortByParam = typeof req.query?.sortBy === 'string' ? req.query.sortBy.toLowerCase() : 'name'
+    const sortOrderParam = typeof req.query?.sortOrder === 'string' ? req.query.sortOrder.toLowerCase() : 'asc'
+
+    const sortFields: Record<string, string> = {
+        name: 'j.nom',
+        playersmin: 'j.nb_joueurs_min',
+        agemin: 'j.age_min'
+    }
+    const sortField = sortFields[sortByParam] ?? sortFields.name
+    const sortDirection = sortOrderParam === 'desc' ? 'DESC' : 'ASC'
+
     try {
+        const filters: string[] = []
+        const params: unknown[] = []
+
+        if (search) {
+            params.push(`%${search}%`)
+            filters.push(`j.nom ILIKE $${params.length}`)
+        }
+
+        const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+
         // Left Join to get the Type name directly
         const { rows } = await pool.query(
             `SELECT ${GAME_FIELDS}, t.nom as type_jeu_nom
              FROM Jeu j
              LEFT JOIN TypeJeu t ON j.type_jeu_id = t.id
-             ORDER BY j.nom ASC`
+             ${whereClause}
+             ORDER BY ${sortField} ${sortDirection}, j.nom ASC`,
+            params
         )
         res.json(rows)
     } catch (err) {
@@ -29,6 +54,7 @@ router.get('/', async (_req, res) => {
     }
 })
 
+// GET /api/jeux/:id
 router.get('/:id', async (req, res) => {
     const gameId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(gameId)) {
@@ -77,6 +103,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/jeux
 router.post('/', requireOrganisateur, async (req, res) => {
     const nom = sanitizeString(req.body?.nom)
     if (!nom) {
@@ -149,6 +176,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/jeux/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const gameId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(gameId)) {
@@ -242,6 +270,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/jeux/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const gameId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(gameId)) {

@@ -8,6 +8,7 @@ router.use(requireSuperOrga)
 
 const TABLE_FIELDS = 'id, zone_du_plan_id, zone_tarifaire_id, capacite_jeux, nb_jeux_actuels, statut, created_at, updated_at'
 
+// GET /api/tables
 router.get('/', async (req, res) => {
     try {
         const params: unknown[] = []
@@ -40,6 +41,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET /api/tables/:id
 router.get('/:id', async (req, res) => {
     const tableId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(tableId)) {
@@ -60,6 +62,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/tables
 router.post('/', async (req, res) => {
     try {
         const zoneDuPlanId = parsePositiveInteger(req.body?.zone_du_plan_id, 'zone_du_plan_id')
@@ -82,6 +85,7 @@ router.post('/', async (req, res) => {
     }
 })
 
+// PUT /api/tables/:id
 router.put('/:id', async (req, res) => {
     const tableId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(tableId)) {
@@ -122,6 +126,7 @@ router.put('/:id', async (req, res) => {
     }
 })
 
+// DELETE /api/tables/:id
 router.delete('/:id', async (req, res) => {
     const tableId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(tableId)) {

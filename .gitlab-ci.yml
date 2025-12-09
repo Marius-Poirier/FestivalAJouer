@@ -1,0 +1,24 @@
+stages:
+  - deploy
+
+deploy_school_vm:
+  stage: deploy
+  tags:
+    - deploy
+  script:
+    - cd ~/FestivalAJouer
+    - git pull origin main
+
+    - docker run --rm -v "$HOME/FestivalAJouer/backend:/clean_target" alpine rm -rf /clean_target/certs
+
+    - mkdir -p backend/certs
+    
+    - cp "$BACKEND_CERT" backend/certs/localhost.pem
+    - cp "$BACKEND_KEY" backend/certs/localhost-key.pem
+    
+    - chmod 644 backend/certs/localhost.pem
+    - chmod 644 backend/certs/localhost-key.pem
+    
+    - docker compose -f docker-compose.prod.yml up --build -d
+  only:
+    - main

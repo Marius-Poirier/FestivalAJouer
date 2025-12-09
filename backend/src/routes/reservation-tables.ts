@@ -6,6 +6,7 @@ import { parsePositiveInteger } from '../utils/validation.js'
 const router = Router()
 const FIELDS = 'reservation_id, table_id, date_attribution, attribue_par'
 
+// GET /api/reservation-tables
 router.get('/', async (req, res) => {
     if (!req.query.reservationId) {
         return res.status(400).json({ error: 'reservationId est requis' })
@@ -26,6 +27,7 @@ router.get('/', async (req, res) => {
     }
 })
 
+// POST /api/reservation-tables
 router.post('/', requireOrganisateur, async (req, res) => {
     try {
         const reservationId = parsePositiveInteger(req.body?.reservation_id, 'reservation_id')
@@ -49,6 +51,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/reservation-tables
 router.delete('/', requireOrganisateur, async (req, res) => {
     try {
         const reservationId = parsePositiveInteger(req.body?.reservation_id, 'reservation_id')

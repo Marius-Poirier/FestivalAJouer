@@ -1,0 +1,32 @@
+<!-- <app-card [data]="festival()?.nom" [fields]="attributs()" [actions]="actions()" /> -->
+@if(festival()){
+    @let fest = festival()!;
+    <mat-card class="card-container">
+        <button
+            class="delete-btn"
+            (click)="openDeletePopup(fest); $event.stopPropagation()"
+            aria-label="Supprimer"
+        >
+            <mat-icon>close</mat-icon>
+        </button>
+        <mat-card-header>
+            <h2>{{fest.nom}}</h2>
+        </mat-card-header>
+        <mat-card-content>
+            <p>Localisation : <a href="">{{fest.lieu}}</a></p>
+            <p>Début : <span style="text-transform: capitalize;">{{fest.date_debut | date: 'fullDate':'':'fr-FR' }}</span></p>
+            <p>Fin : <span style="text-transform: capitalize;">{{fest.date_fin | date: 'fullDate':'':'fr-FR'}}</span></p>
+        </mat-card-content>
+        <mat-card-actions>
+            <button (click)="update.emit(fest.id!); $event.stopPropagation()">Modifier</button> 
+        </mat-card-actions>
+    </mat-card>
+
+    <app-popup-delete
+        [entiteType]="deleteType()"
+        [entiteId]="deleteId()"
+        [entitenom]="deletenom()"
+        (confirm)="handleConfirm()"
+        (cancel)="handleCancel()">
+    </app-popup-delete>
+}

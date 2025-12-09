@@ -1,8 +1,9 @@
 export interface FestivalDto {
     id?: number;
     nom: string;
-    date_creation?: Date;
-    created_at? : Date;
+    lieu : string;
+    date_debut: string;  
+    date_fin: string;    
+    created_at?: string;
     updated_at?: string;
-    // lieu : string
 }

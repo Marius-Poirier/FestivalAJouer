@@ -6,10 +6,24 @@ import { sanitizeString } from '../utils/validation.js'
 const router = Router()
 const EDITOR_FIELDS = 'id, nom, created_at, updated_at'
 
-router.get('/', async (_req, res) => {
+// GET /api/editeurs?search=ludo
+router.get('/', async (req, res) => {
+    const search = typeof req.query?.search === 'string' ? sanitizeString(req.query.search) : null
+
     try {
+        const filters: string[] = []
+        const params: unknown[] = []
+
+        if (search) {
+            params.push(`%${search}%`)
+            filters.push(`nom ILIKE $${params.length}`)
+        }
+
+        const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
+
         const { rows } = await pool.query(
-            `SELECT ${EDITOR_FIELDS} FROM Editeur ORDER BY nom ASC`
+            `SELECT ${EDITOR_FIELDS} FROM Editeur ${whereClause} ORDER BY nom ASC`,
+            params
         )
         res.json(rows)
     } catch (err) {
@@ -18,6 +32,7 @@ router.get('/', async (_req, res) => {
     }
 })
 
+// GET /api/editeurs/:id
 router.get('/:id', async (req, res) => {
     const editorId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(editorId)) {
@@ -38,6 +53,7 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// POST /api/editeurs
 router.post('/', requireOrganisateur, async (req, res) => {
     const nom = sanitizeString(req.body?.nom)
     if (!nom) {
@@ -59,6 +75,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// PUT /api/editeurs/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const editorId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(editorId)) {
@@ -86,6 +103,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// DELETE /api/editeurs/:id
 router.delete('/:id', requireOrganisateur, async (req, res) => {
     const editorId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(editorId)) {

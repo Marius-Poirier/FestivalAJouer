@@ -45,6 +45,7 @@ services:
       BGG_TOKEN: "PASTE_YOUR_LONG_BGG_TOKEN_HERE"
     volumes:
       - ./backend/certs:/app/certs:ro
+    user: "1000:1000"
     ports:
       - "4000:4000"
     networks:

@@ -3,6 +3,7 @@ import pool from '../db/database.js'
 
 const router = Router()
 
+// GET /api/metadata/types-jeu
 router.get('/types-jeu', async (_req, res) => {
     try {
         const { rows } = await pool.query(
@@ -15,6 +16,7 @@ router.get('/types-jeu', async (_req, res) => {
     }
 })
 
+// GET /api/metadata/mecanismes
 router.get('/mecanismes', async (_req, res) => {
     try {
         const { rows } = await pool.query(

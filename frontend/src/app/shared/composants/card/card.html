@@ -1,0 +1,51 @@
+<mat-card (click)="onCardClick()">
+
+  <mat-card-header>
+    @if(data()) {
+      <h2>{{data()}}</h2>
+    }
+    @if(subtitle()) {
+      <h3>{{ subtitle() }}</h3>
+    }
+  </mat-card-header>
+
+
+  <mat-card-content>
+    @for(field of fields(); track field.label) {
+      @if(field.value !== undefined && field.value !== null) {
+        <p>
+          <strong>{{ field.label }} : </strong>
+          @switch(field.type) {
+            @case('link') {
+              <a [href]="field.value">{{ field.value }}</a>
+            }
+            @case('date') {
+              <span [style]="field.style" style="text-transform: capitalize;">
+                {{ field.value | date: (field.pipe || 'fullDate'):'':'fr-FR' }}
+              </span>
+            }
+            @case('currency') {
+              <span [style]="field.style">
+                {{ field.value | currency: 'EUR':'symbol':'1.2-2':'fr-FR' }}
+              </span>
+            }
+            @default {
+              <span [style]="field.style" style="text-transform: capitalize;">{{ field.value }}</span>
+            }
+          }
+        </p>
+      }
+    }
+  </mat-card-content>
+
+  @if(actions().length > 0) {
+    <mat-card-actions>
+      @for(action of actions(); track action.label) {
+        <button (click)="action.callback(); $event.stopPropagation()" 
+                [style]="action.style">
+          {{ action.label }}
+        </button>
+      }
+    </mat-card-actions>
+  }
+</mat-card>

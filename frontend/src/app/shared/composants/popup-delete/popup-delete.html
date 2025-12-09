@@ -1,0 +1,31 @@
+<!-- <div class="popup-delete">
+    <h2>
+        Etes vous sur de vouloir supprimer 
+    </h2>
+    <div class="actions">
+        <button>Annuler</button>
+        <button class="btn-delete">
+            Confirmer
+        </button>
+    </div>
+</div> -->
+@if(entiteType() && entiteId()) {
+      <div class="popup-overlay" (click)="onCancel()">
+        <div class="popup-delete" (click)="$event.stopPropagation()">
+          <h2>{{ confirmationMessage() }}</h2>
+          
+          <p class="warning">
+            ⚠️ Cette action est irréversible
+          </p>
+          
+          <div class="actions">
+            <button (click)="onCancel()" class="btn-cancel">
+              Annuler
+            </button>
+            <button (click)="onConfirm()" class="btn-delete">
+              Confirmer
+            </button>
+          </div>
+        </div>
+      </div>
+    }
