@@ -1,14 +1,14 @@
-<div class="home-container">
+<!-- <div class="home-container">
   <div class="home-card">
     
     @if (authService.isLoading()) {
-      <!-- Loading State -->
+      Loading State
       <div class="loading-state">
         <div class="spinner"></div>
         <p>Loading...</p>
       </div>
     } @else if (authService.isLoggedIn()) {
-      <!-- User Connected -->
+      User Connected
       <div class="user-section">
         <h1>Welcome</h1>
         
@@ -35,7 +35,7 @@
         </button>
       </div>
     } @else {
-      <!-- Not Connected -->
+    Not Connected 
       <div class="not-connected">
         <h1>Home</h1>
         <p>You are not logged in</p>
@@ -45,11 +45,59 @@
       </div>
     }
 
-    <!-- Error Display -->
+    Error Display
     @if (authService.error()) {
       <div class="alert alert-error">
         {{ authService.error() }}
       </div>
     }
   </div>
+</div> -->
+
+<div class="contenair-home">
+  <section class="hero-section">
+    <h1 class="hero-title">Bienvenue sur Festival à Jouer</h1>
+    <p class="hero-subtitle">Découvrez et gérez vos festivals de jeux </p>
+  </section>
+
+  @if (festivalssvc.isLoading()) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Chargement...</p>
+    </div>
+  } @else if (festival()) {
+    <section class="last-festival-section">
+      <h2 class="section-title">Dernier Festival</h2>
+      <div class="festival-highlight">
+        <div class="festival-card-home">
+          <div class="festival-header">
+            <h3>{{ festival()!.nom }}</h3>          
+          </div>
+          <div class="festival-details">
+            <div class="detail-item">
+              <mat-icon>place</mat-icon>
+              <span>{{ festival()!.lieu }}</span>
+            </div>
+            <div class="detail-item">
+              <mat-icon>calendar_today</mat-icon>
+              <span>{{ festival()!.date_debut | date: 'dd MMM yyyy':'':'fr-FR' }} - {{ festival()!.date_fin | date: 'dd MMM yyyy':'':'fr-FR' }}</span>
+            </div>
+          </div>
+          @if (authService.isLoggedIn()) {
+            <div class="festival-actions">
+              <button class="btn-primary" routerLink="/festivals">Voir tous les festivals</button>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+  } @else {
+    <section class="no-festival-section">
+      <mat-icon class="no-festival-icon">event_busy</mat-icon>
+      <p class="no-festival-text">Aucun festival disponible pour le moment</p>
+      @if (authService.isAdmin()) {
+        <button class="btn-primary" routerLink="/festivals">Créer un festival</button>
+      }
+    </section>
+  }
 </div>
