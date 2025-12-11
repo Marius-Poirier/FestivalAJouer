@@ -29,7 +29,7 @@ export class ZoneTarifaireService {
   readonly error = this._error.asReadonly();
 
 
-
+  //charger les zones tarifaires du festival courant
   loadAll(): void {
     this._isLoading.set(true);
     this._error.set(null);
@@ -62,19 +62,17 @@ export class ZoneTarifaireService {
   }
 
   //ajouter zone tarifaire
-  add(zoneTarifaire: Omit<ZoneTarifaireDto, 'id' | 'festival_id' | 'created_at' | 'updated_at'>): void {
+  add(zoneTarifaire: ZoneTarifaireDto): void {
     this._isLoading.set(true);
     this._error.set(null);
 
-    // Vérifier qu'un festival est sélectionné
     if (!this.currentfestival || !this.currentfestival.id) {
       this._error.set('Aucun festival sélectionné');
       this._isLoading.set(false);
       return;
     }
 
-    // Ajouter le festival_id depuis le festival courant
-    const zoneTarifaireComplete: Omit<ZoneTarifaireDto, 'id' | 'created_at' | 'updated_at'> = {
+    const zoneTarifaireComplete: ZoneTarifaireDto = {
       ...zoneTarifaire,
       festival_id: this.currentfestival.id
     };
@@ -113,6 +111,35 @@ export class ZoneTarifaireService {
       )
       .subscribe();
   }
+
+  delete(id: number): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+    this.http.delete<{message: string; zone: ZoneTarifaireDto}>(`${this.baseUrl}/${id}`, {withCredentials: true})
+      .pipe(
+        tap(response => {
+          if (response?.zone) {
+            this._zonesTarifaires.update(list => list.filter(zone => zone.id !== id));
+            console.log(`Zone tarifaire supprimée : ${response.zone.nom}`);
+          }
+        }),
+        catchError((err) => {
+          console.error('Erreur lors de la suppression', err);
+          if (err?.status === 401) {
+            this._error.set('Vous devez être connecté en tant que super organisateur');
+          } else if (err?.status === 404) {
+            this._error.set('Zone tarifaire introuvable');
+          } else {
+            this._error.set('Erreur lors de la suppression');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      )
+      .subscribe();
+  }
+
+ 
 
   public findById(id : number){
     return this._zonesTarifaires().find((f)=>f.id === id)

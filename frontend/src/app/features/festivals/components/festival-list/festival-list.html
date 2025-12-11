@@ -4,20 +4,32 @@
             {{ festivalService.error() }}
         </div>
     }
+    <div class="header-controls">
+        <div class="search-bar">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input 
+                type="text" 
+                placeholder="Rechercher un festival (nom ou lieu)..."
+                [value]="searchTerm()"
+                (input)="onSearch($event)"
+            />
+        </div>
 
-    <div class="header-actions">
-        <button class="btn-add" (click)="show()">+ Ajouter un festival</button>
+        @if (authService.isAdminSuperorga()){
+            <button class="btn-add" (click)="show()">+ Ajouter un festival</button>
+        }
     </div>
-
+    
     @if (festivalService.isLoading()) {
         <p class="loading">Chargement des festivals...</p>
     } @else {
         <ul class="items-list">
-            @for (fest of festivalService.festivals(); track fest.id) {
+            @for (fest of filteredFestivals(); track fest.id) {
                 <li>
                     @let hiddenFestival = false;
                     <app-festival-card 
                     [idFestival]="fest.id"
+                    [canManage]="authService.isAdminSuperorga()"
                     [hidden]="hiddenFestival">
                     </app-festival-card>
                 </li>

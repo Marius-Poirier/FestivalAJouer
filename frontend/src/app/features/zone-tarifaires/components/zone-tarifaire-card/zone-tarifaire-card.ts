@@ -1,13 +1,15 @@
-import { Component, computed, inject, input, output } from '@angular/core';
-import { Card } from '@sharedComponent/card/card';
-import { Action, Attributs } from '@sharedComponent/utils/generic-interfaces';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { ZoneTarifaireService } from '../../services/zone-tarifaire-service';
 import { ZoneTarifaireDto } from '@interfaces/entites/zone-tarifaire-dto';
+import {MatCardModule} from '@angular/material/card';
+import {MatIconModule} from '@angular/material/icon';
+import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
 
 
 @Component({
   selector: 'app-zone-tarifaire-card',
-  imports: [Card],
+  imports: [MatCardModule, MatIconModule, PopupDelete, CurrencyPipe],
   templateUrl: './zone-tarifaire-card.html',
   styleUrl: './zone-tarifaire-card.css'
 })
@@ -19,6 +21,10 @@ export class ZoneTarifaireCard {
   public delete = output<number>();
   public update = output<number>();
 
+  // Signals pour la popup
+  public deleteType = signal<string | null>(null);
+  public deleteId = signal<number | null>(null);
+  public deletenom = signal<string>('');
 
   public zonesTarif = computed(()=>{
     const id = this.idZoneTarif()
@@ -28,38 +34,29 @@ export class ZoneTarifaireCard {
     return undefined;
   })
 
-  public attributs = computed((): Attributs[] =>{
-    const zone  = this.zonesTarif()
-    if (!zone) return [];
-    
-    return [
-      {
-        label: 'Nombre tables total',
-        value: zone.nombre_tables_total, 
-        type : 'text',
-      }, 
-      {
-        label: 'Prix par table',
-        value: zone.prix_table, 
-        type : 'date'
-      }
-    ]
-  })
+  public openDeletePopup(zone: ZoneTarifaireDto): void {
+    this.deleteType.set('zoneTarifaire');
+    this.deleteId.set(zone.id ?? null);
+    this.deletenom.set(zone.nom);
+  }
 
-  public actions = computed((): Action[] => {
-    const zone  = this.zonesTarif()
-    if (!zone || !zone.id) return [];
-    
-    return[
-      {
-        label: 'Modifier',
-        callback: () => this.update.emit(zone.id!)
-      },
-      {
-        label : 'Supprimer',
-        callback : () => this.delete.emit(zone.id!)
-      }
-    ]
-  })
+  public handleCancel(): void {
+    this.closePopup();
+  }
+
+  private closePopup(): void {
+    this.deleteType.set('null');
+    this.deleteId.set(null);
+    this.deletenom.set('');
+  }
+
+  public handleConfirm(): void {
+    const id = this.deleteId();
+    if (id !== null) {
+      this.zoneTarifairessvc.delete(id);
+      console.log('Suppression de la zone tarifaire:', id);
+    }
+    this.closePopup();
+  }
 
 }

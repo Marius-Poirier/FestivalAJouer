@@ -1,18 +1,59 @@
 .list-container {
-    padding: 0.75rem;
-    max-width: 87.5rem;
+    padding: 2rem;
+    max-width: 87rem;
     margin: 0 auto;
 }
 
-.header-actions {
+.header-controls {
     display: flex;
-    justify-content: flex-end;
-    margin-bottom: 1rem;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 0 0.5rem;
+}
+
+.search-bar {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--gris-moyen);
+    font-size: 1.25rem;
+    width: 1.25rem;
+    height: 1.25rem;
+    pointer-events: none;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 0.625rem 1rem 0.625rem 2.75rem;
+    font-size: 0.9375rem;
+    border: 1px solid var(--gris-clair);
+    border-radius: 0.25rem;
+    background-color: var(--gris-tres-clair);
+    color: var(--gris-fonce);
+    transition: all 0.2s ease;
+}
+
+.search-bar input::placeholder {
+    color: var(--gris-moyen);
+}
+
+.search-bar input:focus {
+    outline: none;
+    border-color: var(--couleur-bouton);
+    background-color: var(--blanc);
+    box-shadow: 0 0 0 2px var(--fond-transparent-moyen);
 }
 
 .btn-add {
-    background: #1877f2;
-    color: #ffffff;
+    background: var(--couleur-bouton);
+    color: var(--blanc);
     border: none;
     padding: 0.5rem 1rem;
     border-radius: 0.25rem;
@@ -23,19 +64,19 @@
 }
 
 .btn-add:hover {
-    background: #166fe5;
+    background: var(--couleur-terciere);
 }
 
 .btn-add:active {
-    background: #1564d6;
+    background: var(--couleur-secondaire);
 }
 
 .error-banner {
     background-color: #f8d7da;
-    color: #721c24;
+    color: var(--rouge-danger);
     padding: 0.75rem 1rem;
     border-radius: 0.25rem;
-    border-left: 0.25rem solid #721c24;
+    border-left: 0.25rem solid var(--rouge-danger);
     margin-bottom: 1rem;
     text-align: center;
     font-weight: 500;
@@ -46,7 +87,7 @@ ul {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
-    justify-content: center;
+    justify-content: left;
     list-style: none;
     padding: 0;
     margin: 0;

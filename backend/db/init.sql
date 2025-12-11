@@ -97,6 +97,7 @@ CREATE TABLE ZoneTarifaire (
     nom VARCHAR(255) NOT NULL,
     nombre_tables_total INTEGER NOT NULL,
     prix_table DECIMAL(10, 2) NOT NULL,
+    prix_m2 DECIMAL(10, 2) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (festival_id) REFERENCES Festival(id) ON DELETE CASCADE,

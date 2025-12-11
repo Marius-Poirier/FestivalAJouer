@@ -8,7 +8,7 @@
   display: inline-block;
   margin-bottom: 1rem;
   text-decoration: none;
-  color: #1877f2;
+  color: var(--couleur-bouton);
   font-size: 0.875rem;
 }
 
@@ -22,10 +22,10 @@ h1 {
 }
 
 .card {
-  border: 1px solid #dddfe2;
+  border: 1px solid var(--gris-clair);
   border-radius: 0.5rem;
   padding: 1rem;
-  background: #fff;
+  background: var(--fond-carte);
   margin-bottom: 1.5rem;
 }
 
@@ -35,5 +35,5 @@ h1 {
 }
 
 .error {
-  color: #c41e3a;
+  color: var(--rouge-danger);
 }

@@ -11,8 +11,8 @@
 }
 
 .btn-add {
-  background: #1877f2;
-  color: #ffffff;
+  background: var(--couleur-bouton);
+  color: var(--blanc);
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
@@ -23,11 +23,11 @@
 }
 
 .btn-add:hover {
-  background: #166fe5;
+  background: var(--couleur-terciere);
 }
 
 .btn-add:active {
-  background: #1564d6;
+  background: var(--couleur-primaire);
 }
 
 .error-banner {
@@ -90,6 +90,6 @@ li {
   font-weight: 700;
   margin: 0 0 1rem 0;
   text-align: center;
-  color: #1c1e21;
+  color: var(--gris-fonce);
 }
 

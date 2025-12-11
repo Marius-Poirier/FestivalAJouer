@@ -33,7 +33,8 @@ public confirmationMessage = computed(() => {
         return `Êtes-vous sûr de vouloir supprimer le festival ${nom ? `"${nom}"` : ''} ?`;
       case 'contactEditeur':
         return `Êtes-vous sûr de vouloir supprimer le contact ${nom ? `"${nom}"` : ''} ?`;
-
+      case 'zoneTarifaire':
+        return `Êtes-vous sûr de vouloir supprimer la zone ${nom ? `"${nom}"` : ''} ?`;
       default:
         return
     }
