@@ -1,46 +1,42 @@
 .festival-selector {
+  position: sticky;
+  top: 70px;
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 1rem 2rem;
   background-color: var(--fond-carte);
-  border: 1px solid var(--gris-clair);
-  border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-
-  margin: 0 auto;
+  border-bottom: 2px solid var(--gris-clair);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   width: 100%;
+  z-index: 999;
 }
 
-.contenent{
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-left: 3rem;
-    align-self: flex-start;
-    max-width: 1200px;
+.contenent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 3rem;
 }
 
 .radio-button {
-    display: flex;
-    justify-content: center;
-    width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 :host ::ng-deep .radio-button mat-radio-group {
-    display: flex;
-    gap: 32px;
+  display: flex;
+  gap: 32px;
 }
 
 :host ::ng-deep .radio-button .mdc-form-field {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--couleur-secondaire);
+  font-size: 1.1rem;
+  font-weight: 700;
 }
 
 :host ::ng-deep .radio-button .mdc-label {
-    font-size: 1.1rem !important;
-    font-weight: 700 !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
 }
 
 .festival-selector label {
@@ -65,23 +61,12 @@
   min-width: 250px;
 }
 
-.festival-selector select option {
-  font-weight: 600;
-  font-size: 15px;
-  padding: 8px;
-}
-
-.festival-selector select:hover {
+.festival-selector select:hover,
+.festival-selector select:focus {
   border-color: var(--couleur-bouton);
   background-color: var(--blanc);
 }
 
 .festival-selector select:focus {
-  border-color: var(--couleur-bouton);
-  background-color: var(--blanc);
   box-shadow: 0 0 0 3px var(--fond-transparent-moyen);
-}
-
-.festival-actif {
-  display: none;
 }
