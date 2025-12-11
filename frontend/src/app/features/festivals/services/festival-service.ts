@@ -58,7 +58,7 @@ export class FestivalService {
   }
 
   add(festival: FestivalDto): void {
-    this._isLoading.set(true);
+    this._isLoading.set(true); 
     this._error.set(null);
     
     this.http.post<{ message: string; festival: FestivalDto }>(this.baseUrl, festival, { withCredentials: true })
@@ -89,7 +89,7 @@ export class FestivalService {
       .subscribe();
   }
 
-  public delete(id: number): void {
+  delete(id: number): void {
     this._isLoading.set(true);
     this._error.set(null);
     this.http.delete<{ message: string; festival: FestivalDto }>(`${this.baseUrl}/${id}`, { withCredentials: true })

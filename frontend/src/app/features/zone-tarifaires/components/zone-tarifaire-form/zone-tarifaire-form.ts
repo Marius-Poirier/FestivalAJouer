@@ -21,7 +21,8 @@ export class ZoneTarifaireForm {
   protected readonly form = this.fb.group({
     nom : ['', [Validators.required, Validators.minLength(3)]],
     nombre_tables_total : [0, [Validators.required, Validators.min(1)]], 
-    prix_table : [0, [Validators.required, Validators.min(0.01)]]
+    prix_table : [0, [Validators.required, Validators.min(0.01)]],
+    prix_m2 : [0, [Validators.required, Validators.min(0.01)]]
   })
 
   protected close() {
@@ -30,10 +31,11 @@ export class ZoneTarifaireForm {
 
   protected onSubmit() {
     if (this.form.valid) {
-      const zoneTarifaireData: Omit<ZoneTarifaireDto, 'id' | 'festival_id' | 'created_at' | 'updated_at'> = {
+      const zoneTarifaireData: ZoneTarifaireDto = {
         nom: this.form.value.nom!,
         nombre_tables_total: this.form.value.nombre_tables_total!,
-        prix_table: this.form.value.prix_table!
+        prix_table: this.form.value.prix_table!,
+        prix_m2 : this.form.value.prix_m2!
       };
       
       this.zoneTarifaireService.add(zoneTarifaireData);

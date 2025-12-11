@@ -1,2 +1,31 @@
-<app-card [data]="zone()?.nom" [fields]="attributs()" [actions]="actions()"></app-card>
+@if(zonesTarif()){
+    @let zone = zonesTarif()!;
+    <mat-card class="card-container">
+        <button
+            class="delete-btn"
+            (click)="openDeletePopup(zone); $event.stopPropagation()"
+            aria-label="Supprimer"
+        >
+            <mat-icon>close</mat-icon>
+        </button>
+        <mat-card-header>
+            <h2  style="text-transform: capitalize;" >{{zone.nom}}</h2>
+        </mat-card-header>
+        <mat-card-content>
+            <p>Nombre de tables : <span>{{zone.nombre_tables_total}}</span></p>
+            <p>Prix par table : <span>{{zone.prix_table | currency:'EUR':'symbol':'1.2-2':'fr-FR'}}</span></p>
+            <p>Prix par m² : <span>{{zone.prix_m2 | currency:'EUR':'symbol':'1.2-2':'fr-FR'}}</span></p>
+        </mat-card-content>
+        <mat-card-actions>
+            <button (click)="update.emit(zone.id!); $event.stopPropagation()">Modifier</button> 
+        </mat-card-actions>
+    </mat-card>
 
+    <app-popup-delete
+        [entiteType]="deleteType()"
+        [entiteId]="deleteId()"
+        [entitenom]="deletenom()"
+        (confirm)="handleConfirm()"
+        (cancel)="handleCancel()">
+    </app-popup-delete>
+}

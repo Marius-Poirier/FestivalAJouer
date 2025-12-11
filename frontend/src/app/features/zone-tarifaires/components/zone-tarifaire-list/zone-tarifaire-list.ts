@@ -1,14 +1,12 @@
 import { Component, inject, signal } from '@angular/core';
 import { ZoneTarifaireDto } from '@interfaces/entites/zone-tarifaire-dto';
-import { MOCK_ZONES_TARIFAIRES } from 'src/mock_data/mock_zones_tarifaires';
 import { ZoneTarifaireCard } from '../zone-tarifaire-card/zone-tarifaire-card';
-import { FestivalCard } from "@festivals/components/festival-card/festival-card";
 import { ZoneTarifaireService } from '@zoneTarifaires/services/zone-tarifaire-service';
 import { ZoneTarifaireForm } from '../zone-tarifaire-form/zone-tarifaire-form';
 
 @Component({
   selector: 'app-zone-tarifaire-list',
-  imports: [ZoneTarifaireCard, FestivalCard, ZoneTarifaireForm],
+  imports: [ZoneTarifaireCard, ZoneTarifaireForm],
   templateUrl: './zone-tarifaire-list.html',
   styleUrl: './zone-tarifaire-list.css'
 })
@@ -21,8 +19,6 @@ export class ZoneTarifaireList {
   public zonestarifaires = this.zonetarifairesvc.zonesTarifaires  
 
   public showForm = signal<boolean>(false)
-
-
   public zones = signal<ZoneTarifaireDto[]>([])
 
   ngOnInit(){
