@@ -13,7 +13,7 @@ import { ZoneTarifaireForm } from '../zone-tarifaire-form/zone-tarifaire-form';
 export class ZoneTarifaireList {
   
   private zonetarifairesvc = inject(ZoneTarifaireService)
-  private idcurrentfestival = this.zonetarifairesvc.currentfestival?.id
+  private idcurrentfestival = this.zonetarifairesvc.currentfestival()?.id
   public readonly isLoading = this.zonetarifairesvc.isLoading
   public readonly error = this.zonetarifairesvc.error
   public zonestarifaires = this.zonetarifairesvc.zonesTarifaires  

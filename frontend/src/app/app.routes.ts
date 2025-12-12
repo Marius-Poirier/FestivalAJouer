@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth-guard';
 import { adminGuard } from '@core/guards/admin-guard';
+import { FestivalList } from '@festivals/components/festival-list/festival-list';
+import { HomeComponent } from './features/home/home.component';
 
 export const routes: Routes = [
     {
@@ -10,7 +12,6 @@ export const routes: Routes = [
     {
     path: 'home',
     loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
-    canActivate: [authGuard]
     },
     {
     path: 'admin',
@@ -21,10 +22,14 @@ export const routes: Routes = [
     path: 'register',
     loadComponent: () => import('@auth/register/register').then(m => m.Register),
     },
+    // {
+    // path: 'festivals',
+    // loadComponent: () => import('@festivals/components/festival-list/festival-list').then(m => m.FestivalList),
+    // canActivate: [authGuard]
+    // },
     {
     path: 'festivals',
-    loadComponent: () => import('@festivals/components/festival-list/festival-list').then(m => m.FestivalList),
-    canActivate: [authGuard]
+    component: HomeComponent,
     },
     {
     path: 'editeurs',
