@@ -1,103 +1,92 @@
-<!-- <div class="home-container">
-  <div class="home-card">
-    
-    @if (authService.isLoading()) {
-      Loading State
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-      </div>
-    } @else if (authService.isLoggedIn()) {
-      User Connected
-      <div class="user-section">
-        <h1>Welcome</h1>
-        
-        <div class="user-info">
-          <div class="info-row">
-            <span class="label">User:</span>
-            <span class="value">{{ authService.currentUser()?.email }}</span>
-          </div>
-          
-          <div class="info-row">
-            <span class="label">Role:</span>
-            <span class="value role" [class.admin]="authService.isAdmin()">
-              {{ authService.isAdmin() ? 'Administrator' : 'User' }}
-            </span>
-          </div>
-        </div>
-
-        <button 
-          class="btn-logout" 
-          (click)="onLogout()"
-          [disabled]="authService.isLoading()"
-        >
-          Déconnexion
-        </button>
-      </div>
-    } @else {
-    Not Connected 
-      <div class="not-connected">
-        <h1>Home</h1>
-        <p>You are not logged in</p>
-        <a routerLink="/login" class="btn-login">
-          Se connecter
-        </a>
-      </div>
-    }
-
-    Error Display
-    @if (authService.error()) {
-      <div class="alert alert-error">
-        {{ authService.error() }}
-      </div>
-    }
-  </div>
-</div> -->
-
 <div class="contenair-home">
   <section class="hero-section">
-    <h1 class="hero-title">Bienvenue sur Festival à Jouer</h1>
-    <p class="hero-subtitle">Découvrez et gérez vos festivals de jeux </p>
+    <div class="hero-background">
+      <div class="hero-shape shape-1"></div>
+      <div class="hero-shape shape-2"></div>
+      <div class="hero-shape shape-3"></div>
+    </div>
+    <div class="hero-content">
+      <h1 class="hero-title">Festival à Jouer</h1>
+      <p class="hero-subtitle">Organisez, gérez et animez vos festivals de jeux de société avec efficacité</p>
+      @if (authService.isLoggedIn()) {
+        <div class="hero-actions">
+          <button class="btn-hero-primary" routerLink="/festivals">
+            <span>Accéder aux festivals</span>
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      } @else {
+        <div class="hero-actions">
+          <button class="btn-hero-primary" routerLink="/login">
+            <span>Se connecter</span>
+            <mat-icon>login</mat-icon>
+          </button>
+        </div>
+      }
+    </div>
   </section>
 
   @if (festivalssvc.isLoading()) {
     <div class="loading-state">
       <div class="spinner"></div>
-      <p>Chargement...</p>
+      <p>Chargement des données...</p>
     </div>
   } @else if (festival()) {
-    <section class="last-festival-section">
-      <h2 class="section-title">Dernier Festival</h2>
-      <div class="festival-highlight">
-        <div class="festival-card-home">
-          <div class="festival-header">
-            <h3>{{ festival()!.nom }}</h3>          
+    <section class="content-section">
+      <div class="festival-spotlight">
+        <div class="spotlight-main">
+          <div class="spotlight-label">Événement</div>
+          <h3 class="spotlight-title" style="text-transform: capitalize;">{{ festival()!.nom }}</h3>
+          
+          <div class="spotlight-grid">
+            <div class="spotlight-item">
+              <div class="spotlight-icon">
+                <mat-icon>place</mat-icon>
+              </div>
+              <div class="spotlight-info">
+                <span class="spotlight-label-small">Localisation</span>
+                <span class="spotlight-value">{{ festival()!.lieu }}</span>
+              </div>
+            </div>
+            
+            <div class="spotlight-item">
+              <div class="spotlight-icon">
+                <mat-icon>event</mat-icon>
+              </div>
+              <div class="spotlight-info">
+                <span class="spotlight-label-small">Début</span>
+                <span class="spotlight-value">{{ festival()!.date_debut | date: 'dd MMMM yyyy':'':'fr-FR' }}</span>
+              </div>
+            </div>
+            
+            <div class="spotlight-item">
+              <div class="spotlight-icon">
+                <mat-icon>event_available</mat-icon>
+              </div>
+              <div class="spotlight-info">
+                <span class="spotlight-label-small">Fin</span>
+                <span class="spotlight-value">{{ festival()!.date_fin | date: 'dd MMMM yyyy':'':'fr-FR' }}</span>
+              </div>
+            </div>
           </div>
-          <div class="festival-details">
-            <div class="detail-item">
-              <mat-icon>place</mat-icon>
-              <span>{{ festival()!.lieu }}</span>
-            </div>
-            <div class="detail-item">
-              <mat-icon>calendar_today</mat-icon>
-              <span>{{ festival()!.date_debut | date: 'dd MMM yyyy':'':'fr-FR' }} - {{ festival()!.date_fin | date: 'dd MMM yyyy':'':'fr-FR' }}</span>
-            </div>
-          </div>
-          @if (authService.isLoggedIn()) {
-            <div class="festival-actions">
-              <button class="btn-primary" routerLink="/festivals">Voir tous les festivals</button>
-            </div>
-          }
         </div>
       </div>
     </section>
   } @else {
-    <section class="no-festival-section">
-      <mat-icon class="no-festival-icon">event_busy</mat-icon>
-      <p class="no-festival-text">Aucun festival disponible pour le moment</p>
-      @if (authService.isAdmin()) {
-        <button class="btn-primary" routerLink="/festivals">Créer un festival</button>
-      }
+    <section class="content-section">
+      <div class="empty-state">
+        <div class="empty-icon">
+          <mat-icon>event_busy</mat-icon>
+        </div>
+        <h3 class="empty-title">Aucun festival actif</h3>
+        <p class="empty-text">Il n'y a pas de festival programmé pour le moment</p>
+        @if (authService.isAdminSuperorga()) {
+          <button class="btn-empty" routerLink="/festivals">
+            <mat-icon>add_circle</mat-icon>
+            <span>Créer un festival</span>
+          </button>
+        }
+      </div>
     </section>
   }
 </div>

@@ -20,12 +20,13 @@
                         Jeux
                     </a>
                 </div>
-                
-                <div class="workflow">
-                    <a routerLink="/workflow" [class.active]="isActive('/workflow')">
-                        Workflow
-                    </a>
-                </div>
+                @if(authService.isAdminSuperorgaOrga()){
+                    <div class="workflow">
+                        <a routerLink="/workflow" [class.active]="isActive('/workflow')">
+                            Workflow
+                        </a>
+                    </div>
+                }
             </nav>
             <nav class="nav-menu-right">
                 @if (authService.isAdmin()) {
