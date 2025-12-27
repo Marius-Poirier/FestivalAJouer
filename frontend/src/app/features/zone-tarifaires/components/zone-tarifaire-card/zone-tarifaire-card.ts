@@ -35,7 +35,7 @@ export class ZoneTarifaireCard {
   })
 
   public openDeletePopup(zone: ZoneTarifaireDto): void {
-    this.deleteType.set('zoneTarifaire');
+    this.deleteType.set('zone');
     this.deleteId.set(zone.id ?? null);
     this.deletenom.set(zone.nom);
   }

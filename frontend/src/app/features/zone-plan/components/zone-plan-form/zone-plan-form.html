@@ -1,0 +1,62 @@
+<div class="from-zone-plan-container" (click)="close()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" (click)="$event.stopPropagation()">
+        <h2 class="add">Ajouter une zone du plan</h2>
+        
+        <!-- Affichage des erreurs -->
+        @if (zonePlanService.error()) {
+            <div class="error-message">
+                {{ zonePlanService.error() }}
+            </div>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Nom de la zone</mat-label>
+            <input matInput type="text" formControlName="nom" placeholder="Nom de la zone" [disabled]="zonePlanService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.nom.invalid && form.controls.nom.touched) {
+            <span class="error-text-input">Le nom doit contenir au moins 3 caractères</span>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Nombre de tables</mat-label>
+            <input matInput type="number" formControlName="nombre_tables" placeholder="Nombre de tables" [disabled]="zonePlanService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.nombre_tables.invalid && form.controls.nombre_tables.touched) {
+            <span class="error-text-input">Le nombre de tables doit être au moins 1</span>
+        }
+
+        <mat-form-field appearance="fill">
+            <mat-label>Zone tarifaire</mat-label>
+            <mat-select formControlName="zone_tarifaire_id" [disabled]="zonePlanService.isLoading()">
+                <mat-option [value]="0">Sélectionner une zone tarifaire</mat-option>
+                @for (zoneTarif of zonesTarifaires(); track zoneTarif.id) {
+                    <mat-option [value]="zoneTarif.id">{{ zoneTarif.nom }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        @if (form.controls.zone_tarifaire_id.invalid && form.controls.zone_tarifaire_id.touched) {
+            <span class="error-text-input">Veuillez sélectionner une zone tarifaire</span>
+        }
+
+        <button 
+            type="submit" 
+            mat-raised-button 
+            color="primary" 
+            [disabled]="form.invalid || zonePlanService.isLoading()">
+            @if (zonePlanService.isLoading()) {
+                Enregistrement...
+            } @else {
+                Enregistrer
+            }
+        </button>
+        
+        <button 
+            type="button" 
+            (click)="close()" 
+            mat-raised-button
+            [disabled]="zonePlanService.isLoading()">
+            Fermer
+        </button>
+    </form>
+
+</div>

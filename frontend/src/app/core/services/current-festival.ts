@@ -12,12 +12,10 @@ export class CurrentFestival {
 
   constructor() {
     effect(() => {
-      const last = this.festsvc.lastFestival();
       const current = this._currentFestival();
+      const last = this.festsvc.lastFestival();
       
-      // Si pas de festival courant et qu'un dernier festival existe
-      // OU si le dernier festival est plus récent que le courant
-      if (last && (!current || (last.created_at && current.created_at && new Date(last.created_at) > new Date(current.created_at)))) {
+      if (!current && last) {
         this.setFestival(last);
       }
     });

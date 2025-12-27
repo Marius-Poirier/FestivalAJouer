@@ -27,6 +27,7 @@
       "@mockdata/*":["src/mockdata/*"],
       "@festivals/*":["src/app/features/festivals/*"],
       "@zoneTarifaires/*":["src/app/features/zone-tarifaires/*"],
+      "@zonePlan/*":["src/app/features/zone-plan/*"],
       "@editeurs/*":["src/app/features/editeurs/*"],
     }
   },
