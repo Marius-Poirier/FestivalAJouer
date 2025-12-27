@@ -1,4 +1,4 @@
-  <app-festival-selector (listselected)="onListSelected($event)"></app-festival-selector>
+  <app-festival-selector></app-festival-selector>
   <!-- Affichage conditionnel selon la valeur -->
 @switch (listselected()) {
   @case (1) {
@@ -12,7 +12,12 @@
      <app-zone-tarifaire-list></app-zone-tarifaire-list>
   }
   @case(4){
-    <div>reservation</div>
+    <!-- <div>zone du plan</div> -->
+    <app-zone-plan-list></app-zone-plan-list>
   }
+  @case(5){
+    <div>reservations</div>
+  }
+
 }
 
