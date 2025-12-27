@@ -35,7 +35,8 @@ export class ZoneTarifaireForm {
         nom: this.form.value.nom!,
         nombre_tables_total: this.form.value.nombre_tables_total!,
         prix_table: this.form.value.prix_table!,
-        prix_m2 : this.form.value.prix_m2!
+        prix_m2 : this.form.value.prix_m2!,
+        festival_id: this.zoneTarifaireService.currentfestival()?.id ?? 0
       };
       
       this.zoneTarifaireService.add(zoneTarifaireData);

@@ -14,7 +14,6 @@ export class ZoneTarifaireService {
   private readonly baseUrl = `${environment.apiUrl}/zones-tarifaires`;
 
   public readonly currentfestival = this.currentFestivalsvc.currentFestival;
-  
 
   private readonly _zonesTarifaires = signal<ZoneTarifaireDto[]>([]);
   readonly zonesTarifaires = this._zonesTarifaires.asReadonly()
@@ -45,13 +44,15 @@ export class ZoneTarifaireService {
   loadAll(): void {
     this._isLoading.set(true);
     this._error.set(null);
-    if (!this.currentfestival() || !this.currentfestival()?.id) {
+
+    const current = this.currentfestival();
+    if (!current || !current.id) {
       this._error.set('Aucun festival sélectionné');
       this._isLoading.set(false);
       this._zonesTarifaires.set([]);
       return;
     }
-    const params = new HttpParams().set('festivalId', this.currentfestival()!.id!.toString());    
+    const params = new HttpParams().set('festivalId', current.id.toString());    
     this.http.get<ZoneTarifaireDto[]>(this.baseUrl, {
       params,
       withCredentials: true
@@ -78,7 +79,8 @@ export class ZoneTarifaireService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    if (!this.currentfestival() || !this.currentfestival()?.id) {
+    const current = this.currentfestival();
+    if (!current || !current.id) {
       this._error.set('Aucun festival sélectionné');
       this._isLoading.set(false);
       return;
@@ -86,7 +88,7 @@ export class ZoneTarifaireService {
 
     const zoneTarifaireComplete: ZoneTarifaireDto = {
       ...zoneTarifaire,
-      festival_id: this.currentfestival()?.id
+      festival_id: current.id
     };
 
     console.log('Données envoyées au backend:', zoneTarifaireComplete);

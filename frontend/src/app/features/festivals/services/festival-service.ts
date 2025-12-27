@@ -54,7 +54,7 @@ export class FestivalService {
         finalize(() => this._isLoading.set(false)),
         catchError(() => of(null))
       )
-      .subscribe(data => this._festivals.set(data ?? []));
+      .subscribe();
   }
 
   add(festival: FestivalDto): void {

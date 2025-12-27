@@ -1,5 +1,5 @@
-@if(zonesTarif()){
-    @let zone = zonesTarif()!;
+@if(zonePlan()){
+    @let zone = zonePlan()!;
     <mat-card class="card-container">
         <button
             class="delete-btn"
@@ -12,10 +12,16 @@
             <h2  style="text-transform: capitalize;" >{{zone.nom}}</h2>
         </mat-card-header>
         <mat-card-content>
-            <p>Nombre de tables : <span>{{zone.nombre_tables_total}}</span></p>
-            <!-- ✅ Format français avec € à droite grâce au locale fr-FR enregistré -->
-            <p>Prix par table : <span>{{zone.prix_table | currency:'EUR':'symbol':'1.2-2'}}</span></p>
-            <p>Prix par m² : <span>{{zone.prix_m2 | currency:'EUR':'symbol':'1.2-2'}}</span></p>
+            <!-- ✅ Affichage des infos de la zone tarifaire associée -->
+            @if (zoneTarifaire()) {
+                <p>Zone tarifaire: <span>{{zoneTarifaire()!.nom}}</span></p>
+                <p>Prix par table: <span>{{zoneTarifaire()!.prix_table | currency:'EUR'}}</span></p>
+                <p>Prix au m²: <span>{{zoneTarifaire()!.prix_m2 | currency:'EUR'}}</span></p>
+            } @else {
+                <p>Zone tarifaire: <span>Non assignée</span></p>
+            }
+            <p>Nombre de tables : <span>{{zone.nombre_tables}}</span></p>
+
         </mat-card-content>
         <mat-card-actions>
             <button (click)="update.emit(zone.id!); $event.stopPropagation()">Modifier</button> 

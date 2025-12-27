@@ -1,4 +1,4 @@
-import { Component, inject, output, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CurrentFestival } from '@core/services/current-festival';
 import { FestivalService } from '@festivals/services/festival-service';
 import {MatRadioModule} from '@angular/material/radio';
@@ -15,7 +15,7 @@ export class FestivalSelector {
 
   public currentFestival = this.currentfestsvc.currentFestival
   public festivals = this.festsvc.festivals
-  public listselected = output<number>()
+  public listselected = signal<number>(1)
 
   ngOnInit(){
     this.festsvc.loadAll();
@@ -27,11 +27,11 @@ export class FestivalSelector {
     const festival = this.festivals().find(f => f.id === festivalId);
     if (festival) {
       this.currentfestsvc.setFestival(festival);
-      localStorage.setItem('festival_courant', JSON.stringify(festival));
     }
+    console.log("selector : id festival new", festivalId)
   }
 
-  onRadioChange(value: string){
-    this.listselected.emit(Number(value))
+  onRadioChange(event: any){
+    this.listselected.set(Number(event.value))
   }
 }
