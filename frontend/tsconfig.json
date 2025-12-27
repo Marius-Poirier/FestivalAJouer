@@ -28,6 +28,7 @@
       "@festivals/*":["src/app/features/festivals/*"],
       "@zoneTarifaires/*":["src/app/features/zone-tarifaires/*"],
       "@zonePlan/*":["src/app/features/zone-plan/*"],
+      "@tables/*":["src/app/features/tables/*"],
       "@editeurs/*":["src/app/features/editeurs/*"],
     }
   },

@@ -114,43 +114,6 @@ export class FestivalCard {
     this.festsvc.update(updatedFestival);
     this.isEditMode.set(false);
   }
+  
 
-  // public attributs = computed((): Attributs[] =>{
-  //   const fest  = this.festival()
-  //   if (!fest) return [];
-    
-  //   return [
-  //     {
-  //       label: 'Localisation',
-  //       value: fest.lieu, 
-  //       type : 'text',
-  //     }, 
-  //     {
-  //       label: 'Début',
-  //       value: fest.date_debut, 
-  //       type : 'date'
-  //     },
-  //     {
-  //       label: 'Fin',
-  //       value: fest.date_fin,
-  //       type : 'date'
-  //     }
-  //   ]
-  // })
-
-  // public actions = computed((): Action[] => {
-  //   const fest = this.festival()
-  //   if (!fest || !fest.id) return [];
-    
-  //   return[
-  //     {
-  //       label: 'Modifier',
-  //       callback: () => this.update.emit(fest.id!)
-  //     },
-  //     {
-  //       label : 'Supprimer',
-  //       callback : () => this.delete.emit(fest.id!)
-  //     }
-  //   ]
-  // })
 }

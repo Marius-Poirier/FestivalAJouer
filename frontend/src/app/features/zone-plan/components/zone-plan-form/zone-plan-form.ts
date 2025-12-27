@@ -34,7 +34,8 @@ export class ZonePlanForm {
   protected readonly form = this.fb.group({
     nom : ['', [Validators.required, Validators.minLength(3)]],
     nombre_tables : [0, [Validators.required, Validators.min(1)]], 
-    zone_tarifaire_id : [0, [Validators.required, Validators.min(1)]]
+    zone_tarifaire_id : [0, [Validators.required, Validators.min(1)]],
+    capacite_jeux : [2, [Validators.required, Validators.min(2)]]
   })
 
   ngOnInit() {
@@ -57,7 +58,7 @@ export class ZonePlanForm {
         festival_id: this.zonePlanService.currentfestival()?.id ?? 0
       };
       
-      this.zonePlanService.add(zonePlanData);
+      this.zonePlanService.add(zonePlanData, this.form.value.capacite_jeux ?? 2);
       if(this.zonePlanService.error() != null){
         return
       }

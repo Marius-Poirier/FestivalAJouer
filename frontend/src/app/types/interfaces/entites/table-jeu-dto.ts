@@ -6,7 +6,7 @@ export interface TableJeuDto {
   zone_tarifaire_id: number;
   capacite_jeux: number;
   nb_jeux_actuels?: number;
-  statut: StatutTable;
+  statut?: StatutTable;
   created_at? : Date;
   updated_at? : Date;
 

@@ -38,6 +38,14 @@
             <span class="error-text-input">Veuillez sélectionner une zone tarifaire</span>
         }
 
+        <mat-form-field appearance="fill">
+            <mat-label>Capacité de jeux par table</mat-label>
+            <input matInput type="number" formControlName="capacite_jeux" placeholder="Capacité (par défaut 2)" [disabled]="zonePlanService.isLoading()">
+        </mat-form-field>
+        @if (form.controls.capacite_jeux.invalid && form.controls.capacite_jeux.touched) {
+            <span class="error-text-input">La capacité doit être au moins 2</span>
+        }
+
         <button 
             type="submit" 
             mat-raised-button 

@@ -4,6 +4,7 @@ import { environment } from '@env/environment';
 import { ZoneDuPlanDto } from '@interfaces/entites/zone-du-plan-dto';
 import { catchError, finalize, of, tap } from 'rxjs';
 import { CurrentFestival } from '@core/services/current-festival';
+import { TablesService } from '@tables/services/tables-service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,10 +12,8 @@ import { CurrentFestival } from '@core/services/current-festival';
 export class ZonePlanService {
   private readonly http = inject(HttpClient)
   private readonly currentFestivalsvc = inject(CurrentFestival)
-  // ❌ ANCIEN CODE (URL incorrecte - ne correspond pas au backend)
-  // private readonly baseUrl = `${environment.apiUrl}/zones-plan`;
-  
-  // ✅ NOUVEAU CODE (URL correcte - correspond au backend /api/zones-du-plan)
+  private readonly tablesSvc = inject(TablesService)
+
   private readonly baseUrl = `${environment.apiUrl}/zones-du-plan`;
 
   public readonly currentfestival = this.currentFestivalsvc.currentFestival;
@@ -57,11 +56,11 @@ export class ZonePlanService {
     .pipe(
       tap(data => { this._zonesPlan.set(data ?? []) 
         if(data.length == 0){
-          console.log("Pas de zone du plan dans ce festival") // ✅ CORRIGÉ
+          console.log("Pas de zone du plan dans ce festival") 
         }
       }),
       catchError(err => {
-        this._error.set('Erreur lors du chargement des zones du plan'); // ✅ CORRIGÉ
+        this._error.set('Erreur lors du chargement des zones du plan');
         this._zonesPlan.set([]);
         return of(null);
       }),
@@ -72,8 +71,8 @@ export class ZonePlanService {
     console.log("chargement reussi")
   }
 
-  //ajouter zone du plan
-  add(zonePlan: ZoneDuPlanDto): void {
+  //ajouter zone du plan + génération automatique des tables
+  add(zonePlan: ZoneDuPlanDto, tableCapacity = 2): void {
     this._isLoading.set(true);
     this._error.set(null);
 
@@ -102,6 +101,18 @@ export class ZonePlanService {
             // Ajouter la nouvelle zone au début de la liste
             this._zonesPlan.update(list => [response.zone, ...list]);
             console.log(`Zone du plan ajoutée : ${JSON.stringify(response.zone)}`);
+
+            // Générer automatiquement les tables liées à cette zone
+            const tablesToCreate = Math.max(0, response.zone.nombre_tables ?? 0);
+            if (response.zone.id) {
+              for (let i = 0; i < tablesToCreate; i++) {
+                this.tablesSvc.add({
+                  zone_du_plan_id: response.zone.id,
+                  zone_tarifaire_id: response.zone.zone_tarifaire_id,
+                  capacite_jeux: tableCapacity || 2
+                });
+              }
+            }
           } else {
             this._error.set('Erreur lors de l\'ajout de la zone du plan');
           }
