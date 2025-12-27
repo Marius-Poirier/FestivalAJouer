@@ -41,7 +41,7 @@ export class TablesService {
       .subscribe();
   }
 
-  add(table: Pick<TableJeuDto, 'zone_du_plan_id' | 'zone_tarifaire_id' | 'capacite_jeux'>): void {
+  add(table: TableJeuDto): void {
     this._isLoading.set(true); 
     this._error.set(null);
     

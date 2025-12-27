@@ -56,11 +56,11 @@ export class ZonePlanService {
     .pipe(
       tap(data => { this._zonesPlan.set(data ?? []) 
         if(data.length == 0){
-          console.log("Pas de zone du plan dans ce festival") // ✅ CORRIGÉ
+          console.log("Pas de zone du plan dans ce festival") 
         }
       }),
       catchError(err => {
-        this._error.set('Erreur lors du chargement des zones du plan'); // ✅ CORRIGÉ
+        this._error.set('Erreur lors du chargement des zones du plan');
         this._zonesPlan.set([]);
         return of(null);
       }),
