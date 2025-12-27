@@ -118,8 +118,44 @@ export class FestivalService {
       .subscribe();
   }
 
-  public update(partial : Partial<FestivalDto> &{id: number}) : void{
-    this._festivals.update(fest=>fest.map(f => (f.id === partial.id ? {...f, ...partial} : f)))
+  update(festival: Omit<FestivalDto, 'created_at' | 'updated_at'> & { id: number }): void {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    this.http.put<{ message: string; festival: FestivalDto }>(
+      `${this.baseUrl}/${festival.id}`, 
+      festival, 
+      { withCredentials: true }
+    )
+      .pipe(
+        tap(response => {
+          if (response?.festival) {
+            this._festivals.update(list => 
+              list.map(f => f.id === festival.id ? response.festival : f)
+            );
+            console.log(`Festival mis à jour : ${JSON.stringify(response.festival)}`);
+          } else {
+            this._error.set('Erreur lors de la mise à jour du festival');
+          }
+        }),
+        catchError((err) => {
+          console.error('Erreur HTTP', err);
+          if (err?.status === 401) {
+            this._error.set('Vous devez être connecté en tant que super organisateur');
+          } else if (err?.status === 400) {
+            this._error.set('Données invalides');
+          } else if (err?.status === 404) {
+            this._error.set('Festival non trouvé');
+          } else if (err?.status === 409) {
+            this._error.set('Un festival avec ce nom existe déjà');
+          } else {
+            this._error.set('Erreur serveur');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      )
+      .subscribe();
   }
 
   public findById(id : number){

@@ -11,7 +11,7 @@ import { FestivalService } from '@festivals/services/festival-service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   protected readonly festivalssvc = inject(FestivalService)

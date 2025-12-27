@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, effect } from '@angular/core';
 import { environment } from '@env/environment';
 import { ZoneTarifaireDto } from '@interfaces/entites/zone-tarifaire-dto';
 import { catchError, finalize, of, tap } from 'rxjs';
@@ -28,11 +28,23 @@ export class ZoneTarifaireService {
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
 
+  constructor() {
+    // Recharger automatiquement les zones quand le festival change
+    effect(() => {
+      const festival = this.currentfestival();
+      if (festival?.id) {
+        console.log('Festival changé, rechargement des zones tarifaires pour:', festival.nom);
+        this.loadAll();
+      }
+    });
+  }
+
 
   //charger les zones tarifaires du festival courant
   loadAll(): void {
     this._isLoading.set(true);
     this._error.set(null);
+
     const current = this.currentfestival();
     if (!current || !current.id) {
       this._error.set('Aucun festival sélectionné');

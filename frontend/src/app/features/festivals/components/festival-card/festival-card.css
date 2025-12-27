@@ -4,9 +4,9 @@ mat-card {
   border-radius: 8px;
   padding: 16px;
   width: 100%;
-  /* min-width: 230px; */
   width: 320px;
-  height: 240px;
+  min-height: 240px;
+  height: auto;
   margin: 0 auto;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   display: flex;
@@ -110,4 +110,87 @@ mat-card-actions button:active {
 
 .delete-btn:active {
   background: #991b1b;
+}
+/* Styles pour le formulaire d'édition */
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.4rem;
+}
+
+.form-group label {
+  color: var(--couleur-primaire);
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input {
+  padding: 0.45rem 0.6rem;
+  border: 1.5px solid var(--gris-clair);
+  border-radius: 5px;
+  font-size: 0.85rem;
+  color: var(--gris-fonce);
+  background-color: var(--fond-carte);
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.form-group input:hover {
+  border-color: var(--couleur-terciere);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--couleur-primaire);
+  box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.12);
+  background-color: var(--blanc);
+}
+
+.form-group input:disabled {
+  background-color: var(--gris-tres-clair);
+  cursor: not-allowed;
+  opacity: 0.6;
+  border-color: var(--gris-clair);
+}
+
+.form-group input::placeholder {
+  color: var(--gris-moyen);
+  opacity: 0.6;
+  font-style: italic;
+}
+
+.error-text-input {
+  color: var(--rouge-danger);
+  font-size: 0.75rem;
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+.error-message {
+  background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+  color: var(--rouge-danger);
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  border-left: 4px solid var(--rouge-danger);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+  font-weight: 500;
+}
+
+.btn-cancel {
+  background-color: var(--gris-moyen) !important;
+}
+
+.btn-cancel:hover {
+  background-color: var(--gris-fonce) !important;
 }

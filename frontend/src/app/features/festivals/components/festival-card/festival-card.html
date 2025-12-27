@@ -1,4 +1,3 @@
-<!-- <app-card [data]="festival()?.nom" [fields]="attributs()" [actions]="actions()" /> -->
 @if(festival()){
     @let fest = festival()!;
     <mat-card class="card-container">
@@ -9,19 +8,107 @@
         >
             <mat-icon>close</mat-icon>
         </button>
-        <mat-card-header>
-            <h2>{{fest.nom}}</h2>
-        </mat-card-header>
-        <mat-card-content>
-            <p>Localisation : <a href="">{{fest.lieu}}</a></p>
-            <p>Début : <span style="text-transform: capitalize;">{{fest.date_debut | date: 'fullDate':'':'fr-FR' }}</span></p>
-            <p>Fin : <span style="text-transform: capitalize;">{{fest.date_fin | date: 'fullDate':'':'fr-FR'}}</span></p>
-        </mat-card-content>
-        <mat-card-actions>
-            <button (click)="update.emit(fest.id!); $event.stopPropagation()">Modifier</button> 
-        </mat-card-actions>
-    </mat-card>
+        
+        @if (!isEditMode()) {
+            <!-- Mode affichage -->
+            <mat-card-header>
+                <h2 style="text-transform: capitalize;" >{{fest.nom}}</h2>
+            </mat-card-header>
+            <mat-card-content>
+                <p>Localisation : <a href="">{{fest.lieu}}</a></p>
+                <p>Début : <span style="text-transform: capitalize;">{{fest.date_debut | date: 'fullDate':'':'fr-FR' }}</span></p>
+                <p>Fin : <span style="text-transform: capitalize;">{{fest.date_fin | date: 'fullDate':'':'fr-FR'}}</span></p>
+            </mat-card-content>
+            <mat-card-actions>
+                <button (click)="formEdition(); $event.stopPropagation()">Modifier</button> 
+            </mat-card-actions>
+        } @else {
+            <!-- Mode édition -->
+            <form [formGroup]="form" (click)="$event.stopPropagation()">
+                <mat-card-header>
+                    <h2>Modifier le festival</h2>
+                </mat-card-header>
+                <mat-card-content class="form-content">
+                    @if (festsvc.error()) {
+                        <div class="error-message">
+                            {{ festsvc.error() }}
+                        </div>
+                    }
+                    
+                    <div class="form-group">
+                        <label for="nom">Nom festival : </label>
+                        <input 
+                            id="nom"
+                            type="text" 
+                            formControlName="nom" 
+                            placeholder="Nom du festival" 
+                            [disabled]="festsvc.isLoading()">
+                        @if (form.controls.nom.invalid && form.controls.nom.touched) {
+                            <span class="error-text-input">Le nom doit contenir au moins 5 caractères</span>
+                        }
+                    </div>
 
+                    <div class="form-group">
+                        <label for="lieu">Localisation : </label>
+                        <input 
+                            id="lieu"
+                            type="text" 
+                            formControlName="lieu" 
+                            placeholder="Lieu du festival" 
+                            [disabled]="festsvc.isLoading()">
+                        @if (form.controls.lieu.invalid && form.controls.lieu.touched) {
+                            <span class="error-text-input">Le lieu doit contenir au moins 5 caractères</span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_debut">Date de début : </label>
+                        <input 
+                            id="date_debut"
+                            type="date" 
+                            formControlName="date_debut" 
+                            [disabled]="festsvc.isLoading()">
+                        @if (form.controls.date_debut.invalid && form.controls.date_debut.touched) {
+                            <span class="error-text-input">La date de début est requise</span>
+                        }
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_fin">Date de fin : </label>
+                        <input 
+                            id="date_fin"
+                            type="date" 
+                            formControlName="date_fin" 
+                            [disabled]="festsvc.isLoading()">
+                        @if (form.controls.date_fin.invalid && form.controls.date_fin.touched) {
+                            <span class="error-text-input">La date de fin est requise</span>
+                        }
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button 
+                        type="button"
+                        (click)="saveChanges(); $event.stopPropagation()" 
+                        [disabled]="form.invalid || festsvc.isLoading()">
+                        @if (festsvc.isLoading()) {
+                            Enregistrement...
+                        } @else {
+                            Enregistrer
+                        }
+                    </button>
+                    <button 
+                        type="button"
+                        class="btn-cancel"
+                        (click)="formEdition(); $event.stopPropagation()"
+                        [disabled]="festsvc.isLoading()">
+                        Annuler
+                    </button>
+                </mat-card-actions>
+            </form>
+        }
+    </mat-card>
+    
+<!-- Popup delete -->
     <app-popup-delete
         [entiteType]="deleteType()"
         [entiteId]="deleteId()"

@@ -3,11 +3,11 @@
   top: 70px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 1rem 2rem;
-  background-color: var(--fond-carte);
-  border-bottom: 2px solid var(--gris-clair);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  gap: 24px;
+  padding: 1.5rem 3rem;
+  background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+  border-bottom: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 1px 0 rgba(30, 64, 175, 0.08);
   width: 100%;
   z-index: 999;
 }
@@ -15,58 +15,89 @@
 .contenent {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-left: 3rem;
+  gap: 16px;
+  padding: 1rem 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(30, 64, 175, 0.08);
+  transition: all 0.3s ease;
+}
+
+.contenent:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(30, 64, 175, 0.15);
 }
 
 .radio-button {
   display: flex;
   justify-content: center;
+  padding: 0.5rem 1rem;
 }
 
 :host ::ng-deep .radio-button mat-radio-group {
   display: flex;
-  gap: 32px;
+  gap: 40px;
 }
 
 :host ::ng-deep .radio-button .mdc-form-field {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+:host ::ng-deep .radio-button .mdc-form-field:hover {
+  color: var(--couleur-primaire) !important;
 }
 
 :host ::ng-deep .radio-button .mdc-label {
-  font-size: 1.1rem !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--gris-fonce) !important;
+  transition: color 0.2s ease;
+}
+
+:host ::ng-deep .radio-button .mat-mdc-radio-button.mat-accent.mat-mdc-radio-checked .mdc-label {
+  color: var(--couleur-primaire) !important;
   font-weight: 700 !important;
 }
 
 .festival-selector label {
-  color: var(--couleur-secondaire);
-  font-size: 1.25rem;
+  color: var(--couleur-primaire);
+  font-size: 1.05rem;
   font-weight: 700;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
 }
 
 .festival-selector select {
-  padding: 8px 12px;
-  font-size: 16px;
+  padding: 12px 18px;
+  font-size: 1.05rem;
   font-weight: 600;
   color: var(--gris-fonce);
-  background-color: var(--gris-tres-clair);
-  border: 2px solid var(--gris-clair);
-  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(30, 64, 175, 0.02), rgba(59, 130, 246, 0.02));
+  border: 2px solid rgba(30, 64, 175, 0.12);
+  border-radius: 12px;
   cursor: pointer;
   outline: none;
-  transition: all 0.2s ease;
-  min-width: 250px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-width: 280px;
+  text-transform: capitalize;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.festival-selector select:hover,
-.festival-selector select:focus {
-  border-color: var(--couleur-bouton);
-  background-color: var(--blanc);
+.festival-selector select:hover {
+  border-color: rgba(30, 64, 175, 0.3);
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.12);
+  background: white;
+  transform: translateY(-1px);
 }
 
 .festival-selector select:focus {
-  box-shadow: 0 0 0 3px var(--fond-transparent-moyen);
+  border-color: var(--couleur-primaire);
+  box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.12), 0 4px 12px rgba(30, 64, 175, 0.15);
+  background: white;
+  transform: translateY(-1px);
 }
