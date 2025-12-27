@@ -7,13 +7,7 @@ import {MatIconModule} from '@angular/material/icon';
 import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
 import { CurrencyPipe } from '@angular/common';
 
-// ❌ ANCIEN CODE - Code de test à supprimer
-// const zonetest : ZoneDuPlanDto = {
-//   festival_id : 1,
-//   nom : "teste plan",
-//   nombre_tables : 3,
-//   zone_tarifaire_id :  1,
-// }
+
 
 @Component({
   selector: 'app-zone-plan-card',
@@ -27,19 +21,18 @@ export class ZonePlanCard {
   public readonly idZonePlan = input<number>();
   public readonly zone = input<ZoneDuPlanDto>();
   
-  // ❌ ANCIEN CODE - Variable de test à supprimer
-  // public readonly zonetest = zonetest;
-  
+
   public readonly zonetarifaire = input<string>();
   public delete = output<number>();
   public update = output<number>();
   
-
   
   // Signals pour la popup
   public deleteType = signal<string | null>(null);
   public deleteId = signal<number | null>(null);
   public deletenom = signal<string>('');
+
+  public isEditMode = signal<boolean>(false)
 
   public zonePlan = computed(()=>{
     const id = this.idZonePlan()
@@ -49,7 +42,7 @@ export class ZonePlanCard {
     return undefined;
   })
 
-  // ✅ NOUVEAU : Récupérer toutes les infos de la zone tarifaire associée
+  //------ Récupérer la zone tarifaire associer a cette zone du plan
   public zoneTarifaire = computed(() => {
     const zonePlan = this.zonePlan()
     if (zonePlan && zonePlan.zone_tarifaire_id) {
@@ -78,10 +71,6 @@ export class ZonePlanCard {
     const id = this.deleteId();
     if (id !== null) {
       this.zonePlansvc.delete(id);
-      // ❌ ANCIEN CODE (mauvais message)
-      // console.log('Suppression de la zone tarifaire:', id);
-      
-      // ✅ NOUVEAU CODE (message correct)
       console.log('Suppression de la zone du plan:', id);
     }
     this.closePopup();
