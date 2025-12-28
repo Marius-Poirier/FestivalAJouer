@@ -1,36 +1,38 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { EditeurCard } from '../editeur-card/editeur-card';
-import { EditeurForm } from '../editeur-form/editeur-form';
-import { EditeurService } from '../../services/editeur-service';
+import { JeuService } from '../../services/jeu-service';
 import { AuthService } from '@core/services/auth-services';
+import { JeuCard } from '../jeu-card/jeu-card';
+import { JeuForm } from '../jeu-form/jeu-form'; // si tu l’as déjà
 
 @Component({
-  selector: 'app-editeur-list',
+  selector: 'app-jeu-list',
   standalone: true,
-  imports: [EditeurCard, EditeurForm, MatIconModule],
-  templateUrl: './editeur-list.html',
-  styleUrl: './editeur-list.css'
+  imports: [JeuCard, JeuForm, MatIconModule],
+  templateUrl: './jeu-list.html',
+  styleUrl: './jeu-list.css'
 })
-export class EditeurList {
-  protected readonly editeurService = inject(EditeurService);
+export class JeuList {
+  protected readonly jeuService = inject(JeuService);
   protected readonly authService = inject(AuthService);
+
   protected readonly showForm = signal(false);
+
   protected readonly searchTerm = signal<string>('');
 
-  protected readonly filteredEditeurs = computed(() => {
+  protected readonly filteredJeux = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
-    const list = this.editeurService.editeurs();
+    const list = this.jeuService.jeux();
 
     if (!term) return list;
 
-    return list.filter(e =>
-      e.nom.toLowerCase().includes(term)
+    return list.filter(j =>
+      j.nom.toLowerCase().includes(term)
     );
   });
 
   ngOnInit() {
-    this.editeurService.loadAll();
+    this.jeuService.loadAll();
   }
 
   protected toggleForm() {
@@ -43,10 +45,6 @@ export class EditeurList {
   }
 
   protected onDelete(id: number) {
-    this.editeurService.delete(id);
-  }
-
-  protected onUpdate(id: number) {
-    console.log('update éditeur', id);
+    this.jeuService.delete(id);
   }
 }

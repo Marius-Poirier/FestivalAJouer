@@ -1,0 +1,60 @@
+<div class="from-jeu-container" (click)="close()">
+  <form
+    [formGroup]="form"
+    (ngSubmit)="onSubmit()"
+    (click)="$event.stopPropagation()"
+  >
+    <h2 class="add">Ajouter un jeu</h2>
+
+    @if (jeuService.error()) {
+      <div class="error-message">
+        {{ jeuService.error() }}
+      </div>
+    }
+
+    <mat-form-field appearance="fill">
+      <mat-label>Nom du jeu</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="nom"
+        placeholder="Nom du jeu"
+        [disabled]="jeuService.isLoading()"
+      />
+    </mat-form-field>
+
+    @if (form.controls.nom.invalid && form.controls.nom.touched) {
+      @if (form.controls.nom.hasError('required')) {
+        <span class="error-text-input">
+          Le nom est requis
+        </span>
+      } @else if (form.controls.nom.hasError('minlength')) {
+        <span class="error-text-input">
+          Le nom doit contenir au moins 3 caractères
+        </span>
+      }
+    }
+
+    <button
+      type="submit"
+      mat-raised-button
+      color="primary"
+      [disabled]="form.invalid || jeuService.isLoading()"
+    >
+      @if (jeuService.isLoading()) {
+        Enregistrement...
+      } @else {
+        Enregistrer
+      }
+    </button>
+
+    <button
+      type="button"
+      (click)="close()"
+      mat-raised-button
+      [disabled]="jeuService.isLoading()"
+    >
+      Fermer
+    </button>
+  </form>
+</div>

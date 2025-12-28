@@ -1,34 +1,44 @@
 <div class="list-container">
-
   @if (editeurService.error()) {
     <div class="error-banner">
       {{ editeurService.error() }}
     </div>
   }
 
-  @if (authService.isAdminSuperorgaOrga()) {
-    <div class="header-actions">
-      <button class="btn-add" (click)="toggleForm()">+ Ajouter un éditeur</button>
+  <div class="header-controls">
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Rechercher un éditeur..."
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+      />
     </div>
+
+    @if (authService.isAdminSuperorgaOrga()) {
+      <button class="btn-add" (click)="toggleForm()">+ Ajouter un éditeur</button>
+    }
+  </div>
+
+  @if (editeurService.isLoading() && !editeurService.editeurs().length) {
+    <p class="loading">Chargement des éditeurs...</p>
+  } @else {
+    <ul class="editeurs-list">
+      @for (edi of filteredEditeurs(); track edi.id) {
+        <li>
+          <app-editeur-card
+            [editeur]="edi"
+            [canManage]="authService.isAdminSuperorgaOrga()"
+            (delete)="onDelete($event)"
+            (update)="onUpdate($event)">
+          </app-editeur-card>
+        </li>
+      }
+    </ul>
   }
 
-  <h1 class="list-title">Liste des éditeurs</h1>
-
-  <ul class="editeurs-list">
-    @for (edi of editeurService.editeurs(); track edi.id) {
-      <li>
-        <app-editeur-card
-          [editeur]="edi"
-          [canManage]="authService.isAdminSuperorgaOrga()"
-          (delete)="onDelete($event)"
-          (update)="onUpdate($event)"
-          (detail)="onDetail($event)"
-        ></app-editeur-card>
-      </li>
-    }
-  </ul>
-
-  @if (showForm() && authService.isAdminSuperorgaOrga()) {
+  @if (showForm()) {
     <app-editeur-form (closeForm)="toggleForm()"></app-editeur-form>
   }
 </div>

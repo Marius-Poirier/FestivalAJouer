@@ -30,6 +30,7 @@
       "@zonePlan/*":["src/app/features/zone-plan/*"],
       "@tables/*":["src/app/features/tables/*"],
       "@editeurs/*":["src/app/features/editeurs/*"],
+      "@jeux/*":["src/app/features/jeux/*"],
     }
   },
   "angularCompilerOptions": {
