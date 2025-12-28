@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { CurrentFestival } from '@core/services/current-festival';
 import { FestivalService } from '@festivals/services/festival-service';
 import {MatRadioModule} from '@angular/material/radio';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-festival-selector',
@@ -12,6 +13,7 @@ import {MatRadioModule} from '@angular/material/radio';
 export class FestivalSelector {
   private currentfestsvc = inject(CurrentFestival)
   private festsvc = inject(FestivalService) 
+  private router = inject(Router)
 
   public currentFestival = this.currentfestsvc.currentFestival
   public festivals = this.festsvc.festivals
@@ -20,6 +22,14 @@ export class FestivalSelector {
   ngOnInit(){
     this.festsvc.loadAll();
     this.currentfestsvc.loadFestivalFromStorage();
+
+    const nav = this.router.getCurrentNavigation();
+    const stateTab = (nav?.extras?.state as { tab?: number } | undefined)?.tab;
+    const historyTab = (history.state as { tab?: number } | undefined)?.tab;
+    const tab = stateTab ?? historyTab;
+    if (tab) {
+      this.listselected.set(Number(tab));
+    }
   }
 
   onFestivalChange(value: string) {

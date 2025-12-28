@@ -30,6 +30,7 @@
       "@zonePlan/*":["src/app/features/zone-plan/*"],
       "@tables/*":["src/app/features/tables/*"],
       "@editeurs/*":["src/app/features/editeurs/*"],
+      "@reservations/*":["src/app/features/reservations/*"],
     }
   },
   "angularCompilerOptions": {

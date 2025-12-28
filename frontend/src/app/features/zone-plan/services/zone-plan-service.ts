@@ -68,7 +68,6 @@ export class ZonePlanService {
       catchError(() => of(null))
     )
     .subscribe(data => this._zonesPlan.set(data ?? []));
-    console.log("chargement reussi")
   }
 
   //ajouter zone du plan + génération automatique des tables
@@ -143,7 +142,7 @@ export class ZonePlanService {
       tap(response => {
         if (response?.zone) {
           this._zonesPlan.update(list => list.filter(zone => zone.id !== id));
-          console.log(`Zone du plan supprimée : ${response.zone.nom}`); // ✅ CORRIGÉ
+          console.log(`Zone du plan supprimée : ${response.zone.nom}`);
         }
       }),
       catchError((err) => {
@@ -151,7 +150,7 @@ export class ZonePlanService {
         if (err?.status === 401) {
           this._error.set('Vous devez être connecté en tant que super organisateur');
         } else if (err?.status === 404) {
-          this._error.set('Zone du plan introuvable'); // ✅ CORRIGÉ
+          this._error.set('Zone du plan introuvable');
         } else {
           this._error.set('Erreur lors de la suppression');
         }

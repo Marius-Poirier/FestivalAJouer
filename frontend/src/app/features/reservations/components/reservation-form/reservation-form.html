@@ -1,0 +1,113 @@
+<form class="form-wrapper" [formGroup]="form" (ngSubmit)="submit()">
+	<section>
+		<h2>Création réservation dans {{ festivalName() }}</h2>
+		<label>
+			Éditeur
+			<select formControlName="editeur_id">
+				<option [ngValue]="null">-- Choisir un éditeur --</option>
+				@for (edi of editeurOptions(); track edi.id) {
+					<option [ngValue]="edi.id">{{ edi.nom }}</option>
+				}
+			</select>
+		</label>
+		@if (form.controls.editeur_id.invalid && form.controls.editeur_id.touched) {
+			<div class="error">L'éditeur est requis.</div>
+		}
+
+		<!-- <label>
+			Festival (courant)
+			<input type="number" formControlName="festival_id" [readonly]="true" />
+		</label> -->
+		@if (form.controls.festival_id.invalid && form.controls.festival_id.touched) {
+			<div class="error">Le festival est requis.</div>
+		}
+
+		<label>
+			Statut workflow
+			<select formControlName="statut_workflow">
+				@for (wf of workflowOptions; track wf) {
+					<option [value]="wf">{{ wf }}</option>
+				}
+			</select>
+		</label>
+
+		<label class="checkbox">
+			<input type="checkbox" formControlName="editeur_presente_jeux" />
+			L'éditeur présente des jeux
+		</label>
+	</section>
+
+	<section>
+		<h3>Zones tarifaires du festival</h3>
+		<div class="zone-table">
+			<div class="zone-row header">
+				<div>Zone tarifaire</div>
+				<div>Prix par table</div>
+				<div>Nombre de tables total</div>
+				<div>Combien de tables ?</div>
+			</div>
+			@for (zone of zonesTarifaires(); track zone.id) {
+				<div class="zone-row">
+					<div>{{ zone.nom }}</div>
+					<div>{{ zone.prix_table }} €</div>
+					<div>{{ zone.nombre_tables_total }}</div>
+					<div>
+						<input
+							type="number"
+							min="0"
+							[value]="selectedTables(zone.id!)"
+							(input)="updateZoneTables(zone.id!, $any($event.target).value)"
+						/>
+					</div>
+				</div>
+			}
+		</div>
+
+		<label class="readonly-field">
+			Prix total (€)
+			<div class="readonly-value">{{ form.controls.prix_total.value ?? 0 }} €</div>
+			<input type="hidden" formControlName="prix_total" />
+		</label>
+		<label>
+			Remise %
+			<input type="number" step="1" formControlName="remise_pourcentage" />
+		</label>
+
+		<!-- <label>
+			Remise montant (€)
+			<input type="number" step="1" formControlName="remise_montant" />
+		</label> -->
+
+		<label class="readonly-field">
+			Prix final (€)
+			<div class="readonly-value">{{ form.controls.prix_final.value ?? 0 }} €</div>
+			<input type="hidden" formControlName="prix_final" />
+		</label>
+	</section>
+
+	<section>
+		<label>
+			Statut workflow
+			<select formControlName="statut_workflow">
+				<option [value]="'PAS_CONTACTE'">Pas contacté</option>
+				<option [value]="'CONTACT_PRIS'">Contact pris</option>
+				<option [value]="'DISCUSSION_EN_COURS'">Discussion en cours</option>
+				<option [value]="'SERA_ABSENT'">Sera absent</option>
+				<option [value]="'CONSIDERE_ABSENT'">Considéré absent</option>
+				<option [value]="'PRESENT'">Présent</option>
+				<option [value]="'FACTURE'">Facturé</option>
+				<option [value]="'PAIEMENT_RECU'">Paiement reçu</option>
+				<option [value]="'PAIEMENT_EN_RETARD'">Paiement en retard</option>
+			</select>
+		</label>
+
+		<label>
+			Commentaires paiement
+			<textarea rows="3" formControlName="commentaires_paiement"></textarea>
+		</label>
+	</section>
+
+	<div class="actions">
+		<button type="submit">Créer la réservation</button>
+	</div>
+</form>

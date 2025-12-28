@@ -1,0 +1,63 @@
+@if(reservation()){
+    @let res = reservation()!;
+    <mat-card class="card-container">
+        @if (canManage()) {
+            <button
+                class="delete-btn"
+                (click)="openDeletePopup(res); $event.stopPropagation()"
+                aria-label="Supprimer"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        }
+
+        <mat-card-header>
+            <div class="header-top">
+                <div class="subtitle">Réservation #{{ res.id ?? '—' }}</div>
+                <span class="badge">{{ workflowLabel() }}</span>
+            </div>
+            <div class="title">{{ editeur()?.nom ?? 'Éditeur inconnu' }}</div>
+            @if(res.editeur_presente_jeux){
+                <div class="tag">Présente des jeux</div>
+            }
+        </mat-card-header>
+
+        <mat-card-content>
+            <div class="info-row">
+                <span>Nombre de tables réservées</span>
+                <strong>{{ tablesCount() }}</strong>
+            </div>
+            <div class="info-row">
+                <span>Prix total</span>
+                <strong>{{ res.prix_total | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}</strong>
+            </div>
+            <div class="info-row">
+                <span>Prix final</span>
+                <strong>{{ res.prix_final | currency:'EUR':'symbol':'1.2-2':'fr-FR' }}</strong>
+            </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+            <!-- <button type="button" (click)="res.id && edit.emit(res.id); $event.stopPropagation()">
+                Modifier
+            </button> -->
+        
+            <button 
+                type="button" 
+                class="btn-delete" 
+                (click)="openDeletePopup(res); $event.stopPropagation()">
+                Supprimer
+            </button>
+            
+        </mat-card-actions>
+    </mat-card>
+    
+    <!-- Popup delete -->
+    <app-popup-delete
+        [entiteType]="deleteType()"
+        [entiteId]="deleteId()"
+        [entitenom]="deletenom()"
+        (confirm)="handleConfirm()"
+        (cancel)="handleCancel()">
+    </app-popup-delete>
+}

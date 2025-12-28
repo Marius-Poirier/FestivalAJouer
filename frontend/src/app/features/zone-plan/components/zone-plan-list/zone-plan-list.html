@@ -1,49 +1,19 @@
-<!-- 
-<h2>Zones Tarifaires</h2>
-
-@if (zones().length === 0) {
-  <p>Aucune zone tarifaire trouvée pour ce festival</p>
-} @else {
-  <div class="zones-list">
-    @for (zone of zones(); track zone.id) {
-      <app-zone-tarifaire-card [zone]="zone"></app-zone-tarifaire-card>
-    }
-  </div>
-} -->
-
 <div class="list-container">
     @if (error()) {
         <div class="error-banner">
             {{error() }}
         </div>
     }
+    @if(authsvc.isAdminSuperorga()){
+        <div class="header-actions">
+            <button class="btn-add" (click)="show()">+ Ajouter une zone</button>
+        </div>
 
-    <div class="header-actions">
-        <button class="btn-add" (click)="show()">+ Ajouter une zone</button>
-    </div>
+    }
 
     @if (isLoading()) {
-        <!-- <p class="loading">Chargement des festivals...</p> -->
-        
-        <!-- ✅ NOUVEAU TEXTE -->
         <p class="loading">Chargement des zones du plan...</p>
     } @else {
-        <!-- @if(zonestarifaires().length === 0){
-              <p>Aucune zone tarifaire trouvée pour ce festival</p>
-        }
-        @else{
-            <ul class="items-list">
-                @for (zone of zonestarifaires(); track zone.id) {
-                    <li>
-                        <app-zone-plan-card
-                        [idZonePlan]="zone.id">
-                        </app-zone-plan-card>
-                    </li>
-                }
-            </ul>
-        } -->
-        
-        <!-- ✅ NOUVEAU CODE (bonne variable et textes) -->
         @if(zonesPlan().length === 0){
               <p>Aucune zone du plan trouvée pour ce festival</p>
         }
@@ -65,7 +35,6 @@
         <app-zone-tarifaire-form (closeForm)="show()"></app-zone-tarifaire-form>
     } -->
     
-    <!-- ✅ NOUVEAU CODE (formulaire actif) -->
     @if(showForm()){
         <app-zone-plan-form (closeForm)="show()"></app-zone-plan-form>
     }

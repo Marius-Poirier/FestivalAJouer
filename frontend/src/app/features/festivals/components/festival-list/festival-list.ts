@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
   selector: 'app-festival-list',
   standalone: true,
-    imports: [FestivalCard, FestivalForm, MatIconModule],
+  imports: [FestivalCard, FestivalForm, MatIconModule],
   templateUrl: './festival-list.html',
   styleUrl: './festival-list.css'
 })

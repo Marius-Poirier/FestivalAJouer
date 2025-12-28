@@ -41,6 +41,12 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
+        path: 'reservation/create',
+        loadComponent: () => import('@reservations/components/reservation-form/reservation-form').then(m => m.ReservationForm),
+        canActivate: [authGuard]
+    }
+    ,
+    {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full'
