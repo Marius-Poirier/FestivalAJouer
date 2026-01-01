@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
-import { catchError, finalize, Observable, of, tap } from 'rxjs';
+import { catchError, finalize, of, tap, switchMap } from 'rxjs';
 import { JeuDto } from '@interfaces/entites/jeu-dto';
 
 @Injectable({
@@ -42,15 +42,23 @@ export class JeuService {
     this._isLoading.set(true);
     this._error.set(null);
 
-    this.http.post<{ message: string; jeu: JeuDto }>(this.baseUrl, jeu, {
+    this.http.post<{ message: string; jeu: { id: number } }>(this.baseUrl, jeu, {
       withCredentials: true
     })
       .pipe(
-        tap(res => {
-          if (res?.jeu) {
-            this._jeux.update(list => [res.jeu, ...list]);
-          } else {
+        switchMap(res => {
+          if (!res?.jeu?.id) {
             this._error.set('Erreur lors de l\'ajout du jeu');
+            return of(null);
+          }
+          // 👉 on recharge le jeu complet
+          return this.http.get<JeuDto>(`${this.baseUrl}/${res.jeu.id}`, {
+            withCredentials: true
+          });
+        }),
+        tap(fullJeu => {
+          if (fullJeu) {
+            this._jeux.update(list => [fullJeu, ...list]);
           }
         }),
         catchError(err => {
@@ -71,6 +79,55 @@ export class JeuService {
       .subscribe();
   }
 
+  update(jeu: JeuDto): void {
+    if (jeu.id == null) return;
+
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    this.http.put<{ message: string; jeu: { id: number } }>(
+      `${this.baseUrl}/${jeu.id}`,
+      jeu,
+      { withCredentials: true }
+    )
+      .pipe(
+        switchMap(res => {
+          if (!res?.jeu?.id) {
+            this._error.set('Erreur lors de la mise à jour du jeu');
+            return of(null);
+          }
+          // 👉 on recharge le jeu complet (avec éditeurs, mécas, type, etc.)
+          return this.http.get<JeuDto>(`${this.baseUrl}/${res.jeu.id}`, {
+            withCredentials: true
+          });
+        }),
+        tap(fullJeu => {
+          if (fullJeu) {
+            this._jeux.update(list =>
+              list.map(j => j.id === fullJeu.id ? fullJeu : j)
+            );
+          }
+        }),
+        catchError(err => {
+          console.error('Erreur HTTP update jeu', err);
+          if (err?.status === 401) {
+            this._error.set('Vous devez être connecté avec un rôle autorisé');
+          } else if (err?.status === 400) {
+            this._error.set('Données invalides');
+          } else if (err?.status === 404) {
+            this._error.set('Jeu non trouvé');
+          } else if (err?.status === 409) {
+            this._error.set('Un jeu avec ce nom existe déjà');
+          } else {
+            this._error.set('Erreur serveur');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      )
+      .subscribe();
+  }
+
   delete(id: number): void {
     this._error.set(null);
 
@@ -79,7 +136,6 @@ export class JeuService {
       { withCredentials: true }
     ).pipe(
       tap(() => {
-        // On met à jour la liste localement, sans recharger toute la page
         this._jeux.update(list => list.filter(j => j.id !== id));
       }),
       catchError(err => {
@@ -96,9 +152,13 @@ export class JeuService {
     ).subscribe();
   }
 
-    getById(id: number): Observable<JeuDto> {
+  getById(id: number) {
     return this.http.get<JeuDto>(`${this.baseUrl}/${id}`, {
       withCredentials: true
     });
+  }
+
+  findByIdLocal(id: number): JeuDto | undefined {
+    return this._jeux().find(j => j.id === id);
   }
 }

@@ -1,9 +1,11 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { JeuService } from '../../services/jeu-service';
 import { AuthService } from '@core/services/auth-services';
 import { JeuCard } from '../jeu-card/jeu-card';
 import { JeuForm } from '../jeu-form/jeu-form';
+import { Router } from '@angular/router';
+import { JeuDto } from '@interfaces/entites/jeu-dto';
 
 @Component({
   selector: 'app-jeu-list',
@@ -15,14 +17,16 @@ import { JeuForm } from '../jeu-form/jeu-form';
 export class JeuList {
   protected readonly jeuService = inject(JeuService);
   protected readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   protected readonly showForm = signal(false);
-
   protected readonly searchTerm = signal<string>('');
 
-  // Pagination
   private readonly pageSize = 20;
-  protected readonly currentPage = signal<number>(1);
+  protected readonly currentPage = signal(1);
+
+  // Jeu en cours d’édition (null en création)
+  protected readonly editingJeu = signal<JeuDto | null>(null);
 
   protected readonly filteredJeux = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
@@ -37,15 +41,14 @@ export class JeuList {
 
   protected readonly totalPages = computed(() => {
     const total = this.filteredJeux().length;
-    if (total === 0) return 1;
-    return Math.ceil(total / this.pageSize);
+    return total === 0 ? 1 : Math.ceil(total / this.pageSize);
   });
 
   protected readonly paginatedJeux = computed(() => {
-    const list = this.filteredJeux();
     const page = this.currentPage();
     const start = (page - 1) * this.pageSize;
-    return list.slice(start, start + this.pageSize);
+    const end = start + this.pageSize;
+    return this.filteredJeux().slice(start, end);
   });
 
   ngOnInit() {
@@ -53,37 +56,49 @@ export class JeuList {
   }
 
   protected toggleForm() {
+    this.editingJeu.set(null);
     this.showForm.update(v => !v);
   }
 
   protected onSearch(event: Event) {
     const target = event.target as HTMLInputElement | null;
     this.searchTerm.set(target?.value ?? '');
-    // quand on change le filtre, on revient page 1
     this.currentPage.set(1);
   }
 
   protected onDelete(id: number) {
     this.jeuService.delete(id);
-    const totalAfter = this.filteredJeux().length;
-    const maxPage = Math.max(1, Math.ceil(totalAfter / this.pageSize));
-    if (this.currentPage() > maxPage) {
-      this.currentPage.set(maxPage);
-    }
   }
 
-  // Navigation pagination
-  protected goToPage(page: number) {
-    const max = this.totalPages();
-    if (page < 1 || page > max) return;
-    this.currentPage.set(page);
+  protected onDetail(id: number) {
+    this.router.navigate(['/jeux', id]);
   }
 
-  protected prevPage() {
-    this.goToPage(this.currentPage() - 1);
+  protected onUpdate(id: number) {
+    this.jeuService.getById(id).subscribe({
+      next: (jeu) => {
+        this.editingJeu.set(jeu);
+        this.showForm.set(true);
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement du jeu pour édition', err);
+      }
+    });
+  }
+
+  protected onFormClosed() {
+    this.showForm.set(false);
+    this.editingJeu.set(null);
+  }
+
+  protected previousPage() {
+    const current = this.currentPage();
+    if (current > 1) this.currentPage.set(current - 1);
   }
 
   protected nextPage() {
-    this.goToPage(this.currentPage() + 1);
+    const current = this.currentPage();
+    const total = this.totalPages();
+    if (current < total) this.currentPage.set(current + 1);
   }
 }

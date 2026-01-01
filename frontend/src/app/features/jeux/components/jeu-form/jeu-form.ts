@@ -1,24 +1,25 @@
-import { Component, inject, output } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-  ɵInternalFormsSharedModule
-} from '@angular/forms';
+import { Component, inject, input, output } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { JeuService } from '../../services/jeu-service';
-import { EditeurService } from '@editeurs/services/editeur-service';
 import { JeuDto } from '@interfaces/entites/jeu-dto';
+import { EditeurService } from '@editeurs/services/editeur-service';
 
-interface TypeJeuOption {
-  id: number;
-  libelle: string;
-}
+// Types de jeu fixes
+const TYPES_JEU = [
+  { id: 1, nom: 'Tout public' },
+  { id: 2, nom: 'Ambiance' },
+  { id: 3, nom: 'Experts' },
+  { id: 4, nom: 'Enfants' },
+  { id: 5, nom: 'Classiques' },
+  { id: 6, nom: 'Initiés' },
+  { id: 7, nom: 'Jeu de rôle' }
+];
 
 @Component({
   selector: 'app-jeu-form',
@@ -27,8 +28,8 @@ interface TypeJeuOption {
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatCheckboxModule,
     MatSelectModule,
+    MatCheckboxModule,
     ɵInternalFormsSharedModule,
     ReactiveFormsModule
   ],
@@ -40,43 +41,56 @@ export class JeuForm {
   protected readonly jeuService = inject(JeuService);
   protected readonly editeurService = inject(EditeurService);
 
+  public jeu = input<JeuDto | null>(null);
+  public mode = input<'create' | 'edit'>('create');
+
   public closeForm = output<void>();
 
-  // Liste des types de jeu
-  protected readonly typeJeux: TypeJeuOption[] = [
-    { id: 1, libelle: 'Tout public' },
-    { id: 2, libelle: 'Ambiance' },
-    { id: 3, libelle: 'Experts' },
-    { id: 4, libelle: 'Enfants' },
-    { id: 5, libelle: 'Classiques' },
-    { id: 6, libelle: 'Initiés' },
-    { id: 7, libelle: 'Jeu de rôle' }
-  ];
+  protected readonly typesJeu = TYPES_JEU;
 
   protected readonly form = this.fb.group({
     nom: ['', [Validators.required, Validators.minLength(3)]],
-
     nb_joueurs_min: [2, [Validators.required, Validators.min(1)]],
-    nb_joueurs_max: [4, [Validators.required, Validators.min(1)]],
-
+    nb_joueurs_max: [4, [Validators.min(1)]],
     duree_minutes: [null as number | null],
     age_min: [8, [Validators.required, Validators.min(0)]],
     age_max: [null as number | null],
-
     description: [''],
     lien_regles: [''],
-
     theme: [''],
     url_image: [''],
     url_video: [''],
     prototype: [false],
-
-    // éditeur choisi (optionnel)
-    editeur_id: [null as number | null],
-
-    // type de jeu choisi (optionnel)
-    type_jeu_id: [null as number | null]
+    type_jeu_id: [null as number | null],
+    editeurs_ids: [[] as number[]]   // 👈 sélection des éditeurs
   });
+
+  ngOnInit() {
+    // on charge les éditeurs si pas déjà faits
+    if (!this.editeurService.editeurs().length) {
+      this.editeurService.loadAll();
+    }
+
+    const current = this.jeu();
+    if (current) {
+      this.form.patchValue({
+        nom: current.nom,
+        nb_joueurs_min: current.nb_joueurs_min,
+        nb_joueurs_max: current.nb_joueurs_max,
+        duree_minutes: current.duree_minutes ?? null,
+        age_min: current.age_min,
+        age_max: current.age_max ?? null,
+        description: current.description ?? '',
+        lien_regles: current.lien_regles ?? '',
+        theme: current.theme ?? '',
+        url_image: current.url_image ?? '',
+        url_video: current.url_video ?? '',
+        prototype: current.prototype ?? false,
+        type_jeu_id: current.type_jeu_id ?? null,
+        editeurs_ids: current.editeurs?.map(e => e.id) ?? []
+      });
+    }
+  }
 
   protected close() {
     this.closeForm.emit();
@@ -85,46 +99,44 @@ export class JeuForm {
   protected onSubmit() {
     if (this.form.invalid) return;
 
-    const v = this.form.value;
+    const value = this.form.value;
+    const current = this.jeu();
+    const mode = this.mode();
 
-    const payload: JeuDto & { editeurs_ids?: number[] } = {
-      nom: v.nom!,
-      nb_joueurs_min: v.nb_joueurs_min ?? 0,
-      nb_joueurs_max: v.nb_joueurs_max ?? 0,
-      duree_minutes: v.duree_minutes ?? undefined,
-      age_min: v.age_min ?? 0,
-      age_max: v.age_max ?? undefined,
-      description: v.description ?? undefined,
-      lien_regles: v.lien_regles ?? undefined,
-      theme: v.theme ?? undefined,
-      url_image: v.url_image ?? undefined,
-      url_video: v.url_video ?? undefined,
-      prototype: v.prototype ?? false
+    const payload: Partial<JeuDto> = {
+      nom: value.nom!,
+      nb_joueurs_min: value.nb_joueurs_min!,
+      nb_joueurs_max: value.nb_joueurs_max!,
+      duree_minutes: value.duree_minutes ?? undefined,
+      age_min: value.age_min!,
+      age_max: value.age_max ?? undefined,
+      description: value.description ?? undefined,
+      lien_regles: value.lien_regles ?? undefined,
+      theme: value.theme ?? undefined,
+      url_image: value.url_image ?? undefined,
+      url_video: value.url_video ?? undefined,
+      prototype: !!value.prototype,
+      type_jeu_id: value.type_jeu_id ?? undefined
     };
 
-    if (v.type_jeu_id != null) {
-      payload.type_jeu_id = v.type_jeu_id;
-    }
+    // 👇 on ajoute editeurs_ids pour le backend
+    (payload as any).editeurs_ids = value.editeurs_ids ?? [];
 
-    if (v.editeur_id != null) {
-      (payload as any).editeurs_ids = [v.editeur_id];
+    if (mode === 'edit' && current?.id != null) {
+      this.jeuService.update({
+        ...(current as JeuDto),
+        ...payload,
+        id: current.id
+      });
+    } else {
+      this.jeuService.add(payload as JeuDto);
     }
-
-    this.jeuService.add(payload);
 
     if (this.jeuService.error()) {
       return;
     }
 
-    this.form.reset({
-      nb_joueurs_min: 2,
-      nb_joueurs_max: 4,
-      age_min: 8,
-      prototype: false,
-      editeur_id: null,
-      type_jeu_id: null
-    });
-
+    this.form.reset();
     this.closeForm.emit();
   }
 }

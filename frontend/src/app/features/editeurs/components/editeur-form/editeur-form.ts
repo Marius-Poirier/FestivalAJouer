@@ -1,10 +1,5 @@
-import { Component, inject, output } from '@angular/core';
-import {
-  FormBuilder,
-  ReactiveFormsModule,
-  Validators,
-  ɵInternalFormsSharedModule
-} from '@angular/forms';
+import { Component, inject, input, output } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -28,29 +23,42 @@ export class EditeurForm {
   private readonly fb = inject(FormBuilder);
   protected readonly editeurService = inject(EditeurService);
 
+  public editeur = input<EditeurDto | null>(null);
+  public mode = input<'create' | 'edit'>('create');
+
   public closeForm = output<void>();
 
   protected readonly form = this.fb.group({
     nom: ['', [Validators.required, Validators.minLength(3)]]
   });
 
+  ngOnInit() {
+    const current = this.editeur();
+    if (current) {
+      this.form.patchValue({
+        nom: current.nom
+      });
+    }
+  }
+
   protected close() {
     this.closeForm.emit();
   }
 
   protected onSubmit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
+    if (this.form.invalid) return;
+
+    const nom = this.form.value.nom!;
+    const current = this.editeur();
+    const mode = this.mode();
+
+    if (mode === 'edit' && current?.id != null) {
+      // MODIFICATION
+      this.editeurService.update(current.id, nom);
+    } else {
+      // CREATION
+      this.editeurService.add({ nom });
     }
-
-    const value = this.form.value;
-
-    const payload: EditeurDto = {
-      nom: value.nom!
-    };
-
-    this.editeurService.add(payload);
 
     if (this.editeurService.error() != null) {
       return;
@@ -59,4 +67,5 @@ export class EditeurForm {
     this.form.reset();
     this.closeForm.emit();
   }
+
 }

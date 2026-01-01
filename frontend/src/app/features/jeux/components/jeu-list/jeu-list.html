@@ -30,8 +30,10 @@
           <app-jeu-card
             [jeu]="jeu"
             [canManage]="authService.isAdminSuperorgaOrga()"
-            (delete)="onDelete($event)">
-          </app-jeu-card>
+            (delete)="onDelete($event)"
+            (detail)="onDetail($event)"
+            (update)="onUpdate($event)"
+          ></app-jeu-card>
         </li>
       }
     </ul>
@@ -41,7 +43,7 @@
         <button
           type="button"
           class="page-btn"
-          (click)="prevPage()"
+          (click)="previousPage()"
           [disabled]="currentPage() === 1">
           ← Précédent
         </button>
@@ -62,6 +64,10 @@
   }
 
   @if (showForm()) {
-    <app-jeu-form (closeForm)="toggleForm()"></app-jeu-form>
+    <app-jeu-form
+      [jeu]="editingJeu()"
+      [mode]="editingJeu() ? 'edit' : 'create'"
+      (closeForm)="onFormClosed()">
+    </app-jeu-form>
   }
 </div>

@@ -1,15 +1,23 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+
 import { EditeurService } from '../../services/editeur-service';
+import { AuthService } from '@core/services/auth-services';
 import { EditeurCard } from '../editeur-card/editeur-card';
 import { EditeurForm } from '../editeur-form/editeur-form';
-import { AuthService } from '@core/services/auth-services';
-import { MatIconModule } from '@angular/material/icon';
+import { EditeurDto } from '@interfaces/entites/editeur-dto';
 
 @Component({
   selector: 'app-editeur-list',
   standalone: true,
-  imports: [EditeurCard, EditeurForm, MatIconModule],
+  imports: [
+    CommonModule,
+    MatIconModule,
+    EditeurCard,
+    EditeurForm
+  ],
   templateUrl: './editeur-list.html',
   styleUrl: './editeur-list.css'
 })
@@ -18,81 +26,94 @@ export class EditeurList {
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
-  public showForm = signal(false);
-  public searchTerm = signal<string>('');
+  // form visible ?
+  protected readonly showForm = signal(false);
+  // éditeur en cours d’édition (null = création)
+  protected readonly editingEditeur = signal<EditeurDto | null>(null);
 
-  // Taille de page
+  // recherche
+  protected readonly searchTerm = signal<string>('');
+
+  // pagination
   private readonly pageSize = 20;
+  protected readonly currentPage = signal(1);
 
-  // Page courante (1-based)
-  protected readonly currentPage = signal<number>(1);
-
-  // Liste filtrée par la recherche
   protected readonly filteredEditeurs = computed(() => {
-    const term = this.searchTerm().trim().toLowerCase();
-    const all = this.editeurService.editeurs();
+    const term = this.searchTerm().toLowerCase().trim();
+    const list = this.editeurService.editeurs();
 
-    if (!term) return all;
+    if (!term) return list;
 
-    return all.filter(e =>
+    return list.filter(e =>
       e.nom.toLowerCase().includes(term)
     );
   });
 
-  // Nombre total de pages
   protected readonly totalPages = computed(() => {
     const total = this.filteredEditeurs().length;
-    if (total === 0) return 1;
-    return Math.ceil(total / this.pageSize);
+    return Math.max(1, Math.ceil(total / this.pageSize));
   });
 
-  // Liste paginée à afficher
   protected readonly paginatedEditeurs = computed(() => {
-    const list = this.filteredEditeurs();
     const page = this.currentPage();
     const start = (page - 1) * this.pageSize;
-    return list.slice(start, start + this.pageSize);
+    const end = start + this.pageSize;
+    return this.filteredEditeurs().slice(start, end);
   });
 
   ngOnInit() {
     this.editeurService.loadAll();
   }
 
-  toggleForm() {
-    this.showForm.update(v => !v);
+  // création
+  protected openCreateForm() {
+    this.editingEditeur.set(null);
+    this.showForm.set(true);
   }
 
-  onSearch(event: Event) {
-    const value = (event.target as HTMLInputElement).value ?? '';
-    this.searchTerm.set(value);
-    // Quand on change de recherche → on revient à la page 1
+  // éditer
+  protected onUpdate(id: number) {
+    const edi = this.editeurService.findByIdLocal(id);
+    if (edi) {
+      this.editingEditeur.set(edi);
+      this.showForm.set(true);
+    }
+  }
+
+  // fermeture form
+  protected closeForm() {
+    this.showForm.set(false);
+    this.editingEditeur.set(null);
+  }
+
+  protected onSearch(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    this.searchTerm.set(target?.value ?? '');
     this.currentPage.set(1);
   }
 
-  onDelete(id: number) {
+  protected onDelete(id: number) {
     this.editeurService.delete(id);
+    const total = this.filteredEditeurs().length - 1;
+    const maxPage = Math.max(1, Math.ceil(total / this.pageSize));
+    if (this.currentPage() > maxPage) {
+      this.currentPage.set(maxPage);
+    }
   }
 
-  onUpdate(id: number) {
-    console.log('TODO update éditeur', id);
-  }
-
-  onDetail(id: number) {
+  protected onDetail(id: number) {
     this.router.navigate(['/editeurs', id]);
   }
 
-  // Navigation pagination
-  goToPage(page: number) {
-    const max = this.totalPages();
-    if (page < 1 || page > max) return;
-    this.currentPage.set(page);
+  protected goToPreviousPage() {
+    if (this.currentPage() > 1) {
+      this.currentPage.update(p => p - 1);
+    }
   }
 
-  prevPage() {
-    this.goToPage(this.currentPage() - 1);
-  }
-
-  nextPage() {
-    this.goToPage(this.currentPage() + 1);
+  protected goToNextPage() {
+    if (this.currentPage() < this.totalPages()) {
+      this.currentPage.update(p => p + 1);
+    }
   }
 }

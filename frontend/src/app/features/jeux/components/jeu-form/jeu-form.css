@@ -19,7 +19,7 @@
   padding: 1.25rem;
   width: 90%;
   max-width: 34rem;
-  max-height: 85vh;          /* 👈 pour tenir dans l’écran */
+  max-height: 85vh;
   box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3);
   animation: slideIn 0.3s ease-out;
 
@@ -34,6 +34,7 @@
   gap: 0.75rem;
   overflow-y: auto;
   padding-right: 0.25rem;
+  max-height: calc(85vh - 5.5rem); /* espace pour le titre + boutons */
 }
 
 .add {
@@ -117,18 +118,6 @@ button[type='button']:active {
   background: var(--gris-moyen);
 }
 
-.grid-two-columns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.grid-three-columns {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -173,11 +162,6 @@ button[type='button']:active {
   .jeu-form {
     width: 95%;
     padding: 1rem;
-  }
-
-  .grid-two-columns,
-  .grid-three-columns {
-    grid-template-columns: 1fr;
   }
 
   .add {

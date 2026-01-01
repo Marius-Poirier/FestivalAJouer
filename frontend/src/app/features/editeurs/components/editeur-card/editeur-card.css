@@ -103,5 +103,30 @@ mat-card-actions button:active {
   background: #991b1b;
 }
 
+.btn-edit {
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
 
+.btn-edit:hover {
+  background-color: var(--couleur-terciere);
+}
 
+.btn-edit:active {
+  background-color: var(--couleur-primaire);
+}
+
+.btn-edit {
+  background-color: var(--couleur-secondaire);
+}
+
+.btn-edit:hover {
+  background-color: var(--couleur-terciere);
+}

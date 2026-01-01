@@ -17,13 +17,38 @@
       <h2>{{ j.nom }}</h2>
     </mat-card-header>
 
+    <mat-card-content>
+      @if (j.type_jeu_nom) {
+        <p><strong>Type :</strong> {{ j.type_jeu_nom }}</p>
+      }
+      <p>
+        <strong>Joueurs :</strong>
+        {{ j.nb_joueurs_min }}
+        @if (j.nb_joueurs_max) {
+          – {{ j.nb_joueurs_max }}
+        }
+      </p>
+      @if (j.duree_minutes) {
+        <p><strong>Durée :</strong> ~ {{ j.duree_minutes }} min</p>
+      }
+    </mat-card-content>
+
     <mat-card-actions>
       <button
         type="button"
         class="btn-detail"
-        (click)="goToDetail(j.id!)">
+        (click)="detail.emit(j.id!)">
         Détail
       </button>
+
+      @if (canManage()) {
+        <button
+          type="button"
+          class="btn-edit"
+          (click)="update.emit(j.id!)">
+          Modifier
+        </button>
+      }
     </mat-card-actions>
   </mat-card>
 }

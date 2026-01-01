@@ -84,7 +84,6 @@ mat-card-actions button:active {
   cursor: pointer;
   transition: background-color 0.2s ease;
 
-  /* fix Material icon vertical alignment */
   line-height: 0;
 }
 

@@ -17,49 +17,63 @@
     </div>
 
     @if (authService.isAdminSuperorgaOrga()) {
-      <button class="btn-add" (click)="toggleForm()">+ Ajouter un éditeur</button>
+      <button class="btn-add" (click)="openCreateForm()">
+        + Ajouter un éditeur
+      </button>
     }
   </div>
 
   @if (editeurService.isLoading() && !editeurService.editeurs().length) {
     <p class="loading">Chargement des éditeurs...</p>
   } @else {
-    <ul class="editeurs-list">
-      @for (edi of paginatedEditeurs(); track edi.id) {
-        <li>
-          <app-editeur-card
-            [editeur]="edi"
-            [canManage]="authService.isAdminSuperorgaOrga()"
-            (delete)="onDelete($event)"
-            (update)="onUpdate($event)"
-            (detail)="onDetail($event)">
-          </app-editeur-card>
-        </li>
+    @if (!filteredEditeurs().length) {
+      <p class="no-results">Aucun éditeur trouvé.</p>
+    } @else {
+      <ul class="editeurs-list">
+        @for (edi of paginatedEditeurs(); track edi.id) {
+          <li>
+            <app-editeur-card
+              [editeur]="edi"
+              [canManage]="authService.isAdminSuperorgaOrga()"
+              (delete)="onDelete($event)"
+              (update)="onUpdate($event)"
+              (detail)="onDetail($event)">
+            </app-editeur-card>
+          </li>
+        }
+      </ul>
+
+      @if (totalPages() > 1) {
+        <div class="pagination">
+          <button
+            class="page-btn"
+            type="button"
+            [disabled]="currentPage() === 1"
+            (click)="goToPreviousPage()">
+            ← Précédent
+          </button>
+
+          <span class="page-info">
+            Page {{ currentPage() }} / {{ totalPages() }}
+          </span>
+
+          <button
+            class="page-btn"
+            type="button"
+            [disabled]="currentPage() === totalPages()"
+            (click)="goToNextPage()">
+            Suivant →
+          </button>
+        </div>
       }
-    </ul>
-
-    @if (filteredEditeurs().length > 0 && totalPages() > 1) {
-      <div class="pagination">
-        <button
-          type="button"
-          (click)="prevPage()"
-          [disabled]="currentPage() === 1">
-          ← Précédent
-        </button>
-
-        <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
-
-        <button
-          type="button"
-          (click)="nextPage()"
-          [disabled]="currentPage() === totalPages()">
-          Suivant →
-        </button>
-      </div>
     }
   }
 
   @if (showForm()) {
-    <app-editeur-form (closeForm)="toggleForm()"></app-editeur-form>
+    <app-editeur-form
+      [editeur]="editingEditeur()"
+      [mode]="editingEditeur() ? 'edit' : 'create'"
+      (closeForm)="closeForm()">
+    </app-editeur-form>
   }
 </div>

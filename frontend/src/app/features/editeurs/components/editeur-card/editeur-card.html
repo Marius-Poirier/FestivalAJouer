@@ -24,6 +24,15 @@
         (click)="detail.emit(edi.id!)">
         Détail
       </button>
+
+      @if (canManage()) {
+        <button
+          type="button"
+          class="btn-edit"
+          (click)="update.emit(edi.id!)">
+          Modifier
+        </button>
+      }
     </mat-card-actions>
 
   </mat-card>

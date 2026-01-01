@@ -4,7 +4,13 @@
     (ngSubmit)="onSubmit()"
     (click)="$event.stopPropagation()"
   >
-    <h2 class="add">Ajouter un éditeur</h2>
+    <h2 class="add">
+      @if (mode() === 'edit') {
+        Modifier un éditeur
+      } @else {
+        Ajouter un éditeur
+      }
+    </h2>
 
     @if (editeurService.error()) {
       <div class="error-message">
@@ -25,7 +31,9 @@
 
     @if (form.controls.nom.invalid && form.controls.nom.touched) {
       @if (form.controls.nom.hasError('required')) {
-        <span class="error-text-input">Le nom est requis</span>
+        <span class="error-text-input">
+          Le nom est requis
+        </span>
       } @else if (form.controls.nom.hasError('minlength')) {
         <span class="error-text-input">
           Le nom doit contenir au moins 3 caractères
@@ -41,6 +49,8 @@
     >
       @if (editeurService.isLoading()) {
         Enregistrement...
+      } @else if (mode() === 'edit') {
+        Mettre à jour
       } @else {
         Enregistrer
       }
