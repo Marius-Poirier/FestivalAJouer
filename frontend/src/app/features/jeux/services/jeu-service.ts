@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '@env/environment';
-import { catchError, finalize, of, tap } from 'rxjs';
+import { catchError, finalize, Observable, of, tap } from 'rxjs';
 import { JeuDto } from '@interfaces/entites/jeu-dto';
 
 @Injectable({
@@ -94,5 +94,11 @@ export class JeuService {
         return of(null);
       })
     ).subscribe();
+  }
+
+    getById(id: number): Observable<JeuDto> {
+    return this.http.get<JeuDto>(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    });
   }
 }

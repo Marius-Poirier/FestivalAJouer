@@ -124,4 +124,32 @@ router.delete('/:id', requireOrganisateur, async (req, res) => {
     }
 })
 
+// GET /api/editeurs/:id/jeux
+router.get('/:id/jeux', async (req, res) => {
+  const editorId = Number.parseInt(req.params.id, 10);
+  if (!Number.isInteger(editorId)) {
+    return res.status(400).json({ error: 'Identifiant invalide' });
+  }
+
+  try {
+    const { rows } = await pool.query(
+      `SELECT j.id, j.nom, j.nb_joueurs_min, j.nb_joueurs_max, j.duree_minutes, j.age_min, j.age_max, j.description, j.lien_regles, j.created_at, j.updated_at
+       FROM Jeu j
+       JOIN JeuEditeur je ON je.jeu_id = j.id
+       WHERE je.editeur_id = $1
+       ORDER BY j.nom ASC`,
+      [editorId]
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error(
+      `Erreur lors de la récupération des jeux pour l'éditeur ${editorId}`,
+      err
+    );
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+})
+
+
 export default router

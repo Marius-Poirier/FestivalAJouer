@@ -37,3 +37,22 @@ h1 {
 .error {
   color: var(--rouge-danger);
 }
+
+.games-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0 0;
+}
+
+.games-list li {
+  margin-bottom: 0.25rem;
+}
+
+.games-list a {
+  color: var(--couleur-bouton);
+  text-decoration: none;
+}
+
+.games-list a:hover {
+  text-decoration: underline;
+}

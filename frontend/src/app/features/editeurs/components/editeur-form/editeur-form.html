@@ -6,7 +6,6 @@
   >
     <h2 class="add">Ajouter un éditeur</h2>
 
-    <!-- Affichage des erreurs globales du service -->
     @if (editeurService.error()) {
       <div class="error-message">
         {{ editeurService.error() }}
@@ -26,9 +25,7 @@
 
     @if (form.controls.nom.invalid && form.controls.nom.touched) {
       @if (form.controls.nom.hasError('required')) {
-        <span class="error-text-input">
-          Le nom est requis
-        </span>
+        <span class="error-text-input">Le nom est requis</span>
       } @else if (form.controls.nom.hasError('minlength')) {
         <span class="error-text-input">
           Le nom doit contenir au moins 3 caractères

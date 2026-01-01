@@ -1,5 +1,6 @@
 <div class="from-jeu-container" (click)="close()">
   <form
+    class="jeu-form"
     [formGroup]="form"
     (ngSubmit)="onSubmit()"
     (click)="$event.stopPropagation()"
@@ -12,28 +13,108 @@
       </div>
     }
 
-    <mat-form-field appearance="fill">
-      <mat-label>Nom du jeu</mat-label>
-      <input
-        matInput
-        type="text"
-        formControlName="nom"
-        placeholder="Nom du jeu"
-        [disabled]="jeuService.isLoading()"
-      />
-    </mat-form-field>
+    <div class="form-scroll">
+      <!-- Nom -->
+      <mat-form-field appearance="fill">
+        <mat-label>Nom du jeu</mat-label>
+        <input matInput formControlName="nom" />
+      </mat-form-field>
 
-    @if (form.controls.nom.invalid && form.controls.nom.touched) {
-      @if (form.controls.nom.hasError('required')) {
-        <span class="error-text-input">
-          Le nom est requis
-        </span>
-      } @else if (form.controls.nom.hasError('minlength')) {
+      @if (form.controls.nom.invalid && form.controls.nom.touched) {
         <span class="error-text-input">
           Le nom doit contenir au moins 3 caractères
         </span>
       }
-    }
+
+      <!-- Éditeur -->
+      <mat-form-field appearance="fill">
+        <mat-label>Éditeur</mat-label>
+        <mat-select formControlName="editeur_id">
+          <mat-option [value]="null">Aucun éditeur</mat-option>
+
+          @for (edi of editeurService.editeurs(); track edi.id) {
+            <mat-option [value]="edi.id">
+              {{ edi.nom }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Type de jeu -->
+      <mat-form-field appearance="fill">
+        <mat-label>Type de jeu</mat-label>
+        <mat-select formControlName="type_jeu_id">
+          <mat-option [value]="null">Aucun type</mat-option>
+
+          @for (t of typeJeux; track t.id) {
+            <mat-option [value]="t.id">
+              {{ t.libelle }}
+            </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Joueurs -->
+      <mat-form-field appearance="fill">
+        <mat-label>Nombre de joueurs minimum</mat-label>
+        <input matInput type="number" formControlName="nb_joueurs_min" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Nombre de joueurs maximum</mat-label>
+        <input matInput type="number" formControlName="nb_joueurs_max" />
+      </mat-form-field>
+
+      <!-- Durée -->
+      <mat-form-field appearance="fill">
+        <mat-label>Durée (minutes, optionnel)</mat-label>
+        <input matInput type="number" formControlName="duree_minutes" />
+      </mat-form-field>
+
+      <!-- Âges -->
+      <mat-form-field appearance="fill">
+        <mat-label>Âge minimum</mat-label>
+        <input matInput type="number" formControlName="age_min" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Âge maximum (optionnel)</mat-label>
+        <input matInput type="number" formControlName="age_max" />
+      </mat-form-field>
+
+      <!-- Thème -->
+      <mat-form-field appearance="fill">
+        <mat-label>Thème (optionnel)</mat-label>
+        <input matInput formControlName="theme" />
+      </mat-form-field>
+
+      <!-- URLs -->
+      <mat-form-field appearance="fill">
+        <mat-label>URL image (optionnel)</mat-label>
+        <input matInput type="url" formControlName="url_image" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>URL vidéo (optionnel)</mat-label>
+        <input matInput type="url" formControlName="url_video" />
+      </mat-form-field>
+
+      <mat-form-field appearance="fill">
+        <mat-label>Lien vers les règles (optionnel)</mat-label>
+        <input matInput type="url" formControlName="lien_regles" />
+      </mat-form-field>
+
+      <!-- Description -->
+      <mat-form-field appearance="fill">
+        <mat-label>Description (optionnel)</mat-label>
+        <textarea matInput rows="3" formControlName="description"></textarea>
+      </mat-form-field>
+
+      <!-- Prototype -->
+      <mat-checkbox formControlName="prototype">
+        Prototype
+      </mat-checkbox>
+    </div>
 
     <button
       type="submit"

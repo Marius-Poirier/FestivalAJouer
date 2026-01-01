@@ -25,7 +25,7 @@
     <p class="loading">Chargement des jeux...</p>
   } @else {
     <ul class="jeux-list">
-      @for (jeu of filteredJeux(); track jeu.id) {
+      @for (jeu of paginatedJeux(); track jeu.id) {
         <li>
           <app-jeu-card
             [jeu]="jeu"
@@ -35,6 +35,30 @@
         </li>
       }
     </ul>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button
+          type="button"
+          class="page-btn"
+          (click)="prevPage()"
+          [disabled]="currentPage() === 1">
+          ← Précédent
+        </button>
+
+        <span class="page-info">
+          Page {{ currentPage() }} / {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()">
+          Suivant →
+        </button>
+      </div>
+    }
   }
 
   @if (showForm()) {

@@ -1,0 +1,124 @@
+<div class="detail-container">
+  <a routerLink="/jeux" class="back-link">← Retour à la liste des jeux</a>
+
+  @if (isLoading()) {
+    <p>Chargement du jeu...</p>
+  } @else if (error()) {
+    <div class="error-banner">
+      {{ error() }}
+    </div>
+  } @else if (jeu()) {
+    @let j = jeu()!;
+
+    <mat-card class="detail-card">
+      <mat-card-header>
+        <div class="header-main">
+          <h1>{{ j.nom }}</h1>
+
+          @if (j.type_jeu_nom) {
+            <span class="badge-type">{{ j.type_jeu_nom }}</span>
+          }
+        </div>
+
+        @if (j.theme) {
+          <p class="theme">Thème : {{ j.theme }}</p>
+        }
+      </mat-card-header>
+
+      <mat-card-content>
+        <!-- Infos rapides -->
+        <div class="info-grid">
+          <div>
+            <h3>Joueurs</h3>
+            <p>
+              {{ j.nb_joueurs_min }}
+              @if (j.nb_joueurs_max) {
+                – {{ j.nb_joueurs_max }}
+              }
+            </p>
+          </div>
+
+          @if (j.duree_minutes) {
+            <div>
+              <h3>Durée</h3>
+              <p>{{ j.duree_minutes }} min</p>
+            </div>
+          }
+
+          <div>
+            <h3>Âge</h3>
+            <p>
+              Dès {{ j.age_min }} ans
+              @if (j.age_max) {
+                (jusqu'à {{ j.age_max }} ans)
+              }
+            </p>
+          </div>
+
+          @if (j.prototype !== undefined && j.prototype !== null) {
+            <div>
+              <h3>Prototype</h3>
+              <p>{{ j.prototype ? 'Oui' : 'Non' }}</p>
+            </div>
+          }
+        </div>
+
+        <!-- Description -->
+        @if (j.description) {
+          <section class="section-block">
+            <h3>Description</h3>
+            <p>{{ j.description }}</p>
+          </section>
+        }
+
+        <!-- Éditeurs -->
+        @if (j.editeurs?.length) {
+        <section class="section-block">
+            <h3>Éditeurs</h3>
+            <ul>
+            @for (e of j.editeurs; track e.id) {
+                <li>
+                <a [routerLink]="['/editeurs', e.id]">
+                    {{ e.nom }}
+                </a>
+                </li>
+            }
+            </ul>
+        </section>
+        }
+
+
+        <!-- Mécanismes -->
+        @if (j.mecanismes?.length) {
+          <section class="section-block">
+            <h3>Mécanismes</h3>
+            <ul>
+              @for (m of j.mecanismes; track m.id) {
+                <li>{{ m.nom }}</li>
+              }
+            </ul>
+          </section>
+        }
+
+        <!-- Liens -->
+        @if (j.lien_regles || j.url_video) {
+          <section class="section-block links">
+            <h3>Liens</h3>
+            <div class="links-list">
+              @if (j.lien_regles) {
+                <a [href]="j.lien_regles" target="_blank" rel="noopener">
+                  Règles du jeu
+                </a>
+              }
+              @if (j.url_video) {
+                <a [href]="j.url_video" target="_blank" rel="noopener">
+                  Vidéo
+                </a>
+              }
+            </div>
+          </section>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

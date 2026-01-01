@@ -134,3 +134,37 @@ li {
   color: var(--gris-fonce);
 }
 
+.pagination {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.pagination button {
+  background: var(--couleur-bouton);
+  color: var(--blanc);
+  border: none;
+  padding: 0.4rem 0.9rem;
+  border-radius: 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.pagination button:hover:not(:disabled) {
+  background: var(--couleur-terciere);
+}
+
+.pagination button:disabled {
+  background: var(--gris-clair);
+  color: var(--gris-moyen);
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-size: 0.9rem;
+  color: var(--gris-fonce);
+}

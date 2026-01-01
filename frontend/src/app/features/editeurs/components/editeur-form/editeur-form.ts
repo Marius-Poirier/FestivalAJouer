@@ -1,6 +1,10 @@
-// src/app/components/editeurs/editeur-form/editeur-form.ts
 import { Component, inject, output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators,
+  ɵInternalFormsSharedModule
+} from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,6 +13,7 @@ import { EditeurDto } from '@interfaces/entites/editeur-dto';
 
 @Component({
   selector: 'app-editeur-form',
+  standalone: true,
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -34,13 +39,18 @@ export class EditeurForm {
   }
 
   protected onSubmit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-    const editeurData: EditeurDto = {
-      nom: this.form.value.nom!
+    const value = this.form.value;
+
+    const payload: EditeurDto = {
+      nom: value.nom!
     };
 
-    this.editeurService.add({ nom: editeurData.nom });
+    this.editeurService.add(payload);
 
     if (this.editeurService.error() != null) {
       return;

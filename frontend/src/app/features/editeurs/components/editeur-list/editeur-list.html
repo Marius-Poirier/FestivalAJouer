@@ -25,17 +25,38 @@
     <p class="loading">Chargement des éditeurs...</p>
   } @else {
     <ul class="editeurs-list">
-      @for (edi of filteredEditeurs(); track edi.id) {
+      @for (edi of paginatedEditeurs(); track edi.id) {
         <li>
           <app-editeur-card
             [editeur]="edi"
             [canManage]="authService.isAdminSuperorgaOrga()"
             (delete)="onDelete($event)"
-            (update)="onUpdate($event)">
+            (update)="onUpdate($event)"
+            (detail)="onDetail($event)">
           </app-editeur-card>
         </li>
       }
     </ul>
+
+    @if (filteredEditeurs().length > 0 && totalPages() > 1) {
+      <div class="pagination">
+        <button
+          type="button"
+          (click)="prevPage()"
+          [disabled]="currentPage() === 1">
+          ← Précédent
+        </button>
+
+        <span>Page {{ currentPage() }} / {{ totalPages() }}</span>
+
+        <button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()">
+          Suivant →
+        </button>
+      </div>
+    }
   }
 
   @if (showForm()) {
