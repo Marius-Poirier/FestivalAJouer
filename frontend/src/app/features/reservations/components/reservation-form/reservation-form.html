@@ -1,113 +1,106 @@
-<form class="form-wrapper" [formGroup]="form" (ngSubmit)="submit()">
-	<section>
-		<h2>Création réservation dans {{ festivalName() }}</h2>
-		<label>
-			Éditeur
-			<select formControlName="editeur_id">
-				<option [ngValue]="null">-- Choisir un éditeur --</option>
-				@for (edi of editeurOptions(); track edi.id) {
-					<option [ngValue]="edi.id">{{ edi.nom }}</option>
-				}
-			</select>
-		</label>
-		@if (form.controls.editeur_id.invalid && form.controls.editeur_id.touched) {
-			<div class="error">L'éditeur est requis.</div>
-		}
+<div class="form-reservation-container" (click)="close()">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" (click)="$event.stopPropagation()">
+        <h2 class="add">Nouvelle réservation</h2>
+        
+        <!-- Affichage des erreurs -->
+        @if (ressvc.error()) {
+            <div class="error-message">
+                {{ ressvc.error() }}
+            </div>
+        }
 
-		<!-- <label>
-			Festival (courant)
-			<input type="number" formControlName="festival_id" [readonly]="true" />
-		</label> -->
-		@if (form.controls.festival_id.invalid && form.controls.festival_id.touched) {
-			<div class="error">Le festival est requis.</div>
-		}
+        <mat-form-field appearance="fill">
+            <mat-label>Éditeur</mat-label>
+            <mat-select formControlName="editeur_id" [disabled]="ressvc.isLoading()">
+                <mat-option [value]="null">-- Choisir un éditeur --</mat-option>
+                @for (editeur of editeursvc.editeurs(); track editeur.id) {
+                    <mat-option [value]="editeur.id">{{ editeur.nom }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        @if (form.controls.editeur_id.invalid && form.controls.editeur_id.touched) {
+            <span class="error-text-input">L'éditeur est requis</span>
+        }
 
-		<label>
-			Statut workflow
-			<select formControlName="statut_workflow">
-				@for (wf of workflowOptions; track wf) {
-					<option [value]="wf">{{ wf }}</option>
-				}
-			</select>
-		</label>
+        <mat-form-field appearance="fill">
+            <mat-label>Statut workflow</mat-label>
+            <mat-select formControlName="statut_workflow" [disabled]="ressvc.isLoading()">
+                @for (option of workflowOptions; track option.value) {
+                    <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
 
-		<label class="checkbox">
-			<input type="checkbox" formControlName="editeur_presente_jeux" />
-			L'éditeur présente des jeux
-		</label>
-	</section>
+        <section class="checkbox-section">
+            <mat-checkbox formControlName="editeur_presente_jeux" [disabled]="ressvc.isLoading()">
+                L'éditeur présente des jeux
+            </mat-checkbox>
+        </section>
 
-	<section>
-		<h3>Zones tarifaires du festival</h3>
-		<div class="zone-table">
-			<div class="zone-row header">
-				<div>Zone tarifaire</div>
-				<div>Prix par table</div>
-				<div>Nombre de tables total</div>
-				<div>Combien de tables ?</div>
-			</div>
-			@for (zone of zonesTarifaires(); track zone.id) {
-				<div class="zone-row">
-					<div>{{ zone.nom }}</div>
-					<div>{{ zone.prix_table }} €</div>
-					<div>{{ zone.nombre_tables_total }}</div>
-					<div>
-						<input
-							type="number"
-							min="0"
-							[value]="selectedTables(zone.id!)"
-							(input)="updateZoneTables(zone.id!, $any($event.target).value)"
-						/>
-					</div>
-				</div>
-			}
-		</div>
+        <mat-form-field appearance="fill">
+            <mat-label>Remise en pourcentage (%)</mat-label>
+            <input 
+                matInput 
+                type="number" 
+                formControlName="remise_pourcentage" 
+                placeholder="0"
+                min="0"
+                max="100"
+                [disabled]="ressvc.isLoading()">
+        </mat-form-field>
+        @if (form.controls.remise_pourcentage.invalid && form.controls.remise_pourcentage.touched) {
+            @if (form.controls.remise_pourcentage.hasError('min')) {
+                <span class="error-text-input">La remise ne peut pas être négative</span>
+            } @else if (form.controls.remise_pourcentage.hasError('max')) {
+                <span class="error-text-input">La remise ne peut pas dépasser 100%</span>
+            }
+        }
 
-		<label class="readonly-field">
-			Prix total (€)
-			<div class="readonly-value">{{ form.controls.prix_total.value ?? 0 }} €</div>
-			<input type="hidden" formControlName="prix_total" />
-		</label>
-		<label>
-			Remise %
-			<input type="number" step="1" formControlName="remise_pourcentage" />
-		</label>
+        <mat-form-field appearance="fill">
+            <mat-label>Remise en montant (€)</mat-label>
+            <input 
+                matInput 
+                type="number" 
+                formControlName="remise_montant" 
+                placeholder="0"
+                min="0"
+                [disabled]="ressvc.isLoading()">
+        </mat-form-field>
+        @if (form.controls.remise_montant.invalid && form.controls.remise_montant.touched) {
+            @if (form.controls.remise_montant.hasError('min')) {
+                <span class="error-text-input">La remise ne peut pas être négative</span>
+            }
+        }
 
-		<!-- <label>
-			Remise montant (€)
-			<input type="number" step="1" formControlName="remise_montant" />
-		</label> -->
+        <mat-form-field appearance="fill">
+            <mat-label>Commentaires paiement</mat-label>
+            <textarea 
+                matInput 
+                formControlName="commentaires_paiement" 
+                rows="3"
+                placeholder="Commentaires optionnels..."
+                [disabled]="ressvc.isLoading()">
+            </textarea>
+        </mat-form-field>
 
-		<label class="readonly-field">
-			Prix final (€)
-			<div class="readonly-value">{{ form.controls.prix_final.value ?? 0 }} €</div>
-			<input type="hidden" formControlName="prix_final" />
-		</label>
-	</section>
-
-	<section>
-		<label>
-			Statut workflow
-			<select formControlName="statut_workflow">
-				<option [value]="'PAS_CONTACTE'">Pas contacté</option>
-				<option [value]="'CONTACT_PRIS'">Contact pris</option>
-				<option [value]="'DISCUSSION_EN_COURS'">Discussion en cours</option>
-				<option [value]="'SERA_ABSENT'">Sera absent</option>
-				<option [value]="'CONSIDERE_ABSENT'">Considéré absent</option>
-				<option [value]="'PRESENT'">Présent</option>
-				<option [value]="'FACTURE'">Facturé</option>
-				<option [value]="'PAIEMENT_RECU'">Paiement reçu</option>
-				<option [value]="'PAIEMENT_EN_RETARD'">Paiement en retard</option>
-			</select>
-		</label>
-
-		<label>
-			Commentaires paiement
-			<textarea rows="3" formControlName="commentaires_paiement"></textarea>
-		</label>
-	</section>
-
-	<div class="actions">
-		<button type="submit">Créer la réservation</button>
-	</div>
-</form>
+        <button 
+            type="submit" 
+            mat-raised-button 
+            color="primary" 
+            [disabled]="form.invalid || ressvc.isLoading()">
+            @if (ressvc.isLoading()) {
+                Création en cours...
+            } @else {
+                Créer la réservation
+            }
+        </button>
+        
+        <button 
+            type="button" 
+            (click)="close()" 
+            mat-raised-button
+            [disabled]="ressvc.isLoading()">
+            Annuler
+        </button>
+    </form>
+</div>

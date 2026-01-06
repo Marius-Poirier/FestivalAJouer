@@ -16,7 +16,7 @@
         </div> -->
 
         @if (authService.isAdminSuperorga()){
-            <button class="btn-add" routerLink="/reservation/create">+ Ajouter une réservation</button>
+            <button class="btn-add" (click)="show()">+ Nouvelle réservation</button>
         }
     </div>
     
@@ -41,7 +41,7 @@
     }
 
     @if(showForm()){
-        <!-- <app-festival-form (closeForm)="show()"></app-festival-form> -->
+        <app-reservation-form (closeForm)="show()"></app-reservation-form>
     }
     
 </div>

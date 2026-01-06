@@ -3,12 +3,13 @@ import { AuthService } from '@core/services/auth-services';
 import { ReservationsService } from '../../services/reservations-service';
 import { MatIconModule } from '@angular/material/icon';
 import { ReservationCard } from '../reservation-card/reservation-card';
+import { ReservationForm } from '../reservation-form/reservation-form';
 import { RouterModule } from '@angular/router';
 
 
 @Component({
   selector: 'app-reservation-list',
-  imports: [ReservationCard, MatIconModule, RouterModule],
+  imports: [ReservationCard, MatIconModule, RouterModule, ReservationForm],
   templateUrl: './reservation-list.html',
   styleUrl: './reservation-list.css'
 })
