@@ -1,0 +1,49 @@
+<div class="list-container">
+    @if (ressvc.error()) {
+        <div class="error-banner">
+            {{ ressvc.error() }}
+        </div>
+    }
+    <div class="header-controls">
+        <!-- <div class="search-bar">
+            <mat-icon class="search-icon">search</mat-icon>
+            <input 
+                type="text" 
+                placeholder="Rechercher une réservation ( nom éditeur ou numéro reservation)..."
+                [value]="searchTerm()"
+                (input)="onSearch($event)"
+            />
+        </div> -->
+
+        @if (authService.isAdminSuperorga()){
+            <button class="btn-add" (click)="show()">+ Nouvelle réservation</button>
+        }
+    </div>
+    
+    @if (ressvc.isLoading()) {
+        <p class="loading">Chargement des réservations...</p>
+    } @else {
+        @if(ressvc.reservations().length != 0){
+            <ul class="items-list">
+                @for (res of ressvc.reservations(); track res.id) {
+                    <li>
+                        <app-reservation-card
+                            [idReservation]="res.id"
+                            [canManage]="authService.isAdminSuperorga()">
+                        </app-reservation-card>
+                    </li>
+                }
+            </ul>
+        }
+        @else {
+            <p>Aucune réservation trouvée pour ce festival</p>
+        }
+    }
+
+    @if(showForm()){
+        <app-reservation-form (closeForm)="show()"></app-reservation-form>
+    }
+    
+</div>
+
+

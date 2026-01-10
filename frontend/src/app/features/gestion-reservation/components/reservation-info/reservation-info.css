@@ -1,0 +1,63 @@
+:host {
+	display: block;
+}
+
+.info-grid {
+	background: #ffffff;
+	border: 1px solid #e5e7eb; /* neutral-200 */
+	border-radius: 12px;
+	padding: 16px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.info-row {
+	display: grid;
+	grid-template-columns: 180px 1fr;
+	gap: 12px;
+	align-items: center;
+	padding: 8px 4px;
+	border-bottom: 1px dashed #eef1f5;
+}
+
+.info-row:last-child {
+	border-bottom: none;
+}
+
+.label {
+	color: #6b7280; /* neutral-500 */
+	font-weight: 600;
+	letter-spacing: 0.2px;
+}
+
+.value {
+	color: #111827; /* neutral-900 */
+	text-align: right;
+	font-weight: 500;
+}
+
+.value.highlight {
+	color: #065f46; /* emerald-800 */
+	background: #ecfdf5; /* emerald-50 */
+	border: 1px solid #a7f3d0; /* emerald-200 */
+	border-radius: 8px;
+	padding: 4px 8px;
+	display: inline-block;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+	.info-row {
+		grid-template-columns: 1fr;
+	}
+	.value {
+		text-align: left;
+	}
+}
+
+/* Subtle emphasis for payment comments when present */
+.info-row .label + .value:not(:empty) {
+	word-break: break-word;
+}

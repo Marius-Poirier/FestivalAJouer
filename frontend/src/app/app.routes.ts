@@ -41,6 +41,17 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
+        path: 'reservation/create',
+        loadComponent: () => import('@reservations/components/reservation-form/reservation-form').then(m => m.ReservationForm),
+        canActivate: [authGuard]
+    },
+    {
+        path: 'reservations/:id',
+        loadComponent: () => import('@reservations/components/reservation-detail/reservation-detail').then(m => m.ReservationDetail),
+        canActivate: [authGuard]
+    }
+    ,
+
         path: 'jeux',
         loadComponent: () => import('@jeux/components/jeu-list/jeu-list').then(m => m.JeuList),
         canActivate: [authGuard]
@@ -50,6 +61,7 @@ export const routes: Routes = [
         loadComponent: () => import('@jeux/components/jeu-detail/jeu-detail').then(m => m.JeuDetail),
         canActivate: [authGuard]
     },
+
     {
         path: '',
         redirectTo: 'home',

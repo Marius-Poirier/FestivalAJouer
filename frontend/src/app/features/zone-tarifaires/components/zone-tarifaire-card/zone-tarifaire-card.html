@@ -17,16 +17,6 @@
             <p>Prix par table : <span>{{zone.prix_table | currency:'EUR':'symbol':'1.2-2'}}</span></p>
             <p>Prix par m² : <span>{{zone.prix_m2 | currency:'EUR':'symbol':'1.2-2'}}</span></p>
         </mat-card-content>
-        <mat-card-actions>
-            <button (click)="update.emit(zone.id!); $event.stopPropagation()">Modifier</button> 
-        </mat-card-actions>
     </mat-card>
 
-    <app-popup-delete
-        [entiteType]="deleteType()"
-        [entiteId]="deleteId()"
-        [entitenom]="deletenom()"
-        (confirm)="handleConfirm()"
-        (cancel)="handleCancel()">
-    </app-popup-delete>
 }

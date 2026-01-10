@@ -11,13 +11,14 @@ import { FestivalService } from '@festivals/services/festival-service';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent{
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
-  protected readonly festivalssvc = inject(FestivalService)
-  protected readonly festival = this.festivalssvc.lastFestival
+  protected readonly festivalssvc = inject(FestivalService);
+  protected readonly festival = this.festivalssvc.lastFestival;
 
-  ngOnInit(): void {
+  constructor() {
+    this.festivalssvc.loadAll();
     if (!this.authService.currentUser()) {
       this.authService.whoami();
     }

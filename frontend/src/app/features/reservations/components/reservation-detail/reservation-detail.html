@@ -1,0 +1,73 @@
+@if (isLoading()) {
+  <div class="loading-container">
+    <p>Chargement...</p>
+  </div>
+} @else if (reservation() && editeur() && festival()) {
+  @let res = reservation()!;
+  <div class="detail-container">
+
+    <div class="header">
+      <h1 class="title">Réservation #{{ res.id }}</h1>
+      @if (canManage()) {
+        <div class="actions">
+          <button type="button" class="btn" (click)="onModifier()">Modifier</button>
+          <button type="button" class="btn danger" (click)="onSupprimer()">Supprimer</button>
+        </div>
+      }
+    </div>
+
+    <div class="info-section">
+      <p><strong>Éditeur :</strong> {{ editeur()!.nom }}</p>
+      <p><strong>Festival :</strong> {{ festival() ? festival()!.nom : 'Chargement...' }}</p>
+      
+      <p><strong>Statut :</strong> {{ workflowLabel() }}</p>
+      <p><strong>Présente des jeux :</strong> {{ res.editeur_presente_jeux ? 'Oui' : 'Non' }}</p>
+      <p><strong>Prix final :</strong> <span class="prix-final">{{ res.prix_final }} €</span></p>
+    </div>
+
+    <!-- ONGLETS -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <mat-radio-group aria-label="Sélectionner un onglet" [value]="activeTab()" (change)="onTabChange($event)">
+          <mat-radio-button value="informations">Informations</mat-radio-button>
+          <mat-radio-button value="tables">Tables</mat-radio-button>
+          <mat-radio-button value="jeux">Jeux</mat-radio-button>
+          <mat-radio-button value="workflow">Workflow</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="tab-content">
+        @switch (activeTab()) {
+          @case ('informations') {
+            <div class="tab-panel">
+              <app-reservation-info [reservation]="reservation()" [editeurNom]="editeur() ? editeur()!.nom : null"></app-reservation-info>
+            </div>
+          }
+          @case ('tables') { 
+            <div class="tab-panel">
+              <app-reservation-table 
+                [reservationId]="reservationId()"
+                [festivalId]="festivalId()">
+              </app-reservation-table>
+            </div>
+          }
+          @case ('jeux') { <div class="tab-panel"><p>Onglet Jeux</p></div> }
+          @case ('workflow') { <div class="tab-panel"><p>Onglet Workflow</p></div> }
+        }
+      </div>
+    </div>
+  </div>
+  @if (showDeletePopup()) {
+    <app-popup-delete
+      [entiteType]="'reservation'"
+      [entiteId]="reservationId()"
+      [entitenom]="editeur() ? editeur()!.nom : ''"
+      (confirm)="onConfirmDelete()"
+      (cancel)="onCancelDelete()"
+    />
+  }
+} @else {
+  <div class="error-container">
+    <p>Erreur: Réservation introuvable</p>
+  </div>
+}

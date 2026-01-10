@@ -1,0 +1,123 @@
+mat-card {
+  background-color: var(--fond-carte); 
+  border: 1px solid var(--gris-clair);
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  min-width: 260px;
+  max-width: 320px;
+  margin: 0 auto;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+mat-card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  color: var(--gris-moyen);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.main-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title {
+  color: var(--gris-fonce);
+  font-size: 1.25rem;
+  font-weight: bold;
+  flex: 1;
+}
+
+.badge {
+  background: var(--couleur-primaire);
+  color: var(--blanc);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.tag {
+  color: var(--couleur-primaire);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+mat-card-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+mat-card-actions button {
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+mat-card-actions button:hover {
+  background-color: var(--couleur-terciere);
+}
+
+mat-card-actions button:active {
+  background-color: var(--couleur-secondaire);
+}
+
+.card-container {
+  position: relative;
+  padding-top: 1.2rem;
+}
+
+.delete-btn {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.35rem;
+  background: var(--rouge-danger);
+  color: var(--blanc);
+  border: none;
+  border-radius: 50%;
+  width: 1.3rem;
+  height: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  line-height: 0;
+}
+
+.delete-btn mat-icon {
+  font-size: 0.9rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  line-height: 1;
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+}
+
+.delete-btn:active {
+  background: #991b1b;
+}
+

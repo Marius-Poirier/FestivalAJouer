@@ -1,0 +1,34 @@
+@if(reservation()){
+    @let res = reservation()!;
+    <mat-card class="card-container" (click)="navigateToDetail(res.id!)">
+        @if (canManage()) {
+            <button
+                class="delete-btn"
+                (click)="openDeletePopup(res); $event.stopPropagation()"
+                aria-label="Supprimer"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        }
+
+        <mat-card-header>
+            <div class="subtitle">Réservation #{{ res.id ?? '—' }}</div>
+            <div class="main-info">
+                <div class="title">{{ editeur()?.nom ?? 'Éditeur inconnu' }}</div>
+                <span class="badge">{{ workflowLabel() }}</span>
+            </div>
+            @if(res.editeur_presente_jeux){
+                <div class="tag">Présente des jeux</div>
+            }
+        </mat-card-header>
+    </mat-card>
+    
+    <!-- Popup delete -->
+    <app-popup-delete
+        [entiteType]="deleteType()"
+        [entiteId]="deleteId()"
+        [entitenom]="deletenom()"
+        (confirm)="handleConfirm()"
+        (cancel)="handleCancel()">
+    </app-popup-delete>
+}

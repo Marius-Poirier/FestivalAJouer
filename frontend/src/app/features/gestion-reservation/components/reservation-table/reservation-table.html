@@ -1,0 +1,69 @@
+<div class="tables-tab">
+    <div class="actions">
+      <button type="button" class="btn" (click)="showAddTable()">+ Ajouter table</button>
+    </div>
+
+  @if (isAddTable() && reservationId()) {
+    <app-add-table-reservation 
+      [reservationId]="reservationId() ?? undefined"
+      (close)="closeAddModal()"
+      (added)="handleTableAdded()"
+    ></app-add-table-reservation>
+  }
+
+  @if (showRemoveConfirm()) {
+    <div class="confirm-overlay" (click)="closeRemoveConfirm()">
+      <div class="confirm-popup" (click)="$event.stopPropagation()">
+        <h3>Retirer la table ?</h3>
+        <p>Êtes-vous sûr de vouloir retirer cette table de la réservation ?</p>
+        <div class="confirm-actions">
+          <button type="button" class="btn secondary" (click)="closeRemoveConfirm()">Annuler</button>
+          <button type="button" class="btn danger" (click)="confirmRemoveTable()">Retirer</button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (loading()) {
+    <div class="placeholder">
+      <p>⏳ Chargement des tables...</p>
+    </div>
+  }
+
+  @if (error() && !loading()) {
+    <div class="error-message">
+      <p>❌ {{ error() }}</p>
+    </div>
+  }
+
+  @if (!loading() && tables().length === 0 && !error()) {
+    <div class="placeholder">
+      <p>⚠️ Aucune table attribuée pour le moment.</p>
+      @if (reservationId()) {
+        <small>ID réservation : {{ reservationId() }}</small>
+      }
+    </div>
+  }
+
+  @if (!loading() && tables().length > 0) {
+    <div class="summary">
+      <p>
+        <strong>Résumé :</strong> 
+        {{ tables().length }} table(s) - 
+        <strong>{{prix_total()}} €</strong>
+      </p>
+    </div>
+
+    <div class="tables-list">
+      @for (table of tables(); track table.id) {
+        <div class="card-table">
+          <app-table-card 
+              [table]="table"
+              (onRemove)="handleRemoveTable($event)">
+          </app-table-card>
+          <button type="button" class="btn btn-remove" (click)="handleRemoveTable(table.id!)">Retirer table</button>
+        </div>
+      }
+    </div>
+  }
+</div>

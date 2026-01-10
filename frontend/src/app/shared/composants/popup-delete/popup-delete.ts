@@ -35,6 +35,8 @@ public confirmationMessage = computed(() => {
         return `Êtes-vous sûr de vouloir supprimer le contact ${nom ? `"${nom}"` : ''} ?`;
       case 'zone':
         return `Êtes-vous sûr de vouloir supprimer la zone ${nom ? `"${nom}"` : ''} ?`;
+      case 'reservation':
+        return `Êtes-vous sûr de vouloir supprimer la réservation ${nom ? `"${nom}"` : ''} ?`;
       default:
         return
     }

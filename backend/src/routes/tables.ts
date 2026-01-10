@@ -29,6 +29,14 @@ router.get('/', async (req, res) => {
             params.push(val)
             clauses.push(`zone_tarifaire_id = $${params.length}`)
         }
+        if (req.query.statut) {
+            const statut = String(req.query.statut)
+            if (!['libre', 'reserve', 'plein', 'hors_service'].includes(statut)) {
+                return res.status(400).json({ error: 'Statut invalide' })
+            }
+            params.push(statut)
+            clauses.push(`statut = $${params.length}`)
+        }
         const whereClause = clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''
         const { rows } = await pool.query(
             `SELECT ${TABLE_FIELDS} FROM Table_Jeu ${whereClause} ORDER BY created_at DESC`,

@@ -25,6 +25,7 @@ export class ZonePlanForm {
   private readonly fb = inject(FormBuilder)
   protected readonly zonePlanService = inject(ZonePlanService)
   protected readonly zoneTarifaireService = inject(ZoneTarifaireService)
+
   
   public closeForm = output<void>()
 
@@ -40,8 +41,9 @@ export class ZonePlanForm {
 
   ngOnInit() {
     // Charger les zones tarifaires si pas déjà chargées
-    if (this.zonesTarifaires().length === 0) {
-      this.zoneTarifaireService.loadAll();
+    const festivalId = this.zoneTarifaireService.currentfestival()?.id;
+    if (this.zonesTarifaires().length === 0 && festivalId) {
+      this.zoneTarifaireService.loadAll(festivalId);
     }
   }
 
