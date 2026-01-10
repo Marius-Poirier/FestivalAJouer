@@ -1,5 +1,4 @@
-// src/app/components/editeurs/editeur-form/editeur-form.ts
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, ɵInternalFormsSharedModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,6 +8,7 @@ import { EditeurDto } from '@interfaces/entites/editeur-dto';
 
 @Component({
   selector: 'app-editeur-form',
+  standalone: true,
   imports: [
     MatFormFieldModule,
     MatInputModule,
@@ -23,11 +23,23 @@ export class EditeurForm {
   private readonly fb = inject(FormBuilder);
   protected readonly editeurService = inject(EditeurService);
 
+  public editeur = input<EditeurDto | null>(null);
+  public mode = input<'create' | 'edit'>('create');
+
   public closeForm = output<void>();
 
   protected readonly form = this.fb.group({
     nom: ['', [Validators.required, Validators.minLength(3)]]
   });
+
+  ngOnInit() {
+    const current = this.editeur();
+    if (current) {
+      this.form.patchValue({
+        nom: current.nom
+      });
+    }
+  }
 
   protected close() {
     this.closeForm.emit();
@@ -36,11 +48,17 @@ export class EditeurForm {
   protected onSubmit() {
     if (this.form.invalid) return;
 
-    const editeurData: EditeurDto = {
-      nom: this.form.value.nom!
-    };
+    const nom = this.form.value.nom!;
+    const current = this.editeur();
+    const mode = this.mode();
 
-    this.editeurService.add({ nom: editeurData.nom });
+    if (mode === 'edit' && current?.id != null) {
+      // MODIFICATION
+      this.editeurService.update(current.id, nom);
+    } else {
+      // CREATION
+      this.editeurService.add({ nom });
+    }
 
     if (this.editeurService.error() != null) {
       return;
@@ -49,4 +67,5 @@ export class EditeurForm {
     this.form.reset();
     this.closeForm.emit();
   }
+
 }

@@ -4,9 +4,14 @@
     (ngSubmit)="onSubmit()"
     (click)="$event.stopPropagation()"
   >
-    <h2 class="add">Ajouter un éditeur</h2>
+    <h2 class="add">
+      @if (mode() === 'edit') {
+        Modifier un éditeur
+      } @else {
+        Ajouter un éditeur
+      }
+    </h2>
 
-    <!-- Affichage des erreurs globales du service -->
     @if (editeurService.error()) {
       <div class="error-message">
         {{ editeurService.error() }}
@@ -44,6 +49,8 @@
     >
       @if (editeurService.isLoading()) {
         Enregistrement...
+      } @else if (mode() === 'edit') {
+        Mettre à jour
       } @else {
         Enregistrer
       }

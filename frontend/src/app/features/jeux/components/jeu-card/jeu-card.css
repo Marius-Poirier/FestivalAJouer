@@ -84,12 +84,11 @@ mat-card-actions button:active {
   cursor: pointer;
   transition: background-color 0.2s ease;
 
-  /* fix Material icon vertical alignment */
   line-height: 0;
 }
 
 .delete-btn mat-icon {
-  font-size: 0.9rem;   /* 👈 plus petit */
+  font-size: 0.9rem;
   width: 0.9rem;
   height: 0.9rem;
   line-height: 1;
@@ -101,32 +100,4 @@ mat-card-actions button:active {
 
 .delete-btn:active {
   background: #991b1b;
-}
-
-.btn-edit {
-  background-color: var(--couleur-bouton);
-  color: var(--blanc);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-.btn-edit:hover {
-  background-color: var(--couleur-terciere);
-}
-
-.btn-edit:active {
-  background-color: var(--couleur-primaire);
-}
-
-.btn-edit {
-  background-color: var(--couleur-secondaire);
-}
-
-.btn-edit:hover {
-  background-color: var(--couleur-terciere);
 }

@@ -1,0 +1,73 @@
+<div class="list-container">
+  @if (jeuService.error()) {
+    <div class="error-banner">
+      {{ jeuService.error() }}
+    </div>
+  }
+
+  <div class="header-controls">
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Rechercher un jeu..."
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+      />
+    </div>
+
+    @if (authService.isAdminSuperorgaOrga()) {
+      <button class="btn-add" (click)="toggleForm()">+ Ajouter un jeu</button>
+    }
+  </div>
+
+  @if (jeuService.isLoading() && !jeuService.jeux().length) {
+    <p class="loading">Chargement des jeux...</p>
+  } @else {
+    <ul class="jeux-list">
+      @for (jeu of paginatedJeux(); track jeu.id) {
+        <li>
+          <app-jeu-card
+            [jeu]="jeu"
+            [canManage]="authService.isAdminSuperorgaOrga()"
+            (delete)="onDelete($event)"
+            (detail)="onDetail($event)"
+            (update)="onUpdate($event)"
+          ></app-jeu-card>
+        </li>
+      }
+    </ul>
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button
+          type="button"
+          class="page-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage() === 1">
+          ← Précédent
+        </button>
+
+        <span class="page-info">
+          Page {{ currentPage() }} / {{ totalPages() }}
+        </span>
+
+        <button
+          type="button"
+          class="page-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage() === totalPages()">
+          Suivant →
+        </button>
+      </div>
+    }
+  }
+
+  @if (showForm()) {
+    <app-jeu-form
+      [jeu]="editingJeu()"
+      [mode]="editingJeu() ? 'edit' : 'create'"
+      (closeForm)="onFormClosed()">
+    </app-jeu-form>
+  }
+</div>

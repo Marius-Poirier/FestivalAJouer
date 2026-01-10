@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { EditeurDto } from '@interfaces/entites/editeur-dto';
 import { catchError, finalize, of, tap } from 'rxjs';
+import { JeuDto } from '@interfaces/entites/jeu-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -192,4 +193,7 @@ export class EditeurService {
     });
   }
 
+  getJeuxForEditeur(editeurId: number) {
+    return this.http.get<JeuDto[]>(`${this.baseUrl}/${editeurId}/jeux`,{ withCredentials: true });
+  }
 }

@@ -55,6 +55,7 @@ const allowedOrigins = [
   'https://localhost:4200',  // Local Angular Dev
   'http://localhost:4200',   // Local Angular Dev (HTTP fallback)
   'https://162.38.111.37:8080', // VM Production URL
+  'https://localhost:8080',
   process.env.FRONTEND_URL   // Environment variable fallback
 ].filter(Boolean); // Remove undefined values
 
