@@ -55,7 +55,7 @@ export class FestivalService {
         catchError(() => of(null))
       )
       .subscribe();
-  }
+  } 
 
   add(festival: FestivalDto): void {
     this._isLoading.set(true); 
@@ -160,6 +160,21 @@ export class FestivalService {
 
   public findById(id : number){
     return this._festivals().find((f)=>f.id === id)
+  }
+
+  /**
+   * GET /api/festivals/:id
+   * Charge un seul festival par son ID
+   */
+  public loadOne(id: number) {
+    return this.http.get<FestivalDto>(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    }).pipe(
+      catchError(err => {
+        console.error(`Erreur lors du chargement du festival ${id}`, err);
+        throw err;
+      })
+    );
   }
 
   

@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal, computed } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { TableJeuDto } from '@interfaces/entites/table-jeu-dto'; // À créer si n'existe pas
 import { environment } from 'src/environments/environment';
-import { catchError, finalize, of, tap } from 'rxjs';
+import { Observable, catchError, finalize, map, of, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +23,85 @@ export class TablesService {
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
 
+  /**
+   * Récupère une table par son id (GET /api/tables/:id).
+   */
+  getTableById(tableId: number): Observable<TableJeuDto | null> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http.get<TableJeuDto>(`${this.baseUrl}/${tableId}`, { withCredentials: true })
+      .pipe(
+        tap(table => {
+          if (table) {
+            this._tables.update(list => {
+              const exists = list.some(t => t.id === tableId);
+              return exists ? list.map(t => t.id === tableId ? table : t) : [table, ...list];
+            });
+          }
+        }),
+        catchError(err => {
+          console.error('Erreur lors du chargement de la table', err);
+          this._error.set('Erreur lors du chargement de la table');
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  /**
+   * Récupère toutes les tables d'une zone du plan donnée.
+   */
+  getTablesByZonePlan(zonePlanId: number): Observable<TableJeuDto[]> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const params = new HttpParams().set('zoneDuPlanId', zonePlanId.toString());
+    return this.http.get<TableJeuDto[]>(this.baseUrl, { params, withCredentials: true })
+      .pipe(
+        map(data => data ?? []),
+        tap(data => this._tables.set(data)),
+        catchError(err => {
+          console.error('Erreur lors du chargement des tables de la zone', err);
+          this._error.set('Erreur lors du chargement des tables');
+          this._tables.set([]);
+          return of([]);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  /**
+   * Récupère les tables disponibles (statut "libre") pour une zone du plan.
+   */
+  getAvailableTablesByZonePlan(zonePlanId: number): Observable<TableJeuDto[]> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const params = new HttpParams()
+      .set('zoneDuPlanId', zonePlanId.toString())
+      .set('statut', 'libre');
+
+    console.log('Récupération des tables disponibles avec params:', { zoneDuPlanId: zonePlanId, statut: 'libre' });
+
+    return this.http.get<TableJeuDto[]>(this.baseUrl, { params, withCredentials: true })
+      .pipe(
+        map(data => data ?? []),
+        tap(data => {
+          console.log('Tables disponibles reçues:', data);
+          this._tables.set(data);
+        }),
+        catchError(err => {
+          console.error('Erreur lors du chargement des tables disponibles', err);
+          this._error.set('Erreur lors du chargement des tables disponibles');
+          this._tables.set([]);
+          return of([]);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  //chargement de toute les tables 
   loadAll(): void {
     this._isLoading.set(true);
     this._error.set(null);
@@ -41,6 +120,8 @@ export class TablesService {
       .subscribe();
   }
 
+
+  //ajouter une tables
   add(table: TableJeuDto): void {
     this._isLoading.set(true); 
     this._error.set(null);

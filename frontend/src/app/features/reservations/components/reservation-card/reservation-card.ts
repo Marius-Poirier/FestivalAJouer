@@ -9,6 +9,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { ReservationsService } from '../../services/reservations-service';
 import { EditeurService } from '@editeurs/services/editeur-service';
 import { StatutReservationWorkflow } from '@enum/statut-workflow-reservation';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reservation-card',
@@ -21,6 +22,7 @@ export class ReservationCard {
   protected ressvc = inject(ReservationsService)
   private editeursvc = inject(EditeurService)
   private fb = inject(FormBuilder)
+  private router = inject(Router)
 
   public readonly idReservation = input<number>();
   public readonly tablesCount = input<number>(0);
@@ -92,6 +94,10 @@ export class ReservationCard {
       this.ressvc.delete(id);
     }
     this.closePopup();
+  }
+
+  public navigateToDetail(id: number): void {
+    this.router.navigate(['/reservations', id]);
   }
 
 }

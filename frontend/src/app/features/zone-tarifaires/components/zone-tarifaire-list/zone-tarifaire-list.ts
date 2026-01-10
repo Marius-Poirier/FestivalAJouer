@@ -25,19 +25,19 @@ export class ZoneTarifaireList {
   private readonly reloadOnFestivalChange = effect(() => {
     const id = this.idcurrentfestival();
     if (id) {
-      this.zonetarifairesvc.loadAll();
+     this.loadAll();
     }
   });
 
   ngOnInit(){
-    this.zonetarifairesvc.loadAll()
+    this.loadAll()
     console.log("id festival", this.idcurrentfestival())
   }
 
+loadAll(){
+   this.zonetarifairesvc.loadAll(this.idcurrentfestival()!);
+}
 
-  add(){
-
-  }
 
   public show(){
     this.showForm.update(z => !z)

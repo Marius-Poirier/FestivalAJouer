@@ -1,0 +1,217 @@
+.tables-tab {
+  width: 100%;
+  background: var(--blanc);
+  border-radius: 8px;
+}
+
+/* ===== ACTIONS (BUTTONS) ===== */
+.actions {
+  justify-content: flex-end;
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  background: var(--couleur-bouton);
+  color: var(--blanc);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn:hover {
+  background: var(--couleur-terciere);
+}
+
+.btn:active {
+  background: var(--couleur-secondaire);
+}
+
+.btn.secondary {
+  background: var(--couleur-bouton);
+  color: var(--blanc);
+}
+
+.btn.secondary:hover {
+  background: var(--couleur-terciere);
+}
+
+.btn.secondary:active {
+  background: var(--couleur-secondaire);
+}
+
+/* ===== PLACEHOLDER / EMPTY STATE ===== */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  background-color: var(--gris-tres-clair);
+  border-radius: 8px;
+  border: 2px dashed var(--gris-clair);
+  text-align: center;
+  color: var(--gris-moyen);
+  min-height: 200px;
+}
+
+.placeholder p {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.placeholder small {
+  font-size: 0.875rem;
+  color: var(--gris-moyen);
+  opacity: 0.8;
+}
+
+/* ===== ERROR STATE ===== */
+.error-message {
+  padding: 1rem;
+  background-color: #fee2e2;
+  border: 1px solid var(--rouge-danger);
+  border-radius: 6px;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.error-message p {
+  color: var(--rouge-danger);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ===== SUMMARY ===== */
+.summary {
+  padding: 1rem;
+  background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-terciere));
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.15);
+}
+
+.summary p {
+  margin: 0;
+  color: var(--blanc);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.summary strong {
+  font-weight: 700;
+}
+
+/* ===== TABLES LIST ===== */
+.tables-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.card-table {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.btn-remove {
+  background: var(--rouge-danger);
+  align-self: flex-end;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+.btn-remove:hover {
+  background: #c53030;
+  opacity: 0.9;
+}
+
+/* ===== CONFIRMATION POPUP ===== */
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.confirm-popup {
+  background: var(--blanc);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  text-align: center;
+}
+
+.confirm-popup h3 {
+  margin: 0 0 1rem 0;
+  color: var(--couleur-primaire);
+  font-size: 1.25rem;
+}
+
+.confirm-popup p {
+  margin: 0 0 1.5rem 0;
+  color: var(--gris-moyen);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.confirm-actions .btn {
+  flex: 1;
+  padding: 0.5rem 1rem;
+}
+
+.btn.danger {
+  background: var(--rouge-danger);
+  color: var(--blanc);
+}
+
+.btn.danger:hover {
+  background: #c53030;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+
+  .tables-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .tables-tab {
+    padding: 1rem;
+  }
+
+  .summary p {
+    font-size: 0.9375rem;
+  }
+}

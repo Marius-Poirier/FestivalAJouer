@@ -1,6 +1,6 @@
 @if(reservation()){
     @let res = reservation()!;
-    <mat-card class="card-container">
+    <mat-card class="card-container" (click)="navigateToDetail(res.id!)">
         @if (canManage()) {
             <button
                 class="delete-btn"

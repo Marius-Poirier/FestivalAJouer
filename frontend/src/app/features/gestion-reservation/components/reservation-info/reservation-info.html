@@ -1,0 +1,21 @@
+@if (reservation()) {
+  @let res = reservation()!;
+  <div class="info-grid">
+    <div class="info-row"><span class="label">Nombre de tables</span><span class="value">{{nbr_tables()}}</span></div>
+    @if (res.remise_pourcentage) {
+       <div class="info-row"> <span class="label"><strong>Remise pourcentage:</strong></span><span  class="value">{{ res.remise_pourcentage  }}%</span></div>
+      }
+      @if (res.remise_montant) {
+        <div class="info-row"> <span class="label"><strong>Remise montant:</strong></span> <span  class="value">{{ res.remise_montant  }}€</span></div>
+      }
+    <div class="info-row"><span class="label">Prix total</span><span class="value">{{ this.prix_total() }} €</span></div>
+    <div class="info-row"><span class="label">Prix final</span><span class="value highlight">{{ this.prix_final() }} €</span></div>
+    @if (res.commentaires_paiement) {
+      <div class="info-row"><span class="label">Notes </span><span class="value">{{ res.commentaires_paiement }}</span></div>
+    }
+    <div class="info-row"><span class="label">Date de création</span><span class="value">{{ createdAt() ? (createdAt() | date:'shortDate') : 'Non disponible' }}</span></div>
+    <div class="info-row"><span class="label">Dernière modification</span><span class="value">{{ updatedAt() ? (updatedAt() | date:'shortDate') : 'Non disponible' }}</span></div>
+  </div>
+} @else {
+  <p>Aucune information à afficher.</p>
+}

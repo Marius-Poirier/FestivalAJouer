@@ -34,25 +34,24 @@ export class ZoneTarifaireService {
       const festival = this.currentfestival();
       if (festival?.id) {
         console.log('Festival changé, rechargement des zones tarifaires pour:', festival.nom);
-        this.loadAll();
+        this.loadAll(this.currentfestival()?.id!);
       }
     });
   }
 
-
   //charger les zones tarifaires du festival courant
-  loadAll(): void {
+  loadAll(festivalId:number): void {
     this._isLoading.set(true);
     this._error.set(null);
 
     const current = this.currentfestival();
-    if (!current || !current.id) {
+    if (!current || !festivalId) {
       this._error.set('Aucun festival sélectionné');
       this._isLoading.set(false);
       this._zonesTarifaires.set([]);
       return;
     }
-    const params = new HttpParams().set('festivalId', current.id.toString());    
+    const params = new HttpParams().set('festivalId', festivalId.toString());    
     this.http.get<ZoneTarifaireDto[]>(this.baseUrl, {
       params,
       withCredentials: true

@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { ReservationCard } from '../reservation-card/reservation-card';
 import { ReservationForm } from '../reservation-form/reservation-form';
 import { RouterModule } from '@angular/router';
+import { EditeurService } from '@editeurs/services/editeur-service';
 
 
 @Component({
@@ -16,6 +17,7 @@ import { RouterModule } from '@angular/router';
 export class ReservationList {
   protected readonly authService = inject(AuthService)
   protected readonly ressvc = inject(ReservationsService)
+  protected readonly editeursvc = inject(EditeurService)
   private idcurrentfestival = computed(() => this.ressvc.currentfestival()?.id ?? null)
   public showForm = signal<boolean>(false)
   public searchTerm = signal<string>('')
@@ -32,7 +34,12 @@ export class ReservationList {
   //     fest.lieu.toLowerCase().includes(term)
   //   );
   // });
-
+  constructor() {
+    this.editeursvc.loadAll();
+    if (!this.authService.currentUser()) {
+      this.authService.whoami();
+    }
+  }
   private readonly reloadOnFestivalChange = effect(() => {
     const id = this.idcurrentfestival();
     if (id) {
@@ -46,7 +53,7 @@ export class ReservationList {
 
   }
 
-  // Afficher form ajouter festival
+  // Afficher form ajouter reservation
   public show(){
     this.showForm.update(r => !r)
   }

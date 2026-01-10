@@ -26,13 +26,17 @@ export class ZonePlanList {
   private readonly reloadOnFestivalChange = effect(() => {
     const id = this.idcurrentfestival();
     if (id) {
-      this.zonePlansvc.loadAll();
+      this.loadAll();
     }
   });
 
   ngOnInit(){
-    this.zonePlansvc.loadAll()
+    this.loadAll()
     console.log("id festival", this.idcurrentfestival())
+  }
+
+  loadAll(){
+    this.zonePlansvc.loadAll(this.idcurrentfestival()!)
   }
 
   public show(){

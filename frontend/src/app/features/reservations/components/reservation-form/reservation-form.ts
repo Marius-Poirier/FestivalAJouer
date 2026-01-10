@@ -13,14 +13,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-reservation-form',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatSelectModule,
-    MatCheckboxModule
-  ],
+  imports: [ReactiveFormsModule,MatFormFieldModule,MatInputModule,MatButtonModule,MatSelectModule,MatCheckboxModule],
   templateUrl: './reservation-form.html',
   styleUrl: './reservation-form.css'
 })
@@ -55,8 +48,6 @@ export class ReservationForm {
 
   constructor() {
     this.editeursvc.loadAll();
-
-    // Logique de validation : désactiver remise_montant si remise_pourcentage rempli
     effect(() => {
       const pourcentage = this.form.controls.remise_pourcentage.value;
       if (pourcentage != null && pourcentage > 0) {
@@ -65,8 +56,6 @@ export class ReservationForm {
         this.form.controls.remise_montant.enable({ emitEvent: false });
       }
     });
-
-    // Logique de validation : désactiver remise_pourcentage si remise_montant rempli
     effect(() => {
       const montant = this.form.controls.remise_montant.value;
       if (montant != null && montant > 0) {
@@ -113,8 +102,8 @@ export class ReservationForm {
           editeur_presente_jeux: false
         });
         this.closeForm.emit();
-        // Rediriger vers la page détail de la réservation créée
         if (res.id) {
+          //rediriger vers la page detaille de la reservation
           this.router.navigate(['/reservations', res.id]);
         }
       }

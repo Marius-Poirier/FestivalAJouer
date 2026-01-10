@@ -44,6 +44,11 @@ export const routes: Routes = [
         path: 'reservation/create',
         loadComponent: () => import('@reservations/components/reservation-form/reservation-form').then(m => m.ReservationForm),
         canActivate: [authGuard]
+    },
+    {
+        path: 'reservations/:id',
+        loadComponent: () => import('@reservations/components/reservation-detail/reservation-detail').then(m => m.ReservationDetail),
+        canActivate: [authGuard]
     }
     ,
     {

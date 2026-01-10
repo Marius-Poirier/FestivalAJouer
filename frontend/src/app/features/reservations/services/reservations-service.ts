@@ -19,6 +19,8 @@ export class ReservationsService {
   private readonly _reservations = signal<ReservationDto[]>([]);
   readonly reservations = this._reservations.asReadonly();
 
+  public reservation = signal<ReservationDto | null>(null)
+
   private readonly _showform = signal(false);
   readonly showform = this._showform.asReadonly();
 
@@ -33,7 +35,7 @@ export class ReservationsService {
     return this._reservations().find(r => r.id === id);
   }
 
-
+// charger tout les reservations 
   loadAll(): void {
     this._isLoading.set(true);
     this._error.set(null);
@@ -48,8 +50,7 @@ export class ReservationsService {
     const params = new HttpParams().set('festivalId', current.id.toString());  
     this.http.get<ReservationDto[]>(this.baseUrl, {params, withCredentials:true})
       .pipe(
-        map(data => (data ?? []).map(r => this.normalizeReservation(r))),
-        tap(data => this._reservations.set(data)),
+        tap(data => this._reservations.set(data ?? [])),
         catchError(err => {
           console.error('Erreur lors du chargement des réservations', err);
           this._error.set('Erreur lors du chargement des réservations');
@@ -61,7 +62,7 @@ export class ReservationsService {
       )
       .subscribe(data => this._reservations.set(data ?? []));
   }
-
+//ajouter une reservation
   add(reservation: Omit<ReservationDto, 'id' | 'created_at' | 'updated_at'>) {
     this._isLoading.set(true);
     this._error.set(null);
@@ -77,10 +78,7 @@ export class ReservationsService {
       ...reservation,
       festival_id: current.id
     };
-
     console.log('Données envoyées au backend:', reservationComplet);
-
-    // Adapter le statut pour l'API (backend attend les valeurs en minuscule)
     const apiPayload = {
       ...reservationComplet,
       statut_workflow: String(reservationComplet.statut_workflow).toLowerCase()
@@ -90,14 +88,13 @@ export class ReservationsService {
       .pipe(
         tap(response => {
           if (response?.reservation) {
-            const normalized = this.normalizeReservation(response.reservation);
-            this._reservations.update(list => [normalized, ...list]);
-            console.log(`Réservation ajoutée : ${JSON.stringify(normalized)}`);
+            this._reservations.update(list => [response.reservation, ...list]);
+            console.log(`Réservation ajoutée : ${JSON.stringify(response.reservation)}`);
           } else {
             this._error.set('Erreur lors de l\'ajout de la réservation');
           }
         }),
-        map(response => response?.reservation ? this.normalizeReservation(response.reservation) : null),
+        map(response => response?.reservation ?? null),
         catchError((err) => {
           console.error('Erreur HTTP', err);
           if (err?.status === 401) {
@@ -115,16 +112,8 @@ export class ReservationsService {
       );
   }
 
-  private normalizeReservation(res: ReservationDto): ReservationDto {
-    const statutRaw = (res.statut_workflow as unknown as string) ?? '';
-    const upper = statutRaw.toUpperCase() as keyof typeof StatutReservationWorkflow;
-    const normalizedStatut = StatutReservationWorkflow[upper] ?? StatutReservationWorkflow.PAS_CONTACTE;
-    return {
-      ...res,
-      statut_workflow: normalizedStatut
-    };
-  }
 
+//supprimer une reservation
   delete(id: number): void {
     this._isLoading.set(true);
     this._error.set(null);
@@ -156,44 +145,26 @@ export class ReservationsService {
       .subscribe();
   }
 
-  update(reservation: Omit<ReservationDto, 'created_at' | 'updated_at'> & { id: number }): void {
-    this._isLoading.set(true);
-    this._error.set(null);
-
-    this.http.put<{ message: string; reservation: ReservationDto }>(
-      `${this.baseUrl}/${reservation.id}`, 
-      reservation, 
-      { withCredentials: true }
-    )
-      .pipe(
-        tap(response => {
-          if (response?.reservation) {
-            this._reservations.update(list => 
-              list.map(r => r.id === reservation.id ? response.reservation : r)
-            );
-            console.log(`Réservation mise à jour : ${JSON.stringify(response.reservation)}`);
-          } else {
-            this._error.set('Erreur lors de la mise à jour de la réservation');
-          }
-        }),
-        catchError((err) => {
-          console.error('Erreur HTTP', err);
-          if (err?.status === 401) {
-            this._error.set('Vous devez être connecté en tant qu\'organisateur');
-          } else if (err?.status === 400) {
-            this._error.set('Données invalides');
-          } else if (err?.status === 404) {
-            this._error.set('Réservation non trouvée');
-          } else if (err?.status === 409) {
-            this._error.set('Conflit lors de la mise à jour de la réservation');
-          } else {
-            this._error.set('Erreur serveur');
-          }
-          return of(null);
-        }),
-        finalize(() => this._isLoading.set(false))
-      )
-      .subscribe();
+  /**
+   * GET /api/reservations/:id
+   * Charge une seule réservation par son ID et la stocke dans le signal reservation
+   */
+  loadOne(id: number) {
+    return this.http.get<ReservationDto>(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    }).pipe(
+      tap(data => {
+        if (data) {
+          this.reservation.set(data);
+          console.log('Réservation chargée:', data);
+        }
+      }),
+      catchError(err => {
+        console.error('Erreur lors du chargement de la réservation', err);
+        this.reservation.set(null);
+        throw err;
+      })
+    );
   }
 
 }

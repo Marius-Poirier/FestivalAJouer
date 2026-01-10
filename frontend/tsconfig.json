@@ -31,6 +31,7 @@
       "@tables/*":["src/app/features/tables/*"],
       "@editeurs/*":["src/app/features/editeurs/*"],
       "@reservations/*":["src/app/features/reservations/*"],
+      "@gestion-reservation/*":["src/app/features/gestion-reservation/*"],
     }
   },
   "angularCompilerOptions": {

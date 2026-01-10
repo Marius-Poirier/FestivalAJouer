@@ -1,0 +1,31 @@
+<!-- Table Card: Display single table information -->
+<div class="table-card" [attr.data-status]="statusBadgeColor()">
+  <!-- Card Header: Table number + status badge -->
+  <div class="card-header">
+    <div>
+      <h4 class="table-number">Table #{{ table()?.id || 'N/A' }}</h4>
+      <p class="zone-plan">{{ table()?.zone_du_plan_nom || 'Zone du plan' }}</p>
+    </div>
+    <span class="status-badge" [title]="'Statut: ' + statusBadgeColor()">
+      {{ statusEmoji() }}
+    </span>
+  </div>
+
+  <div class="card-body">
+
+    <div class="info-row occupancy" [style.color]="statusBadgeColor() === 'green' ? 'green' : statusBadgeColor() === 'orange' ? 'orange' : 'red'">
+      <label>Capacité :</label>
+      <span class="value">{{ table()?.capacite_jeux || 2 }} jeux | Actuellement : <strong>{{ occupancyText() }}</strong> {{ statusEmoji() }}</span>
+    </div>
+    <div class="info-row">
+      <label>Statut :</label>
+      <span class="value">{{ table()?.statut || 'N/A' }}</span>
+    </div>
+
+    @if ((table()?.nb_jeux_actuels || 0) === 0) {
+      <div class="warning">
+        <p>⚠️ Aucun jeu attribué à cette table</p>
+      </div>
+    }
+  </div>
+</div>

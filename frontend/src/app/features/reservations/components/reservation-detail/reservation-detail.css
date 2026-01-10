@@ -1,0 +1,233 @@
+.loading-container, .error-container {
+  max-width: 48rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: center;
+  color: var(--gris-moyen);
+}
+
+.error-container {
+  color: var(--rouge-danger);
+}
+
+.detail-container {
+  max-width: 56rem;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--gris-clair);
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: var(--gris-fonce);
+  margin: 0;
+}
+
+.btn-modifier {
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-modifier:hover {
+  background-color: var(--couleur-terciere);
+}
+
+.btn-modifier:active {
+  background-color: var(--couleur-secondaire);
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-annuler {
+  background-color: var(--gris-moyen);
+  color: var(--blanc);
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-annuler:hover {
+  background-color: var(--gris-fonce);
+}
+
+.btn-enregistrer {
+  background-color: var(--vert-succes);
+  color: var(--blanc);
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-enregistrer:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.btn-enregistrer:disabled {
+  background-color: var(--gris-clair);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* INFO SECTION */
+.info-section {
+  background: var(--fond-carte);
+  border: 1px solid var(--gris-clair);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.info-section p {
+  margin-bottom: 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--gris-fonce);
+}
+
+.info-section p:last-child {
+  margin-bottom: 0;
+}
+
+.info-section strong {
+  color: var(--gris-moyen);
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.prix-final {
+  color: var(--couleur-primaire);
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+/* FORMULAIRE D'ÉDITION */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.edit-form mat-form-field {
+  width: 100%;
+}
+
+.edit-form mat-checkbox {
+  margin: 0.5rem 0;
+}
+
+/* ONGLETS */
+.tabs-container {
+  background: var(--fond-carte);
+  border: 1px solid var(--gris-clair);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabs-header {
+  background: var(--fond-sous-header);
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--gris-clair);
+}
+
+.tabs-header mat-radio-group {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.tabs-header mat-radio-button {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.tabs-header mat-radio-button ::ng-deep .mdc-label {
+  color: var(--gris-fonce);
+}
+
+.tabs-header mat-radio-button ::ng-deep .mdc-radio__native-control:enabled:checked + .mdc-radio__background .mdc-radio__outer-circle {
+  border-color: var(--couleur-primaire);
+}
+
+.tabs-header mat-radio-button ::ng-deep .mdc-radio__native-control:enabled:checked + .mdc-radio__background .mdc-radio__inner-circle {
+  border-color: var(--couleur-primaire);
+}
+
+.tab-content {
+  padding: 1.5rem;
+  min-height: 200px;
+}
+
+.tab-panel {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .detail-container {
+    padding: 0 0.75rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .btn-modifier {
+    width: 100%;
+  }
+
+  .tabs-header mat-radio-group {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tab-content {
+    padding: 1rem;
+  }
+}

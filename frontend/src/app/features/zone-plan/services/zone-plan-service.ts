@@ -1,10 +1,12 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { inject, Injectable, signal, computed } from '@angular/core';
 import { environment } from '@env/environment';
 import { ZoneDuPlanDto } from '@interfaces/entites/zone-du-plan-dto';
 import { catchError, finalize, of, tap } from 'rxjs';
 import { CurrentFestival } from '@core/services/current-festival';
 import { TablesService } from '@tables/services/tables-service';
+import { GestionReservationService } from '@gestion-reservation/services/gestion-reservation-service';
+import { TableJeuDto } from '@interfaces/entites/table-jeu-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -21,6 +23,8 @@ export class ZonePlanService {
   private readonly _zonesPlan = signal<ZoneDuPlanDto[]>([]);
   readonly zonesPlan = this._zonesPlan.asReadonly()
 
+  private readonly _tables = signal<TableJeuDto[]>([])
+
   private readonly _showform = signal(false)
   readonly showform = this._showform.asReadonly()
 
@@ -32,23 +36,23 @@ export class ZonePlanService {
   readonly error = this._error.asReadonly();
 
 
+
   public findById(id : number){
     return this._zonesPlan().find((f)=>f.id === id)
   }
 
   //charger les zones du plan du festival courant
-  loadAll(): void {
+  loadAll(festivalId : number ): void {
     console.log("chargement des zones du plan")
     this._isLoading.set(true);
     this._error.set(null);
-    const current = this.currentfestival();
-    if (!current || !current.id) {
+    if (!festivalId) {
       this._error.set('Aucun festival sélectionné');
       this._isLoading.set(false);
       this._zonesPlan.set([]);
       return;
     }
-    const params = new HttpParams().set('festivalId', current.id.toString());    
+    const params = new HttpParams().set('festivalId', festivalId.toString());    
     this.http.get<ZoneDuPlanDto[]>(this.baseUrl, {
       params,
       withCredentials: true
@@ -69,6 +73,8 @@ export class ZonePlanService {
     )
     .subscribe(data => this._zonesPlan.set(data ?? []));
   }
+
+
 
   //ajouter zone du plan + génération automatique des tables
   add(zonePlan: ZoneDuPlanDto, tableCapacity = 2): void {
@@ -161,6 +167,20 @@ export class ZonePlanService {
     .subscribe();
   }
 
+  /**
+   * GET /api/zones-du-plan/:id
+   * Charge une seule zone du plan par son ID
+   */
+  public loadOne(id: number) {
+    return this.http.get<ZoneDuPlanDto>(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    }).pipe(
+      catchError(err => {
+        console.error(`Erreur lors du chargement de la zone du plan ${id}`, err);
+        throw err;
+      })
+    );
+  }
 
   
 }
