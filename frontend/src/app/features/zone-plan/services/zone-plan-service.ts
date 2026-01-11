@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable, signal, computed } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '@env/environment';
 import { ZoneDuPlanDto } from '@interfaces/entites/zone-du-plan-dto';
 import { catchError, finalize, of, tap } from 'rxjs';
@@ -74,8 +74,6 @@ export class ZonePlanService {
     .subscribe(data => this._zonesPlan.set(data ?? []));
   }
 
-
-
   //ajouter zone du plan + génération automatique des tables
   add(zonePlan: ZoneDuPlanDto, tableCapacity = 2): void {
     this._isLoading.set(true);
@@ -87,10 +85,10 @@ export class ZonePlanService {
       this._isLoading.set(false);
       return;
     }
-
     const zonePlanComplete: ZoneDuPlanDto = {
       ...zonePlan,
-      festival_id: current.id
+      festival_id: current.id,
+      nombre_tables: 0
     };
 
     console.log('Données envoyées au backend:', zonePlanComplete);
@@ -103,12 +101,11 @@ export class ZonePlanService {
       .pipe(
         tap(response => {
           if (response?.zone) {
-            // Ajouter la nouvelle zone au début de la liste
             this._zonesPlan.update(list => [response.zone, ...list]);
             console.log(`Zone du plan ajoutée : ${JSON.stringify(response.zone)}`);
 
-            // Générer automatiquement les tables liées à cette zone
-            const tablesToCreate = Math.max(0, response.zone.nombre_tables ?? 0);
+            const tablesToCreate = Math.max(0, zonePlan.nombre_tables ?? 0);
+            
             if (response.zone.id) {
               for (let i = 0; i < tablesToCreate; i++) {
                 this.tablesSvc.add({
@@ -116,6 +113,13 @@ export class ZonePlanService {
                   zone_tarifaire_id: response.zone.zone_tarifaire_id,
                   capacite_jeux: tableCapacity || 2
                 });
+              }
+
+              if (tablesToCreate > 0) {
+                const zid = response.zone.id;
+                this._zonesPlan.update(list => list.map(z =>
+                  z.id === zid ? { ...z, nombre_tables: tablesToCreate } : z
+                ));
               }
             }
           } else {
@@ -168,7 +172,8 @@ export class ZonePlanService {
   }
 
   /**
-   * GET /api/zones-du-plan/:id
+   * GET /api/zones-du-plan
+   * /:id
    * Charge une seule zone du plan par son ID
    */
   public loadOne(id: number) {
@@ -182,5 +187,4 @@ export class ZonePlanService {
     );
   }
 
-  
 }

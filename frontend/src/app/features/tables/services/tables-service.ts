@@ -18,7 +18,7 @@ export class TablesService {
   readonly showform = this._showform.asReadonly()
 
   private readonly _isLoading = signal<boolean>(false);
-  private readonly _error = signal<string | null>(null);
+  public readonly _error = signal<string | null>(null);
 
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
@@ -123,12 +123,14 @@ export class TablesService {
 
   //ajouter une tables
   add(table: TableJeuDto): void {
+    console.log('🔵 TablesService.add() appelé', table);
     this._isLoading.set(true); 
     this._error.set(null);
     
     this.http.post<{ message: string; table: TableJeuDto }>(this.baseUrl, table, { withCredentials: true })
       .pipe(
         tap(response => {
+          console.log('✅ Réponse POST /api/tables:', response);
           if (response?.table) {
             this._tables.update(list => [response.table, ...list]);
             console.log(`Table créée : ${JSON.stringify(response.table)}`);
@@ -221,5 +223,21 @@ export class TablesService {
 
   public findById(id: number) {
     return this._tables().find((t) => t.id === id)
+  }
+
+  /**
+   * Vérifie s'il existe au moins une réservation pour une table donnée.
+   * GET /api/tables/:id/reservation (retourne un objet ou null)
+   */
+  hasReservationForTable(tableId: number): Observable<boolean> {
+    if (!tableId) return of(false);
+
+    return this.http.get<unknown>(`${this.baseUrl}/${tableId}/reservation`, { withCredentials: true }).pipe(
+      map(res => !!res),
+      catchError(err => {
+        console.error('Erreur lors du contrôle des réservations pour la table', err);
+        return of(false);
+      })
+    );
   }
 }

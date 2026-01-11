@@ -1,0 +1,320 @@
+.loading-container, .error-container {
+  max-width: 48rem;
+  margin: 2rem auto;
+  padding: 2rem;
+  text-align: center;
+  color: var(--gris-moyen);
+}
+
+.error-container {
+  color: var(--rouge-danger);
+}
+
+.detail-container {
+  max-width: 56rem;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--gris-clair);
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: var(--gris-fonce);
+  margin: 0;
+}
+
+.btn-ajouter {
+  background-color: var(--couleur-primaire);
+  color: var(--blanc);
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.btn-ajouter:hover {
+  background-color: var(--couleur-secondaire);
+}
+
+/* INFO SECTION */
+.info-section {
+  background: var(--fond-carte);
+  border: 1px solid var(--gris-clair);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.info-section p {
+  margin-bottom: 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--gris-fonce);
+}
+
+.info-section p:last-child {
+  margin-bottom: 0;
+}
+
+.info-section strong {
+  color: var(--gris-moyen);
+  font-weight: 600;
+  margin-right: 0.5rem;
+}
+
+.prix-final {
+  color: var(--couleur-primaire);
+  font-weight: bold;
+  font-size: 1.125rem;
+}
+
+/* FORMULAIRE AJOUT TABLE */
+.add-form-section {
+  background: var(--fond-carte);
+  border: 1px solid var(--couleur-primaire);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.add-form-section h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gris-fonce);
+  margin: 0 0 1rem 0;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--gris-moyen);
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  width: 100%;
+  max-width: 200px;
+  padding: 0.5rem;
+  border: 1px solid var(--gris-clair);
+  border-radius: 4px;
+  font-size: 0.9375rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--couleur-primaire);
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: flex-end;
+}
+
+.btn-annuler {
+  background-color: var(--gris-moyen);
+  color: var(--blanc);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.btn-annuler:hover {
+  background-color: var(--gris-fonce);
+}
+
+.btn-enregistrer {
+  background: #1877f2;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.btn-enregistrer:hover {
+  background-color: #10b981;
+}
+
+/* ONGLETS */
+.tabs-container {
+  background: var(--fond-carte);
+  border: 1px solid var(--gris-clair);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.tabs-header {
+  background: var(--fond-sous-header);
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--gris-clair);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tabs-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gris-fonce);
+  margin: 0;
+}
+
+.btn-ajouter {
+  background: #1877f2;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-ajouter:hover {
+  background: #166fe5;
+}
+
+.tab-content {
+  padding: 1.5rem;
+  min-height: 200px;
+}
+
+.tab-panel {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* TABLE ITEMS */
+.table-item {
+  background: var(--blanc);
+  border: 1px solid var(--gris-clair);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+
+.table-item:last-child {
+  margin-bottom: 0;
+}
+
+.table-item p {
+  margin-bottom: 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--gris-fonce);
+}
+
+.table-item p:last-child {
+  margin-bottom: 0;
+}
+
+.table-item strong {
+  color: var(--gris-moyen);
+  font-weight: 600;
+}
+
+.table-delete {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--gris-clair);
+  background: var(--fond-sous-header);
+  color: var(--gris-fonce);
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Toast popup for blocked deletion */
+.toast {
+  position: fixed;
+  top: 4.5rem; /* below the page header to avoid overlap */
+  right: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: var(--blanc);
+  background: var(--gris-fonce);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  z-index: 1000; /* keep above header/card content */
+  cursor: pointer;
+  max-width: 320px;
+}
+
+.toast.blocked {
+  background: var(--rouge-danger);
+}
+
+.table-delete:hover {
+  background: #fdeaea;
+  border-color: var(--rouge-danger);
+  color: var(--rouge-danger);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .detail-container {
+    padding: 0 0.75rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .tab-content {
+    padding: 1rem;
+  }
+}

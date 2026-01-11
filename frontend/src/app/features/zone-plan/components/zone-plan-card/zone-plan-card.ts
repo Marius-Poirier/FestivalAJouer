@@ -1,4 +1,5 @@
 import { Component, computed, inject, input, output, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { ZoneDuPlanDto } from '@interfaces/entites/zone-du-plan-dto';
 import { ZonePlanService } from '../../services/zone-plan-service';
 import { ZoneTarifaireService } from '@zoneTarifaires/services/zone-tarifaire-service';
@@ -18,6 +19,7 @@ import { CurrencyPipe } from '@angular/common';
 export class ZonePlanCard {
   private zonePlansvc = inject(ZonePlanService)
   private zoneTarifairesvc = inject(ZoneTarifaireService)
+  private router = inject(Router);
   public readonly idZonePlan = input<number>();
   public readonly zone = input<ZoneDuPlanDto>();
   
@@ -50,6 +52,10 @@ export class ZonePlanCard {
     }
     return undefined
   })
+  
+  public navigateToDetail(id: number): void {
+    this.router.navigate(['/zone-plan', id]);
+  }
 
   public openDeletePopup(zone: ZoneDuPlanDto): void {
     this.deleteType.set('zone');
@@ -62,7 +68,7 @@ export class ZonePlanCard {
   }
 
   private closePopup(): void {
-    this.deleteType.set('null');
+    this.deleteType.set(null);
     this.deleteId.set(null);
     this.deletenom.set('');
   }
@@ -75,5 +81,7 @@ export class ZonePlanCard {
     }
     this.closePopup();
   }
+
+
 
 }

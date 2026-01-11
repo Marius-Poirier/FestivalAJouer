@@ -1,6 +1,6 @@
 @if(zonePlan()){
     @let zone = zonePlan()!;
-    <mat-card class="card-container">
+    <mat-card class="card-container" (click)="navigateToDetail(zone.id!)">
         <button
             class="delete-btn"
             (click)="openDeletePopup(zone); $event.stopPropagation()"

@@ -21,7 +21,6 @@ import { Router } from '@angular/router';
 export class ReservationCard {
   protected ressvc = inject(ReservationsService)
   private editeursvc = inject(EditeurService)
-  private fb = inject(FormBuilder)
   private router = inject(Router)
 
   public readonly idReservation = input<number>();

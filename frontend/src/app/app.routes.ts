@@ -49,9 +49,13 @@ export const routes: Routes = [
         path: 'reservations/:id',
         loadComponent: () => import('@reservations/components/reservation-detail/reservation-detail').then(m => m.ReservationDetail),
         canActivate: [authGuard]
-    }
-    ,
-
+    },
+    {
+        path: 'zone-plan/:id',
+        loadComponent: () => import('@zonePlan/components/zone-plan-detail/zone-plan-detail').then(m => m.ZonePlanDetail),
+        canActivate: [authGuard]
+    },
+    {
         path: 'jeux',
         loadComponent: () => import('@jeux/components/jeu-list/jeu-list').then(m => m.JeuList),
         canActivate: [authGuard]

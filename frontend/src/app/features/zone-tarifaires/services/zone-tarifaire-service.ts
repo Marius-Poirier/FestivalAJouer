@@ -152,10 +152,23 @@ export class ZoneTarifaireService {
       .subscribe();
   }
 
- 
-
   public findById(id : number){
     return this._zonesTarifaires().find((f)=>f.id === id)
+  }
+
+  /**
+   * GET /api/zones-tarifaires/:id
+   * Charge une zone tarifaire par ID sans charger toute la liste.
+   */
+  public loadOne(id: number) {
+    return this.http.get<ZoneTarifaireDto>(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    }).pipe(
+      catchError(err => {
+        console.error(`Erreur lors du chargement de la zone tarifaire ${id}`, err);
+        throw err;
+      })
+    );
   }
   
 }
