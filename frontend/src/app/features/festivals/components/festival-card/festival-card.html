@@ -1,13 +1,15 @@
 @if(festival()){
     @let fest = festival()!;
     <mat-card class="card-container">
-        <button
-            class="delete-btn"
-            (click)="openDeletePopup(fest); $event.stopPropagation()"
-            aria-label="Supprimer"
-        >
-            <mat-icon>close</mat-icon>
-        </button>
+        @if (authService.isAdminSuperorgaOrga()) {
+            <button
+                class="delete-btn"
+                (click)="openDeletePopup(fest); $event.stopPropagation()"
+                aria-label="Supprimer"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        }
         
         @if (!isEditMode()) {
             <!-- Mode affichage -->
@@ -19,9 +21,11 @@
                 <p>Début : <span style="text-transform: capitalize;">{{fest.date_debut | date: 'fullDate':'':'fr-FR' }}</span></p>
                 <p>Fin : <span style="text-transform: capitalize;">{{fest.date_fin | date: 'fullDate':'':'fr-FR'}}</span></p>
             </mat-card-content>
-            <mat-card-actions>
-                <button (click)="formEdition(); $event.stopPropagation()">Modifier</button> 
-            </mat-card-actions>
+            @if (authService.isAdminSuperorgaOrga()) {
+                <mat-card-actions>
+                    <button (click)="formEdition(); $event.stopPropagation()">Modifier</button> 
+                </mat-card-actions>
+            }
         } @else {
             <!-- Mode édition -->
             <form [formGroup]="form" (click)="$event.stopPropagation()">

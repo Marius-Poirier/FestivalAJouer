@@ -7,6 +7,7 @@ import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
 import { CurrencyPipe } from '@angular/common';
+import { AuthService } from '@core/services/auth-services';
 
 
 
@@ -20,6 +21,7 @@ export class ZonePlanCard {
   private zonePlansvc = inject(ZonePlanService)
   private zoneTarifairesvc = inject(ZoneTarifaireService)
   private router = inject(Router);
+  protected authService = inject(AuthService);
   public readonly idZonePlan = input<number>();
   public readonly zone = input<ZoneDuPlanDto>();
   

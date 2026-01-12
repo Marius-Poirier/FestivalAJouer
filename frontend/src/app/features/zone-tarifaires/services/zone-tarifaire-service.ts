@@ -142,8 +142,10 @@ export class ZoneTarifaireService {
             this._error.set('Vous devez être connecté en tant que super organisateur');
           } else if (err?.status === 404) {
             this._error.set('Zone tarifaire introuvable');
+          } else if (err?.status === 409) {
+            this._error.set('Impossible de supprimer cette zone tarifaire car elle est encore utilisée');
           } else {
-            this._error.set('Erreur lors de la suppression');
+            this._error.set('Impossible de supprimer cette zone tarifaire car elle est encore utilisée');
           }
           return of(null);
         }),

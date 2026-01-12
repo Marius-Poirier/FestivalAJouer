@@ -1,4 +1,4 @@
-import { Component, inject, signal, input, effect, OnInit } from '@angular/core';
+import { Component, inject, signal, input, effect, OnInit, computed } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TableJeuDto } from '@interfaces/entites/table-jeu-dto';
 import { TablesService } from '@tables/services/tables-service';
@@ -43,6 +43,8 @@ export class ZonePlanDetail implements OnInit {
   protected showAddForm = signal<boolean>(false);
   protected newTableCapacite = signal<number>(2);
 
+  // Compute nombre_tables from tables list length
+  protected readonly nombreTablesComputed = computed(() => this.tables().length);
 
   private lastZoneTarifaireLoaded: number | null = null;
 
@@ -138,6 +140,13 @@ export class ZonePlanDetail implements OnInit {
     if (!this.showAddForm()) {
       this.newTableCapacite.set(10);
     }
+  }
+
+  protected capaciteFor(table?: TableJeuDto | null): string {
+    if (!table) return '0/2';
+    const current = table.nb_jeux_actuels ?? 0;
+    const capacity = table.capacite_jeux ?? 2;
+    return `${current}/${capacity}`;
   }
 
   protected addTable(): void {

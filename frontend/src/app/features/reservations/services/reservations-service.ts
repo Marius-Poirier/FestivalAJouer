@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable, signal, computed } from '@angular/core';
+import { inject, Injectable, signal, computed, effect } from '@angular/core';
 import { catchError, finalize, map, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ReservationDto } from '@interfaces/entites/reservation-dto';
@@ -29,6 +29,17 @@ export class ReservationsService {
 
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
+
+  constructor() {
+    // Recharger automatiquement les réservations quand le festival change
+    effect(() => {
+      const festival = this.currentfestival();
+      if (festival?.id) {
+        console.log('Festival changé, rechargement des réservations pour:', festival.nom);
+        this.loadAll();
+      }
+    });
+  }
 
 
   findById(id: number): ReservationDto | undefined {

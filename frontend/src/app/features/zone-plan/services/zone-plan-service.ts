@@ -35,8 +35,6 @@ export class ZonePlanService {
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
 
-
-
   public findById(id : number){
     return this._zonesPlan().find((f)=>f.id === id)
   }
