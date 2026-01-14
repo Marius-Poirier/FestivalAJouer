@@ -1,0 +1,26 @@
+<div class="container">
+
+  @if (!currentFestival()?.id) {
+    <p>Sélectionne un festival pour voir les jeux.</p>
+  } @else if (isLoading()) {
+    <p>Chargement...</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else {
+    @if (jeux().length === 0) {
+      <p>Aucun jeu ajouté via les réservations.</p>
+    } @else {
+      <ul class="grid">
+        @for (j of jeux(); track j.id) {
+          <li>
+            <app-jeu-card
+              [jeu]="j"
+              [canManage]="false"
+              (detail)="onDetail($event)">
+            </app-jeu-card>
+          </li>
+        }
+      </ul>
+    }
+  }
+</div>

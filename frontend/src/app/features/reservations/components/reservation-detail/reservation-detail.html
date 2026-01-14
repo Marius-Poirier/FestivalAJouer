@@ -51,7 +51,15 @@
               </app-reservation-table>
             </div>
           }
-          @case ('jeux') { <div class="tab-panel"><p>Onglet Jeux</p></div> }
+          @case ('jeux') {
+            <div class="tab-panel">
+              <app-workflow-reservation-jeux
+                [festivalId]="festivalId()"
+                [reservationId]="reservationId()"
+                [editeurId]="res.editeur_id">
+              </app-workflow-reservation-jeux>
+            </div>
+          }
           @case ('workflow') { <div class="tab-panel"><p>Onglet Workflow</p></div> }
         }
       </div>

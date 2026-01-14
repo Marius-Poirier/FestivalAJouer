@@ -11,6 +11,7 @@ import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
 import { AuthService } from '@core/services/auth-services';
 import { ReservationInfo } from 'src/app/features/gestion-reservation/components/reservation-info/reservation-info';
 import { ReservationTable } from 'src/app/features/gestion-reservation/components/reservation-table/reservation-table';
+import { WorkflowReservationJeux } from 'src/app/features/gestion-reservation/components/workflow-reservation-jeux/workflow-reservation-jeux';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -20,7 +21,8 @@ import { ReservationTable } from 'src/app/features/gestion-reservation/component
     MatRadioModule,
     PopupDelete,
     ReservationInfo,
-    ReservationTable
+    ReservationTable,
+    WorkflowReservationJeux
   ],
   templateUrl: './reservation-detail.html',
   styleUrl: './reservation-detail.css'

@@ -6,6 +6,71 @@ import { parsePositiveInteger } from '../utils/validation.js'
 const router = Router()
 const FIELDS = `id, jeu_id, reservation_id, festival_id, dans_liste_demandee, dans_liste_obtenue, jeux_recu, created_at, updated_at`
 
+// GET /api/jeu-festival/view?festivalId=...&reservationId=... (reservationId optionnel)
+router.get('/view', async (req, res) => {
+  try {
+    const params: unknown[] = []
+    const clauses: string[] = []
+
+    // festivalId requis (workflow = festival scope)
+    if (!req.query.festivalId) {
+      return res.status(400).json({ error: 'festivalId est requis' })
+    }
+    const festivalId = Number.parseInt(String(req.query.festivalId), 10)
+    if (!Number.isInteger(festivalId)) {
+      return res.status(400).json({ error: 'festivalId invalide' })
+    }
+    params.push(festivalId)
+    clauses.push(`jf.festival_id = $${params.length}`)
+
+    // reservationId optionnel (si tu veux filtrer par réservation)
+    if (req.query.reservationId) {
+      const reservationId = Number.parseInt(String(req.query.reservationId), 10)
+      if (!Number.isInteger(reservationId)) {
+        return res.status(400).json({ error: 'reservationId invalide' })
+      }
+      params.push(reservationId)
+      clauses.push(`jf.reservation_id = $${params.length}`)
+    }
+
+    const whereClause = clauses.length ? `WHERE ${clauses.join(' AND ')}` : ''
+
+    const { rows } = await pool.query(
+      `
+      SELECT
+        jf.id,
+        jf.jeu_id,
+        jf.reservation_id,
+        jf.festival_id,
+        jf.dans_liste_demandee,
+        jf.dans_liste_obtenue,
+        jf.jeux_recu,
+        jf.created_at,
+        jf.updated_at,
+
+        j.nom AS jeu_nom,
+        tj.nom AS type_jeu_nom,
+
+        r.editeur_id,
+        e.nom AS editeur_nom
+      FROM JeuFestival jf
+      JOIN Jeu j ON j.id = jf.jeu_id
+      LEFT JOIN TypeJeu tj ON tj.id = j.type_jeu_id
+      JOIN Reservation r ON r.id = jf.reservation_id
+      JOIN Editeur e ON e.id = r.editeur_id
+      ${whereClause}
+      ORDER BY jf.updated_at DESC NULLS LAST, jf.created_at DESC
+      `,
+      params
+    )
+
+    res.json(rows)
+  } catch (err) {
+    console.error('Erreur lors de la récupération (view) des jeux festival', err)
+    res.status(500).json({ error: 'Erreur serveur' })
+  }
+})
+
 // GET /api/jeu-festival
 router.get('/', async (req, res) => {
     try {

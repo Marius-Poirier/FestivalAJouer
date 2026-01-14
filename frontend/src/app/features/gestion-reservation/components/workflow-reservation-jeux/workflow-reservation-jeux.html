@@ -1,0 +1,62 @@
+<div class="container">
+  <div class="header">
+    <h3>Jeux</h3>
+
+    @if (canManage()) {
+      <div class="add-row">
+        <mat-form-field appearance="fill" class="field">
+          <mat-label>Jeu (éditeur)</mat-label>
+
+          <mat-select
+            [value]="selectedJeuId()"
+            (valueChange)="selectedJeuId.set($event)">
+
+            @if (!availableEditeurJeux().length) {
+              <mat-option disabled>Plus de jeux disponibles</mat-option>
+            }
+
+            @for (j of availableEditeurJeux(); track j.id) {
+              <mat-option [value]="j.id">{{ j.nom }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          type="button"
+          (click)="addJeuToReservation()"
+          [disabled]="!selectedJeuId() || !availableEditeurJeux().length">
+          + Ajouter
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (isLoading()) {
+    <p>Chargement...</p>
+  } @else if (error()) {
+    <p class="error">{{ error() }}</p>
+  } @else {
+    @if (reservationJeux().length === 0) {
+      <p>Aucun jeu ajouté pour cette réservation.</p>
+    } @else {
+      <ul class="simple-list">
+        @for (l of reservationJeux(); track l.id) {
+          <li class="item" (click)="openJeuDetail(l.jeu_id)">
+            <span class="name">{{ l.jeu_nom }}</span>
+
+            @if (canManage()) {
+              <button
+                type="button"
+                class="btn-remove"
+                (click)="removeJeu(l.id); $event.stopPropagation()"
+                aria-label="Retirer">
+                <mat-icon>close</mat-icon>
+              </button>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+</div>

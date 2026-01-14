@@ -1,0 +1,85 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.add-row {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  flex-wrap: wrap;
+}
+
+.field {
+  min-width: 280px;
+  flex: 1;
+}
+
+.simple-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.item {
+  padding: 10px 12px;
+  border: 1px solid var(--gris-clair);
+  background: var(--fond-carte);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.item:hover {
+  box-shadow: 0 0 0 2px var(--couleur-bouton);
+  border-color: var(--couleur-bouton);
+}
+
+.error {
+  color: var(--rouge-danger);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.name {
+  flex: 1;
+}
+
+.btn-remove {
+  background: var(--rouge-danger);
+  color: var(--blanc);
+  border: none;
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-remove:hover {
+  filter: brightness(0.95);
+}
+
+.btn-remove mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+

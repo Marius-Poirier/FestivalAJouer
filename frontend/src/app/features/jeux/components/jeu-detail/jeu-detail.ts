@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { JeuService } from '../../services/jeu-service';
 import { JeuDto } from '@interfaces/entites/jeu-dto';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-jeu-detail',
@@ -20,10 +21,13 @@ export class JeuDetail {
   protected readonly jeu = signal<JeuDto | null>(null);
   protected readonly isLoading = signal<boolean>(true);
   protected readonly error = signal<string | null>(null);
+  protected readonly returnUrl = signal<string>('/jeux');
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
     const id = idParam ? Number.parseInt(idParam, 10) : NaN;
+    const ret = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (ret) this.returnUrl.set(ret);
 
     if (!Number.isFinite(id)) {
       this.error.set('Identifiant de jeu invalide');
@@ -42,4 +46,10 @@ export class JeuDetail {
       }
     });
   }
+
+  private readonly router = inject(Router);
+  protected goBack() {
+    this.router.navigateByUrl(this.returnUrl());
+  }
+
 }

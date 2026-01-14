@@ -7,6 +7,8 @@ import { AuthService } from '@core/services/auth-services';
 import { TableJeuDto } from '@interfaces/entites/table-jeu-dto';
 import { TablesService } from '@tables/services/tables-service';
 import { ReservationsService } from '@reservations/services/reservations-service';
+import { JeuDto } from '@interfaces/entites/jeu-dto';
+import { JeuFestivalViewDto } from '@interfaces/entites/jeu-festival-view-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -176,7 +178,6 @@ export class GestionReservationService {
             this._reservationTables.update(rt =>
               rt.filter(r => !(r.reservation_id === reservationId && r.table_id === tableId))
             );
-            // Retirer aussi la table des détails chargés
             this._tables.update(tables => tables.filter(t => t.id !== tableId));
             console.log(`Réservation de table supprimée : ${JSON.stringify(response.affectation)}`);
           } else {
@@ -202,6 +203,108 @@ export class GestionReservationService {
       .subscribe();
   }
 
-}
+  // =========================
+  // ===== gestion des jeux ===
+  // =========================
 
-//=========  gestion des jeux  
+  private readonly _jeuFestivalView = signal<JeuFestivalViewDto[]>([]);
+  readonly jeuFestivalView = this._jeuFestivalView.asReadonly();
+
+  /**
+   * Vue joinée: jeux liés via JeuFestival
+   * - si reservationId fourni => jeux de la réservation
+   * - sinon => jeux de TOUTES les réservations du festival
+   */
+  loadJeuxView(festivalId: number, reservationId?: number) {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    let params = new HttpParams().set('festivalId', festivalId.toString());
+    if (reservationId) params = params.set('reservationId', reservationId.toString());
+
+    return this.http
+      .get<JeuFestivalViewDto[]>(`${environment.apiUrl}/jeu-festival/view`, { params, withCredentials: true })
+      .pipe(
+        tap((rows) => this._jeuFestivalView.set(rows ?? [])),
+        catchError((err) => {
+          console.error('Erreur loadJeuxView', err);
+          this._error.set('Erreur lors du chargement des jeux');
+          this._jeuFestivalView.set([]);
+          return of([] as JeuFestivalViewDto[]);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  /**
+   * POST lien JeuFestival
+   */
+  addJeuToReservation(festivalId: number, reservationId: number, jeuId: number) {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const payload = {
+      festival_id: festivalId,
+      reservation_id: reservationId,
+      jeu_id: jeuId,
+      dans_liste_demandee: false,
+      dans_liste_obtenue: false,
+      jeux_recu: false
+    };
+
+    return this.http
+      .post(`${environment.apiUrl}/jeu-festival`, payload, { withCredentials: true })
+      .pipe(
+        catchError((err) => {
+          console.error('Erreur addJeuToReservation', err);
+          if (err?.status === 401) this._error.set("Vous devez être connecté en tant qu'organisateur");
+          else if (err?.status === 409) this._error.set('Ce jeu est déjà lié');
+          else this._error.set("Erreur lors de l'ajout du jeu");
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  deleteJeuFromReservation(jeuFestivalId: number) {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.http
+      .delete(`${environment.apiUrl}/jeu-festival/${jeuFestivalId}`, { withCredentials: true })
+      .pipe(
+        catchError((err) => {
+          console.error('Erreur deleteJeuFromReservation', err);
+          if (err?.status === 401) this._error.set("Vous devez être connecté en tant qu'organisateur");
+          else if (err?.status === 404) this._error.set('Lien jeu introuvable');
+          else this._error.set("Erreur lors de la suppression du jeu");
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  mapViewToJeuCards(): JeuDto[] {
+    return (this._jeuFestivalView() ?? []).map((v) => {
+      const nbMin = Number(v.nb_joueurs_min ?? 0);
+      const nbMax = Number(v.nb_joueurs_max ?? nbMin);
+      const ageMin = Number(v.age_min ?? 0);
+      const ageMax = Number(v.age_max ?? ageMin);
+
+      return {
+        id: v.jeu_id,
+        nom: v.jeu_nom,
+
+        nb_joueurs_min: nbMin,
+        nb_joueurs_max: nbMax,
+
+        duree_minutes: v.duree_minutes ?? undefined,
+
+        age_min: ageMin,
+        age_max: ageMax,
+
+        type_jeu_nom: v.type_jeu_nom ?? undefined
+      } as JeuDto;
+    });
+  }
+}

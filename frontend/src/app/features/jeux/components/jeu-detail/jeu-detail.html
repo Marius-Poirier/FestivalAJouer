@@ -1,5 +1,5 @@
 <div class="detail-container">
-  <a routerLink="/jeux" class="back-link">← Retour à la liste des jeux</a>
+  <a (click)="goBack()" class="back-link">← Retour</a>
 
   @if (isLoading()) {
     <p>Chargement du jeu...</p>
