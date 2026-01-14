@@ -53,11 +53,11 @@
           }
           @case ('jeux') {
             <div class="tab-panel">
-              <app-workflow-reservation-jeux
+              <app-reservation-jeu
                 [festivalId]="festivalId()"
                 [reservationId]="reservationId()"
                 [editeurId]="res.editeur_id">
-              </app-workflow-reservation-jeux>
+              </app-reservation-jeu>
             </div>
           }
           @case ('workflow') { <div class="tab-panel"><p>Onglet Workflow</p></div> }

@@ -11,7 +11,7 @@ import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
 import { AuthService } from '@core/services/auth-services';
 import { ReservationInfo } from 'src/app/features/gestion-reservation/components/reservation-info/reservation-info';
 import { ReservationTable } from 'src/app/features/gestion-reservation/components/reservation-table/reservation-table';
-import { WorkflowReservationJeux } from 'src/app/features/gestion-reservation/components/workflow-reservation-jeux/workflow-reservation-jeux';
+import { ReservationJeu } from '@gestion-reservation/components/reservation-jeu/reservation-jeu';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -22,7 +22,7 @@ import { WorkflowReservationJeux } from 'src/app/features/gestion-reservation/co
     PopupDelete,
     ReservationInfo,
     ReservationTable,
-    WorkflowReservationJeux
+    ReservationJeu
   ],
   templateUrl: './reservation-detail.html',
   styleUrl: './reservation-detail.css'

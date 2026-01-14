@@ -9,6 +9,7 @@ import { TablesService } from '@tables/services/tables-service';
 import { ReservationsService } from '@reservations/services/reservations-service';
 import { JeuDto } from '@interfaces/entites/jeu-dto';
 import { JeuFestivalViewDto } from '@interfaces/entites/jeu-festival-view-dto';
+import { JeuService } from '@jeux/services/jeu-service';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,7 @@ export class GestionReservationService {
 
   public reservation = this.reservationsvc.reservation
 
+  private readonly jeuService = inject(JeuService);
 
   findByReservationId(reservationId: number): ReservationTableDto[] {
     return this._reservationTables().filter(rt => rt.reservation_id === reservationId);
@@ -284,27 +286,30 @@ export class GestionReservationService {
       );
   }
 
-  mapViewToJeuCards(): JeuDto[] {
-    return (this._jeuFestivalView() ?? []).map((v) => {
-      const nbMin = Number(v.nb_joueurs_min ?? 0);
-      const nbMax = Number(v.nb_joueurs_max ?? nbMin);
-      const ageMin = Number(v.age_min ?? 0);
-      const ageMax = Number(v.age_max ?? ageMin);
+  loadJeuxCompletsPourFestival(festivalId: number): Observable<JeuDto[]> {
+    // 1) on charge la view (qui sait quels jeux existent via les réservations)
+    return this.loadJeuxView(festivalId).pipe(
+      switchMap((rows) => {
+        const ids = Array.from(new Set((rows ?? []).map(r => r.jeu_id).filter(Boolean)));
 
-      return {
-        id: v.jeu_id,
-        nom: v.jeu_nom,
+        if (!ids.length) return of([] as JeuDto[]);
 
-        nb_joueurs_min: nbMin,
-        nb_joueurs_max: nbMax,
+        // 2) on récupère chaque jeu complet
+        const reqs = ids.map(id =>
+          this.jeuService.getById(id).pipe(
+            catchError(() => of(null))
+          )
+        );
 
-        duree_minutes: v.duree_minutes ?? undefined,
-
-        age_min: ageMin,
-        age_max: ageMax,
-
-        type_jeu_nom: v.type_jeu_nom ?? undefined
-      } as JeuDto;
-    });
+        return forkJoin(reqs).pipe(
+          map(list => list.filter((j): j is JeuDto => j !== null))
+        );
+      }),
+      catchError(err => {
+        console.error('Erreur loadJeuxCompletsPourFestival', err);
+        this._error.set('Erreur lors du chargement des jeux');
+        return of([] as JeuDto[]);
+      })
+    );
   }
 }

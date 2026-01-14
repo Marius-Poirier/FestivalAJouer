@@ -1,18 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { JeuCard } from '@jeux/components/jeu-card/jeu-card';
 import { GestionReservationService } from '@gestion-reservation/services/gestion-reservation-service';
 import { CurrentFestival } from '@core/services/current-festival';
+import { JeuDto } from '@interfaces/entites/jeu-dto';
 
 @Component({
   selector: 'app-workflow-jeux',
   standalone: true,
   imports: [CommonModule, JeuCard],
-  templateUrl: './workflow-jeux.html',
-  styleUrl: './workflow-jeux.css'
+  templateUrl: './reservation-jeu-workflow.html',
+  styleUrl: './reservation-jeu-workflow.css'
 })
-export class WorkflowJeux {
+export class ReservationJeuWorkFlow {
   private readonly gestionSvc = inject(GestionReservationService);
   private readonly currentFestivalSvc = inject(CurrentFestival);
   private readonly router = inject(Router);
@@ -22,16 +23,21 @@ export class WorkflowJeux {
   protected readonly isLoading = this.gestionSvc.isLoading;
   protected readonly error = this.gestionSvc.error;
 
-  protected readonly jeux = computed(() => this.gestionSvc.mapViewToJeuCards());
+  // on stocke les jeux complets
+  protected readonly jeux = signal<JeuDto[]>([]);
 
   constructor() {
     effect(() => {
-      const fest = this.currentFestival();
-      const festId = fest?.id;
-      if (!festId) return;
+      const festId = this.currentFestival()?.id;
+      if (!festId) {
+        this.jeux.set([]);
+        return;
+      }
 
-      // charge tous les jeux de toutes les réservations de ce festival
-      this.gestionSvc.loadJeuxView(festId).subscribe();
+      // charge les jeux complets (mêmes infos que la page /jeux)
+      this.gestionSvc.loadJeuxCompletsPourFestival(festId).subscribe((list) => {
+        this.jeux.set(list ?? []);
+      });
     });
   }
 
