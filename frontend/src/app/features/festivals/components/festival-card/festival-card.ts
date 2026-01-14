@@ -11,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { notPastDateValidator, endDateAfterStartDateValidator } from '../../utils/validators';
+import { AuthService } from '@core/services/auth-services';
 
 registerLocaleData(localeFr);
 
@@ -27,6 +28,7 @@ export class FestivalCard {
 
   public canManage = input<boolean>(false);
   protected festsvc = inject(FestivalService)
+  protected authService = inject(AuthService)
   private fb = inject(FormBuilder)
 
   // Signals pour la popup

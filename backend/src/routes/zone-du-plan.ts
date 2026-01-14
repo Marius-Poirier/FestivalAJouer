@@ -59,7 +59,8 @@ router.post('/', async (req, res) => {
         const festivalId = parsePositiveInteger(req.body?.festival_id, 'festival_id')
         const zoneTarifaireId = parsePositiveInteger(req.body?.zone_tarifaire_id, 'zone_tarifaire_id')
         const nom = sanitizeString(req.body?.nom)
-        const nombreTables = parsePositiveInteger(req.body?.nombre_tables, 'nombre_tables')
+        // nombre_tables est initialisé à 0 à la création, puis
+        // incrémenté/décrémenté par les routes de tables (add/delete)
 
         if (!nom) {
             return res.status(400).json({ error: 'Le nom de la zone est requis' })
@@ -67,9 +68,9 @@ router.post('/', async (req, res) => {
 
         const { rows } = await pool.query(
             `INSERT INTO ZoneDuPlan (festival_id, nom, nombre_tables, zone_tarifaire_id)
-            VALUES ($1, $2, $3, $4)
+            VALUES ($1, $2, 0, $3)
             RETURNING ${ZONE_PLAN_FIELDS}`,
-            [festivalId, nom, nombreTables, zoneTarifaireId]
+            [festivalId, nom, zoneTarifaireId]
         )
 
         res.status(201).json({ message: 'Zone du plan créée', zone: rows[0] })

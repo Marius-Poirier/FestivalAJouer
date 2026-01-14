@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { AuthService } from '@core/services/auth-services';
 import { ReservationsService } from '../../services/reservations-service';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,22 +35,15 @@ export class ReservationList {
   //   );
   // });
   constructor() {
-    this.editeursvc.loadAll();
     if (!this.authService.currentUser()) {
       this.authService.whoami();
     }
   }
-  private readonly reloadOnFestivalChange = effect(() => {
-    const id = this.idcurrentfestival();
-    if (id) {
-      this.ressvc.loadAll();
-    }
-  });
+  // L'effet de rechargement automatique est maintenant dans le service
 
   ngOnInit() {
-    this.ressvc.loadAll();
+    // Le service gère automatiquement le rechargement quand le festival change
     console.log("id festival", this.idcurrentfestival())
-
   }
 
   // Afficher form ajouter reservation

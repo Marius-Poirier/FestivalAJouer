@@ -1,13 +1,15 @@
 @if(zonesTarif()){
     @let zone = zonesTarif()!;
     <mat-card class="card-container">
-        <button
-            class="delete-btn"
-            (click)="openDeletePopup(zone); $event.stopPropagation()"
-            aria-label="Supprimer"
-        >
-            <mat-icon>close</mat-icon>
-        </button>
+        @if (authService.isAdminSuperorgaOrga()) {
+            <button
+                class="delete-btn"
+                (click)="openDeletePopup(zone); $event.stopPropagation()"
+                aria-label="Supprimer"
+            >
+                <mat-icon>close</mat-icon>
+            </button>
+        }
         <mat-card-header>
             <h2  style="text-transform: capitalize;" >{{zone.nom}}</h2>
         </mat-card-header>
@@ -19,4 +21,11 @@
         </mat-card-content>
     </mat-card>
 
+    <app-popup-delete
+        [entiteType]="deleteType()"
+        [entiteId]="deleteId()"
+        [entitenom]="deletenom()"
+        (confirm)="handleConfirm()"
+        (cancel)="handleCancel()">
+    </app-popup-delete>
 }

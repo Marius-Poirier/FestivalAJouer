@@ -1,12 +1,8 @@
 import { Component, input, signal, effect, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { GestionReservationService } from '../../services/gestion-reservation-service';
-import { TablesService } from '@tables/services/tables-service';
 import { TableCard } from '@tables/components/table-card/table-card';
 import { AddTableReservation } from '@gestion-reservation/components/add-table-reservation/add-table-reservation';
-import { TableJeuDto } from '@interfaces/entites/table-jeu-dto';
 
 @Component({
   selector: 'app-reservation-table',
@@ -48,6 +44,9 @@ export class ReservationTable {
         this.error.set(null);
       }
     });
+    effect(()=>{
+      
+    })
   }
 
   protected nbr_tables = computed(() => {
@@ -107,7 +106,7 @@ export class ReservationTable {
     // Reload the tables list to show the newly added table
     const reservationId = this.reservationId();
     if (reservationId) {
-      this.gestionsvc.loadAllTables(reservationId);
+      this.gestionsvc.loadTableDetailsForReservation(reservationId).subscribe();
     }
   }
 }

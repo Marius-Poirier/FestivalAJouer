@@ -142,8 +142,10 @@ export class ZoneTarifaireService {
             this._error.set('Vous devez être connecté en tant que super organisateur');
           } else if (err?.status === 404) {
             this._error.set('Zone tarifaire introuvable');
+          } else if (err?.status === 409) {
+            this._error.set('Impossible de supprimer cette zone tarifaire car elle est encore utilisée');
           } else {
-            this._error.set('Erreur lors de la suppression');
+            this._error.set('Impossible de supprimer cette zone tarifaire car elle est encore utilisée');
           }
           return of(null);
         }),
@@ -152,10 +154,23 @@ export class ZoneTarifaireService {
       .subscribe();
   }
 
- 
-
   public findById(id : number){
     return this._zonesTarifaires().find((f)=>f.id === id)
+  }
+
+  /**
+   * GET /api/zones-tarifaires/:id
+   * Charge une zone tarifaire par ID sans charger toute la liste.
+   */
+  public loadOne(id: number) {
+    return this.http.get<ZoneTarifaireDto>(`${this.baseUrl}/${id}`, {
+      withCredentials: true
+    }).pipe(
+      catchError(err => {
+        console.error(`Erreur lors du chargement de la zone tarifaire ${id}`, err);
+        throw err;
+      })
+    );
   }
   
 }

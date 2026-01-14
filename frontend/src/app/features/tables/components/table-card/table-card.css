@@ -1,0 +1,99 @@
+.table-card {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+	padding: 16px;
+	border-radius: 12px;
+	background: #ffffff;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+	border: 1px solid #e5e7eb;
+	transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.table-card:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+	border-color: #d1d5db;
+}
+
+.card-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.table-number {
+	margin: 0;
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: #111827;
+}
+
+.zone-plan {
+	margin: 2px 0 0;
+	color: #6b7280;
+	font-size: 0.92rem;
+}
+
+.status-badge {
+	min-width: 32px;
+	height: 32px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 999px;
+	background: #f3f4f6;
+	font-size: 1rem;
+	box-shadow: inset 0 0 0 1px #e5e7eb;
+}
+
+.card-body {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.info-row {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 0.95rem;
+	color: #374151;
+}
+
+.info-row label {
+	min-width: 110px;
+	color: #6b7280;
+	font-weight: 600;
+}
+
+.info-row .value {
+	color: #111827;
+}
+
+.occupancy {
+	font-weight: 600;
+}
+
+.warning {
+	padding: 10px 12px;
+	border-radius: 10px;
+	background: #fff7ed;
+	color: #9a3412;
+	border: 1px solid #fed7aa;
+	font-size: 0.93rem;
+}
+
+/* Status color accents on the left border (optional) */
+.table-card[data-status="green"] {
+	border-left: 4px solid #10b981;
+}
+
+.table-card[data-status="orange"] {
+	border-left: 4px solid #f59e0b;
+}
+
+.table-card[data-status="red"] {
+	border-left: 4px solid #ef4444;
+}

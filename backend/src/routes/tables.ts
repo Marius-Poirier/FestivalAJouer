@@ -70,26 +70,68 @@ router.get('/:id', async (req, res) => {
     }
 })
 
+// GET /api/tables/:id/reservation
+router.get('/:id/reservation', async (req, res) => {
+    const tableId = Number.parseInt(req.params.id, 10)
+    if (!Number.isInteger(tableId)) {
+        return res.status(400).json({ error: 'Identifiant invalide' })
+    }
+    try {
+        const { rows } = await pool.query(
+            `SELECT rt.reservation_id, rt.table_id, rt.date_attribution, rt.attribue_par,
+                    r.editeur_id, r.festival_id, r.statut_workflow
+             FROM ReservationTable rt
+             JOIN Reservation r ON rt.reservation_id = r.id
+             WHERE rt.table_id = $1`,
+            [tableId]
+        )
+        if (rows.length === 0) {
+            return res.json(null)
+        }
+        res.json(rows[0])
+    } catch (err) {
+        console.error(`Erreur lors de la vérification de la réservation de la table ${tableId}`, err)
+        res.status(500).json({ error: 'Erreur serveur' })
+    }
+})
+
 // POST /api/tables
 router.post('/', async (req, res) => {
+    const client = await pool.connect()
     try {
+        await client.query('BEGIN')
+        
         const zoneDuPlanId = parsePositiveInteger(req.body?.zone_du_plan_id, 'zone_du_plan_id')
         const zoneTarifaireId = parsePositiveInteger(req.body?.zone_tarifaire_id, 'zone_tarifaire_id')
         const capacite = parsePositiveInteger(req.body?.capacite_jeux ?? 2, 'capacite_jeux')
 
-        const { rows } = await pool.query(
+        // Créer la table
+        const { rows } = await client.query(
             `INSERT INTO Table_Jeu (zone_du_plan_id, zone_tarifaire_id, capacite_jeux)
             VALUES ($1, $2, $3)
             RETURNING ${TABLE_FIELDS}`,
             [zoneDuPlanId, zoneTarifaireId, capacite]
         )
+
+        // Incrémenter nombre_tables de +1
+        await client.query(
+            `UPDATE ZoneDuPlan 
+            SET nombre_tables = nombre_tables + 1
+            WHERE id = $1`,
+            [zoneDuPlanId]
+        )
+
+        await client.query('COMMIT')
         res.status(201).json({ message: 'Table créée', table: rows[0] })
     } catch (err: any) {
+        await client.query('ROLLBACK')
         if (err.message?.startsWith('Le champ')) {
             return res.status(400).json({ error: err.message })
         }
         console.error('Erreur lors de la création de la table', err)
         res.status(500).json({ error: 'Erreur serveur' })
+    } finally {
+        client.release()
     }
 })
 
@@ -141,20 +183,45 @@ router.delete('/:id', async (req, res) => {
         return res.status(400).json({ error: 'Identifiant invalide' })
     }
 
+    const client = await pool.connect()
     try {
-        const { rows } = await pool.query(
+        await client.query('BEGIN')
+        
+        // Récupérer zone_du_plan_id avant suppression
+        const { rows: tableRows } = await client.query(
+            `SELECT zone_du_plan_id FROM Table_Jeu WHERE id = $1`,
+            [tableId]
+        )
+
+        if (tableRows.length === 0) {
+            await client.query('ROLLBACK')
+            return res.status(404).json({ error: 'Table non trouvée' })
+        }
+
+        const zoneDuPlanId = tableRows[0].zone_du_plan_id
+
+        // Supprimer la table
+        const { rows } = await client.query(
             `DELETE FROM Table_Jeu WHERE id = $1 RETURNING id`,
             [tableId]
         )
 
-        if (rows.length === 0) {
-            return res.status(404).json({ error: 'Table non trouvée' })
-        }
+        // Décrémenter nombre_tables de -1
+        await client.query(
+            `UPDATE ZoneDuPlan 
+            SET nombre_tables = GREATEST(nombre_tables - 1, 0)
+            WHERE id = $1`,
+            [zoneDuPlanId]
+        )
 
+        await client.query('COMMIT')
         res.json({ message: 'Table supprimée', table: rows[0] })
     } catch (err) {
+        await client.query('ROLLBACK')
         console.error(`Erreur lors de la suppression de la table ${tableId}`, err)
         res.status(500).json({ error: 'Erreur serveur' })
+    } finally {
+        client.release()
     }
 })
 

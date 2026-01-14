@@ -1,0 +1,87 @@
+@if (isLoading()) {
+  <div class="loading-container">
+    <p>Chargement...</p>
+  </div>
+} @else if (error()) {
+  <div class="error-container">
+    <p>{{ error() }}</p>
+  </div>
+} @else if (zonePlan()) {
+  @let z = zonePlan()!;
+  <div class="detail-container">
+
+    @if (showToast()) {
+      <div class="toast blocked" (click)="closeToast()">
+        {{ toastMessage() }}
+      </div>
+    }
+
+    <div class="header">
+      <h1 class="title">{{ z.nom }}</h1>
+    </div>
+
+    <div class="info-section">
+      <p><strong>Nombre de tables :</strong> {{ nombreTablesComputed() }}</p>
+      @if (zoneTarifaire()) {
+        <p><strong>Zone tarifaire :</strong> {{ zoneTarifaire()!.nom }}</p>
+        <p><strong>Prix par table :</strong> <span class="prix-final">{{ zoneTarifaire()!.prix_table | currency:'EUR' }}</span></p>
+      }
+    </div>
+
+    <!-- FORMULAIRE AJOUT TABLE -->
+    @if (showAddForm()) {
+      <div class="add-form-section">
+        <h3>Ajouter une nouvelle table</h3>
+        <div class="form-group">
+          <label for="capacite">Capacité de jeux :</label>
+          <input 
+            type="number" 
+            id="capacite" 
+            [(ngModel)]="newTableCapacite" 
+            min="1" 
+            max="50"
+            class="form-input"
+          />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-annuler" (click)="toggleAddForm()">Annuler</button>
+          <button type="button" class="btn-enregistrer" (click)="addTable()">Créer la table</button>
+        </div>
+      </div>
+    }
+
+    <!-- ONGLETS -->
+    <div class="tabs-container">
+      <div class="tabs-header">
+        <h2>Tables de la zone</h2>
+        @if (authService.isAdminSuperorgaOrga()) {
+          <button type="button" class="btn-ajouter" (click)="toggleAddForm()">
+            + Ajouter une table
+          </button>
+        }
+      </div>
+
+      <div class="tab-content">
+        @if (tablesSvc.isLoading()) {
+          <p>Chargement des tables...</p>
+        } @else {
+          <div class="tab-panel">
+            @for (t of tables(); track t.id) {
+              <div class="table-item">
+                <button type="button" class="table-delete" (click)="onDeleteTable(t)" aria-label="Supprimer la table">
+                  ×
+                </button>
+                <p><strong>Table #{{ t?.id }}</strong></p>
+                @if (t?.statut) { <p>Statut: {{ t.statut }}</p> }
+                <p>Capacité: {{ capaciteFor(t) }}</p>
+              </div>
+            } @empty {
+              <p>Aucune table dans cette zone.</p>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+  </div>
+}

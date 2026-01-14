@@ -3,10 +3,11 @@ import { FestivalSelector } from '../festival-selector/festival-selector';
 import { ZoneTarifaireList } from '@zoneTarifaires/components/zone-tarifaire-list/zone-tarifaire-list';
 import { ZonePlanList } from '@zonePlan/components/zone-plan-list/zone-plan-list';
 import { ReservationList } from '@reservations/components/reservation-list/reservation-list';
+import { EditeurListFestival } from '@editeurs/components/editeur-list-festival/editeur-list-festival';
 
 @Component({
   selector: 'app-workflow-festival',
-  imports: [FestivalSelector, ZoneTarifaireList, ZonePlanList, ReservationList],
+  imports: [FestivalSelector, ZoneTarifaireList, ZonePlanList, ReservationList, EditeurListFestival],
   templateUrl: './workflow-festival.html',
   styleUrl: './workflow-festival.css'
 })

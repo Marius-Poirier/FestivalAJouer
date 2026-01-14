@@ -1,0 +1,43 @@
+<div class="list-container">
+    @if (editeursvc.error()) {
+        <div class="error-banner">
+            {{ editeursvc.error() }}
+        </div>
+    }
+    <div class="header-controls">
+        @if (authService.isAdminSuperorga()){
+            <button class="btn-add" (click)="editeursvc.showFormModal()">+ Nouvel éditeur</button>
+        }
+    </div>
+    
+    @if (editeursvc.isLoading()) {
+        <p class="loading">Chargement des éditeurs...</p>
+    } @else {
+        @if(editeursvc.editeurs().length != 0){
+            <ul class="items-list">
+                @for (editeur of editeursvc.editeurs(); track editeur.id) {
+                    <li>
+                        <app-editeur-card
+                            [editeur]="editeur"
+                            [canManage]="authService.isAdminSuperorga()"
+                            (delete)="onDelete($event)"
+                            (update)="onUpdate($event)"
+                            (detail)="onDetail($event)">
+                        </app-editeur-card>
+                    </li>
+                }
+            </ul>
+        }
+        @else {
+            <p>Aucun éditeur trouvé pour ce festival</p>
+        }
+    }
+
+    @if(showForm()){
+        <app-editeur-form
+            [editeur]="editingEditeur()"
+            [mode]="editingEditeur() ? 'edit' : 'create'"
+            (closeForm)="closeForm()">
+        </app-editeur-form>
+    }
+</div>

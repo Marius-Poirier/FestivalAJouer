@@ -176,6 +176,8 @@ export class GestionReservationService {
             this._reservationTables.update(rt =>
               rt.filter(r => !(r.reservation_id === reservationId && r.table_id === tableId))
             );
+            // Retirer aussi la table des détails chargés
+            this._tables.update(tables => tables.filter(t => t.id !== tableId));
             console.log(`Réservation de table supprimée : ${JSON.stringify(response.affectation)}`);
           } else {
             this._error.set('Erreur lors de la suppression de la réservation de table');
@@ -199,6 +201,7 @@ export class GestionReservationService {
       )
       .subscribe();
   }
+
 }
 
 //=========  gestion des jeux  

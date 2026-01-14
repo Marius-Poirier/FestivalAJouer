@@ -5,6 +5,7 @@ import { ZoneTarifaireDto } from '@interfaces/entites/zone-tarifaire-dto';
 import {MatCardModule} from '@angular/material/card';
 import {MatIconModule} from '@angular/material/icon';
 import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
+import { AuthService } from '@core/services/auth-services';
 
 
 @Component({
@@ -16,6 +17,7 @@ import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
 export class ZoneTarifaireCard {
 
   private zoneTarifairessvc = inject(ZoneTarifaireService)
+  protected authService = inject(AuthService)
   public readonly idZoneTarif = input<number>();
   public readonly zone = input<ZoneTarifaireDto>();
   public delete = output<number>();
@@ -45,7 +47,7 @@ export class ZoneTarifaireCard {
   }
 
   private closePopup(): void {
-    this.deleteType.set('null');
+    this.deleteType.set(null);
     this.deleteId.set(null);
     this.deletenom.set('');
   }

@@ -31,7 +31,7 @@ export class ReservationDetail {
   private editeurSvc = inject(EditeurService);
   private festivalSvc = inject(FestivalService);
   private route = inject(ActivatedRoute);
-  private authSvc = inject(AuthService);
+  protected authSvc = inject(AuthService);
 
   protected readonly reservation = signal<ReservationDto | null>(null);
   protected readonly editeur = signal<any | null>(null);
@@ -42,7 +42,6 @@ export class ReservationDetail {
   protected readonly reservationId = computed(() => this.reservation()?.id ?? null);
   protected readonly festivalId = computed(() => this.reservation()?.festival_id ?? null);
 
-  protected readonly canManage = computed(() => this.authSvc.isAdminSuperorgaOrga());
 
   public activeTab = signal<'informations' | 'tables' | 'jeux' | 'workflow'>('informations');
 

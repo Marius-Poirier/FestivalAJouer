@@ -8,7 +8,7 @@
 
     <div class="header">
       <h1 class="title">Réservation #{{ res.id }}</h1>
-      @if (canManage()) {
+      @if (this.authSvc.isAdminSuperorgaOrga()) {
         <div class="actions">
           <button type="button" class="btn" (click)="onModifier()">Modifier</button>
           <button type="button" class="btn danger" (click)="onSupprimer()">Supprimer</button>
