@@ -312,4 +312,9 @@ export class GestionReservationService {
       })
     );
   }
+
+  //Ajoutre un jeux a une table 
+
+  
+
 }

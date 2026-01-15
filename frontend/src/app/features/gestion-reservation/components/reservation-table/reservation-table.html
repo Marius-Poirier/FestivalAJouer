@@ -1,7 +1,14 @@
 <div class="tables-tab">
+  <div class="header">
+    <div class="title-group">
+      <h3>Tables</h3>
+      <span class="count">{{ nbr_tables() }}<small> table(s)</small></span>
+    </div>
+
     <div class="actions">
       <button type="button" class="btn" (click)="showAddTable()">+ Ajouter table</button>
     </div>
+  </div>
 
   @if (isAddTable() && reservationId()) {
     <app-add-table-reservation 
@@ -48,21 +55,30 @@
   @if (!loading() && tables().length > 0) {
     <div class="summary">
       <p>
-        <strong>Résumé :</strong> 
-        {{ tables().length }} table(s) - 
-        <strong>{{prix_total()}} €</strong>
+        <strong>Prix Total : {{prix_total()}} €</strong>
       </p>
     </div>
 
     <div class="tables-list">
       @for (table of tables(); track table.id) {
-        <div class="card-table">
-          <app-table-card 
-              [table]="table"
-              (onRemove)="handleRemoveTable($event)">
-          </app-table-card>
-          <button type="button" class="btn btn-remove" (click)="handleRemoveTable(table.id!)">Retirer table</button>
-        </div>
+          <div class="card-table">
+            <button type="button" class="btn-rolldown" (click)="toggleTableJeux(table.id!)">
+              <span [class.open]="openTableJeux()[table.id!]">&#9660;</span>
+            </button>
+            <app-table-card 
+                [table]="table"
+                (onRemove)="handleRemoveTable($event)">
+            </app-table-card>
+            <button type="button" class="btn btn-add-jeu">Ajouter jeu</button>
+            <button type="button" class="btn btn-remove" (click)="handleRemoveTable(table.id!)">Retirer table</button>
+          </div>
+          @if (openTableJeux()[table.id!]) {
+            <div class="table-jeux-list">
+              <!-- Affichage des jeux de la table ici -->
+              <p>Jeux de la table {{ table.id }} :</p>
+              <!-- TODO: Remplacer par la vraie liste -->
+            </div>
+          }
       }
     </div>
   }

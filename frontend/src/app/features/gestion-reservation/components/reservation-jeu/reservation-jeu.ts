@@ -41,6 +41,12 @@ export class ReservationJeu {
   protected readonly isLoadingEditeurJeux = signal(false);
   protected readonly selectedJeuId = signal<number | null>(null);
 
+  // UI flag: afficher le select d'ajout uniquement après clic
+  protected readonly isAddingJeu = signal<boolean>(false);
+
+  // Nombre de jeux actuellement ajoutés
+  protected readonly jeuxCount = computed(() => this.reservationJeux().length);
+
   protected readonly availableEditeurJeux = computed(() => {
     const already = new Set(this.reservationJeux().map(l => l.jeu_id));
     return this.editeurJeux().filter(j => j.id != null && !already.has(j.id));
@@ -91,6 +97,15 @@ export class ReservationJeu {
     });
   }
 
+  protected showAddJeux() {
+    this.isAddingJeu.set(true);
+  }
+
+  protected hideAddJeux() {
+    this.isAddingJeu.set(false);
+    this.selectedJeuId.set(null);
+  }
+
 
   protected addJeuToReservation() {
     if (!this.canManage()) return;
@@ -106,6 +121,7 @@ export class ReservationJeu {
       this.gestionSvc.loadJeuxView(festId, resId).subscribe((rows) => {
         this.reservationJeux.set((rows ?? []) as JeuFestivalViewDto[]);
         this.selectedJeuId.set(null);
+        this.isAddingJeu.set(false);
       });
     });
   }

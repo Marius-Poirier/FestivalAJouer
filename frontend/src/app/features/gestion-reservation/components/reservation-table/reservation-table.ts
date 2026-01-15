@@ -25,6 +25,9 @@ export class ReservationTable {
   public showRemoveConfirm = signal<boolean>(false);
   public tableToRemove = signal<number | null>(null);
 
+  // Etat d'ouverture des jeux par table (tableId -> bool)
+  public openTableJeux = signal<Record<number, boolean>>({});
+
   protected prix_total = computed(()=> this.gestionsvc.reservation()?.prix_total);
 
   constructor() {
@@ -57,6 +60,11 @@ export class ReservationTable {
     console.log('Showing remove confirmation for table:', tableId);
     this.tableToRemove.set(tableId);
     this.showRemoveConfirm.set(true);
+  }
+
+  toggleTableJeux(tableId: number) {
+    const current = this.openTableJeux();
+    this.openTableJeux.set({ ...current, [tableId]: !current[tableId] });
   }
 
   confirmRemoveTable() {

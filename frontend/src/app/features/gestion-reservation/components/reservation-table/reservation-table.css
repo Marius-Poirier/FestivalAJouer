@@ -1,7 +1,66 @@
+.btn-rolldown {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-size: 1.2rem;
+  cursor: pointer;
+  margin-right: 8px;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+}
+.btn-rolldown .open {
+  transform: rotate(180deg);
+}
+.table-jeux-list {
+  background: #f3f4f6;
+  border-radius: 6px;
+  margin: 0 0 8px 32px;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
 .tables-tab {
   width: 100%;
   background: var(--blanc);
   border-radius: 8px;
+  padding: 1rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title-group h3 {
+  margin: 0;
+  font-size: 1.125rem;
+}
+
+.count {
+  background: var(--gris-tres-clair);
+  color: var(--couleur-primaire);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.count small {
+  font-weight: 400;
+  font-size: 0.75rem;
+  margin-left: 0.35rem;
+  color: var(--gris-moyen);
 }
 
 /* ===== ACTIONS (BUTTONS) ===== */
@@ -89,22 +148,23 @@
 
 /* ===== SUMMARY ===== */
 .summary {
-  padding: 1rem;
-  background: linear-gradient(135deg, var(--couleur-primaire), var(--couleur-terciere));
+  padding: 0.75rem 1rem;
+  background: var(--gris-tres-clair);
   border-radius: 8px;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 2px 8px rgba(30, 64, 175, 0.15);
+  margin-bottom: 1rem;
+  border: 1px solid var(--gris-clair);
 }
 
 .summary p {
   margin: 0;
-  color: var(--blanc);
-  font-size: 1rem;
-  line-height: 1.6;
+  color: var(--couleur-primaire);
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
 .summary strong {
   font-weight: 700;
+  color: var(--couleur-primaire);
 }
 
 /* ===== TABLES LIST ===== */
@@ -118,15 +178,33 @@
 .card-table {
   width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
 }
 
+.btn-add-jeu {
+  background: var(--couleur-bouton, #2563eb);
+  color: #fff;
+  margin-left: 8px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  align-self: center;
+  transition: background 0.15s;
+}
+.btn-add-jeu:hover {
+  background: #1746a2;
+}
 .btn-remove {
   background: var(--rouge-danger);
-  align-self: flex-end;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
+  margin-left: 8px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.82rem;
+  align-self: center;
 }
 
 .btn-remove:hover {
