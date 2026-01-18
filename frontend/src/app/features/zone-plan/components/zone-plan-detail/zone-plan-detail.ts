@@ -9,14 +9,16 @@ import { ZoneTarifaireDto } from '@interfaces/entites/zone-tarifaire-dto';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '@core/services/auth-services';
 import { FormsModule } from '@angular/forms';
+import { ReservationTable } from '@gestion-reservation/components/reservation-table/reservation-table';
+import { TablesList } from '@tables/components/tables-list/tables-list';
 
 @Component({
   selector: 'app-zone-plan-detail',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TablesList],
   templateUrl: './zone-plan-detail.html',
   styleUrl: './zone-plan-detail.css'
 })
-export class ZonePlanDetail implements OnInit {
+export class ZonePlanDetail {
   // Inputs
   public zonePlanId = input<number | null>(null);
   
@@ -43,7 +45,7 @@ export class ZonePlanDetail implements OnInit {
   protected showAddForm = signal<boolean>(false);
   protected newTableCapacite = signal<number>(2);
 
-  // Compute nombre_tables from tables list length
+
   protected readonly nombreTablesComputed = computed(() => this.tables().length);
 
   private lastZoneTarifaireLoaded: number | null = null;
@@ -195,5 +197,10 @@ export class ZonePlanDetail implements OnInit {
 
   protected closeToast(): void {
     this.showToast.set(false);
+  }
+
+  protected goToWorkflow() {
+   
+    window.location.href = '/workflow';
   }
 }

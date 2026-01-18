@@ -25,10 +25,8 @@ public confirmationMessage = computed(() => {
     switch (type) {
       case 'jeu':
         return `Êtes-vous sûr de vouloir supprimer le jeu ${nom ? `"${nom}"` : ''} ?`;
-      
       case 'editeur':
         return `Êtes-vous sûr de vouloir supprimer l'éditeur ${nom ? `"${nom}"` : ''} ?`;
-      
       case 'festival':
         return `Êtes-vous sûr de vouloir supprimer le festival ${nom ? `"${nom}"` : ''} ?`;
       case 'contactEditeur':
@@ -37,6 +35,10 @@ public confirmationMessage = computed(() => {
         return `Êtes-vous sûr de vouloir supprimer la zone ${nom ? `"${nom}"` : ''} ?`;
       case 'reservation':
         return `Êtes-vous sûr de vouloir supprimer la réservation ${nom ? `"${nom}"` : ''} ?`;
+      case 'jeu-table':
+        return `Êtes-vous sûr de vouloir retirer le jeu ${nom ? `"${nom}"` : ''} de cette table ?`;
+      case 'table':
+        return `Êtes-vous sûr de vouloir supprimer cette table ?`;
       default:
         return
     }

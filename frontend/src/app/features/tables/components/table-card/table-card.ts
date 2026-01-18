@@ -1,9 +1,11 @@
-import { Component, input, output, computed, inject, signal, effect } from '@angular/core';
+import { Component, input, output, computed, inject, signal, effect, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ZonePlanService } from '@zonePlan/services/zone-plan-service';
 import { ZoneTarifaireService } from '@zoneTarifaires/services/zone-tarifaire-service';
 import { ZoneDuPlanDto } from '@interfaces/entites/zone-du-plan-dto';
 import { ZoneTarifaireDto } from '@interfaces/entites/zone-tarifaire-dto';
+import { TableJeuDto } from '@interfaces/entites/table-jeu-dto';
+import { TablesService } from '@tables/services/tables-service';
 
 @Component({
   selector: 'app-table-card',
@@ -14,7 +16,7 @@ import { ZoneTarifaireDto } from '@interfaces/entites/zone-tarifaire-dto';
 })
 export class TableCard {
 
-  table = input.required<any>();
+  table = input<TableJeuDto>();
   onRemove = output<number>();
 
   private zonePlanSvc = inject(ZonePlanService);
@@ -23,19 +25,9 @@ export class TableCard {
   private readonly zoneTarifaireFetched = signal<ZoneTarifaireDto | null>(null);
   private lastZonePlanLoaded: number | null = null;
   private lastZoneTarifaireLoaded: number | null = null;
+  public showzoneplan = input<boolean>(false)
 
 
-  statusBadgeColor = computed(() => {
-    const t = this.table();
-    if (!t) return 'green';
-
-    const current = t.nb_jeux_actuels || 0;
-    const capacity = t.capacite_jeux || 2;
-
-    if (current === 0) return 'green';
-    if (current < capacity) return 'orange';
-    return 'red';
-  });
 
   zonePlan = computed(() => {
     const t = this.table();
@@ -62,6 +54,8 @@ export class TableCard {
   });
 
 
+
+
   constructor() {
     effect(() => {
       const t = this.table();
@@ -72,19 +66,15 @@ export class TableCard {
         this.lastZonePlanLoaded = null;
         return;
       }
-
-      // Si déjà en cache, inutile de recharger
       if (this.zonePlanSvc.findById(id)) {
         this.zonePlanFetched.set(this.zonePlanSvc.findById(id) ?? null);
         this.lastZonePlanLoaded = id;
         return;
       }
 
-      // Évite de re-fetch la même id
       if (this.lastZonePlanLoaded === id) {
         return;
       }
-
       this.zonePlanSvc.loadOne(id).subscribe({
         next: (zone) => {
           this.zonePlanFetched.set(zone);
@@ -116,7 +106,6 @@ export class TableCard {
       if (this.lastZoneTarifaireLoaded === id) {
         return;
       }
-
       this.zoneTarifaireSvc.loadOne(id).subscribe({
         next: (zone) => {
           this.zoneTarifaireFetched.set(zone);
@@ -128,6 +117,8 @@ export class TableCard {
       });
     });
   }
+
+
 
 }
 

@@ -27,6 +27,28 @@ router.get('/', async (req, res) => {
     }
 })
 
+// GET /api/jeu-festival-tables/jeu-table
+router.get('/jeu-table', async (req, res) => {
+    if (!req.query.tableId) {
+        return res.status(400).json({ error: 'tableId est requis' })
+    }
+    const id = Number.parseInt(String(req.query.tableId), 10)
+    if (!Number.isInteger(id)) {
+        return res.status(400).json({ error: 'tableId invalide' })
+    }
+    try {
+        const { rows } = await pool.query(
+            `SELECT jeu_festival_id FROM JeuFestivalTable WHERE table_id = $1`,
+            [id]
+        )
+        const ids = rows.map((r: any) => r.jeu_festival_id)
+        res.json(ids)
+    } catch (err) {
+        console.error(`Erreur lors de la récupération des jeux pour la table ${id}`, err)
+        res.status(500).json({ error: 'Erreur serveur' })
+    }
+})
+
 // POST /api/jeu-festival-tables
 router.post('/', requireOrganisateur, async (req, res) => {
     try {

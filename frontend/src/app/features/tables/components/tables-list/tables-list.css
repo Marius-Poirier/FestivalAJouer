@@ -1,0 +1,243 @@
+/* ===== TABLE WRAPPER (contient card + jeux associés) ===== */
+
+.table-wrapper {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 22px;
+  box-shadow: none;
+  position: relative;
+  z-index: 1;
+}
+
+.table-wrapper:last-child {
+  margin-bottom: 0;
+}
+
+/* ===== CARD TABLE (ligne principale) ===== */
+
+.card-table {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px 8px 0 0;
+  transition: background 0.15s ease, box-shadow 0.15s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.card-table:hover {
+  background: #f6f8fa;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+/* Bouton rolldown */
+.btn-rolldown {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-rolldown:hover {
+  color: var(--couleur-bouton);
+}
+
+.btn-rolldown span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.btn-rolldown .open {
+  transform: rotate(180deg);
+}
+
+/* Info de la table */
+.table-info {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Actions de la card */
+.card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Bouton ajouter jeu */
+.btn-add-jeu {
+  background: var(--couleur-bouton, #2563eb);
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add-jeu:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+/* Bouton retirer */
+.btn-remove {
+  background: #fee;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+  padding: 6px 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.btn-remove:hover {
+  background: #fca5a5;
+  color: #991b1b;
+  border-color: #f87171;
+  transform: translateY(-1px);
+}
+
+/* ===== SECTION DES JEUX ASSOCIÉS ===== */
+
+.table-jeux-section {
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 14px 18px 18px 18px;
+  margin-bottom: 2px;
+}
+
+.jeux-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.jeux-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--couleur-primaire);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.jeux-count {
+  font-size: 0.8rem;
+  color: #6b7280;
+  background: #fff;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.loading-jeux {
+  margin: 8px 0;
+  padding: 12px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.empty {
+  margin: 8px 0;
+  padding: 12px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+/* ===== LISTE DES JEUX ===== */
+
+.jeux-list {
+  list-style: none;
+  margin: 0 0 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.jeu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  transition: all 0.15s ease;
+}
+
+.jeu-item:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  transform: translateX(4px);
+}
+
+.jeu-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.jeu-nom {
+  font-size: 0.95rem;
+  color: var(--couleur-primaire);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jeu-editeur {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .card-table {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .card-actions {
+    width: 100%;
+    justify-content: flex-end;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .jeu-nom {
+    font-size: 0.875rem;
+  }
+}
