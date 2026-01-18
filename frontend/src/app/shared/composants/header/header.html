@@ -1,7 +1,10 @@
 <header>
     <div class="header-container">
         <div class="logo">
-            <a routerLink="/home" class="logo-link">FESTIVAL À JOUER</a>
+            <a routerLink="/home" class="logo-link">
+                <img src="/logo.ico" alt="Festival à Jouer" class="site-logo" style="height:50px;vertical-align:middle;margin-right:10px" />
+                <span class="logo-text">FESTIVAL À JOUER</span>
+            </a>
         </div>
         @if(authService.isLoggedIn()){
             <nav class="nav-menu-left">
