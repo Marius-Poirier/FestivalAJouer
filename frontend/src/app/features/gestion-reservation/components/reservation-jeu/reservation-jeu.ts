@@ -52,6 +52,7 @@ export class ReservationJeu {
     return this.editeurJeux().filter(j => j.id != null && !already.has(j.id));
   });
 
+  
 
   constructor() {
     // charger les jeux de la réservation via la view

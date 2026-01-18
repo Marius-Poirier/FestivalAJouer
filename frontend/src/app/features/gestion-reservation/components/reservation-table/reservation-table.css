@@ -1,20 +1,18 @@
-/* ===== CONTAINER PRINCIPAL ===== */
 .tables-tab {
-  width: 100%;
   background: var(--blanc);
-  border-radius: 8px;
-  padding: 1rem;
+  padding: 1.5rem;
+  border-radius: 0.2rem;
+  box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
 }
 
-/* ===== HEADER ===== */
+/* Header */
 .header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  align-items: center;
+  margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 2px solid var(--couleur-primaire);
 }
 
 .title-group {
@@ -24,539 +22,370 @@
 }
 
 .title-group h3 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
   color: var(--couleur-primaire);
+  font-size: 1.25rem;
+  margin: 0;
 }
 
 .count {
-  background: var(--gris-tres-clair);
-  color: var(--couleur-primaire);
-  padding: 0.25rem 0.75rem;
-  border-radius: 999px;
-  font-weight: 700;
-  font-size: 0.875rem;
-  display: inline-flex;
-  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: var(--couleur-terciere);
+  font-size: 1rem;
 }
 
 .count small {
   font-weight: 400;
-  font-size: 0.75rem;
-  margin-left: 0.35rem;
-  color: var(--gris-moyen);
+  font-size: 0.875rem;
 }
 
-/* ===== ACTIONS (BUTTONS) ===== */
-.actions {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.btn {
-  background: var(--couleur-bouton);
+.actions .btn {
+  padding: 0.4rem 0.8rem;
+  background-color: var(--couleur-bouton);
   color: var(--blanc);
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.875rem;
+  border-radius: 0.2rem;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.btn:hover {
-  background: var(--couleur-terciere);
-  transform: translateY(-1px);
+.actions .btn:hover {
+  background-color: var(--couleur-primaire);
 }
 
-.btn:active {
-  transform: translateY(0);
-}
-
-.btn.secondary {
-  background: #6b7280;
-  color: var(--blanc);
-}
-
-.btn.secondary:hover {
-  background: #4b5563;
-}
-
-.btn.danger {
-  background: var(--rouge-danger);
-  color: var(--blanc);
-}
-
-.btn.danger:hover {
-  background: #c53030;
-}
-
-/* ===== PLACEHOLDER / EMPTY STATE ===== */
-.placeholder {
+/* Popup de confirmation retirer table */
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 1rem;
-  background-color: var(--gris-tres-clair);
-  border-radius: 8px;
-  border: 2px dashed var(--gris-clair);
-  text-align: center;
-  color: var(--gris-moyen);
-  min-height: 200px;
+  z-index: 1000;
 }
 
-.placeholder p {
-  font-size: 1.125rem;
-  margin-bottom: 0.5rem;
+.confirm-popup {
+  background: var(--blanc);
+  padding: 2rem;
+  border-radius: 0.2rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
-.placeholder small {
-  font-size: 0.875rem;
-  color: var(--gris-moyen);
-  opacity: 0.8;
-}
-
-/* ===== ERROR STATE ===== */
-.error-message {
-  padding: 1rem;
-  background-color: #fee2e2;
-  border: 1px solid var(--rouge-danger);
-  border-radius: 6px;
-  text-align: center;
+.confirm-popup h3 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
   margin-bottom: 1rem;
 }
 
-.error-message p {
+.confirm-popup p {
+  color: var(--gris-fonce);
+  margin-bottom: 1.5rem;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+}
+
+.confirm-actions .btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.confirm-actions .btn.secondary {
+  background-color: var(--gris-clair);
+  color: var(--gris-fonce);
+}
+
+.confirm-actions .btn.secondary:hover {
+  background-color: var(--gris-moyen);
+  color: var(--blanc);
+}
+
+.confirm-actions .btn.danger {
+  background-color: var(--rouge-danger);
+  color: var(--blanc);
+}
+
+.confirm-actions .btn.danger:hover {
+  background-color: #b91c1c;
+}
+
+/* États */
+.placeholder,
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gris-moyen);
+  font-style: italic;
+}
+
+.error-message {
   color: var(--rouge-danger);
   font-weight: 600;
-  margin: 0;
 }
 
-/* ===== SUMMARY ===== */
+/* Summary */
 .summary {
-  padding: 0.75rem 1rem;
-  background: #f0f9ff;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-
+  background: var(--fond-principal);
+  padding: 1rem;
+  border-radius: 0.2rem;
+  margin-bottom: 1.5rem;
 }
 
 .summary p {
   margin: 0;
+  font-family: 'Montserrat', sans-serif;
   color: var(--couleur-primaire);
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 1.1rem;
 }
 
-/* ===== TABLES LIST ===== */
+/* Liste des tables */
 .tables-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
-/* ===== TABLE WRAPPER (contient card + jeux associés) ===== */
 .table-wrapper {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border: 1px solid var(--gris-clair);
+  border-radius: 0.2rem;
   overflow: hidden;
-  transition: box-shadow 0.2s ease;
 }
 
-.table-wrapper:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* ===== CARD TABLE (ligne principale) ===== */
 .card-table {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #fff;
-  transition: background 0.15s ease;
+  gap: 1rem;
+  padding: 1rem;
+  background: var(--blanc);
 }
 
-.card-table:hover {
-  background: #f9fafb;
-}
-
-/* Bouton rolldown */
 .btn-rolldown {
-  background: none;
+  background: var(--gris-clair);
+  color: var(--gris-fonce);
   border: none;
-  color: #6b7280;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 4px;
+  border-radius: 0.2rem;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, color 0.2s ease;
+  cursor: pointer;
   flex-shrink: 0;
+  font-size: 1rem;
+  transition: transform 0.2s;
 }
 
 .btn-rolldown:hover {
-  color: var(--couleur-bouton);
+  background: var(--gris-moyen);
+  color: var(--blanc);
 }
 
 .btn-rolldown span {
-  display: inline-block;
-  transition: transform 0.2s ease;
+  display: block;
+  transition: transform 0.2s;
 }
 
-.btn-rolldown .open {
+.btn-rolldown span.open {
   transform: rotate(180deg);
 }
 
-/* Info de la table */
 .table-info {
   flex: 1;
-  min-width: 0; /* Pour permettre le text-overflow */
 }
 
-/* Actions de la card */
 .card-actions {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   flex-shrink: 0;
-  margin-left: auto;
-}
-
-/* ===== DROPDOWN MENU JEUX ===== */
-.add-jeu-wrapper {
-  position: relative;
 }
 
 .btn-add-jeu {
-  background: var(--couleur-bouton, #2563eb);
-  color: #fff;
-  padding: 6px 12px;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
   border: none;
+  border-radius: 0.2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
 }
 
 .btn-add-jeu:hover {
-  background: #1d4ed8;
-  transform: translateY(-1px);
+  background-color: var(--couleur-primaire);
 }
 
-.jeu-dropdown {
-  position: absolute;
-  right: 0;
-  top: calc(100% + 4px);
-  z-index: 1000;
-  min-width: 250px;
-  max-width: 350px;
-  max-height: 320px;
-  overflow-y: auto;
-  background: #fff;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  padding: 4px;
-}
-
-.dropdown-item {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  width: 100%;
-  padding: 10px 12px;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-  border-radius: 6px;
-  transition: background-color 0.15s ease;
-  font-size: 0.9rem;
-}
-
-.dropdown-item:hover:not(.disabled) {
-  background-color: #f3f4f6;
-}
-
-.dropdown-item.disabled {
-  color: #9ca3af;
-  cursor: not-allowed;
-  font-style: italic;
-}
-
-.dropdown-item .jeu-editeur {
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
-/* Bouton retirer */
 .btn-remove {
-  background: #fee;
-  color: #dc2626;
-  border: 1px solid #fecaca;
-  padding: 6px 10px;
-  font-size: 1.2rem;
-  font-weight: 700;
-  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  background-color: var(--gris-clair);
+  color: var(--gris-fonce);
+  border: none;
+  border-radius: 0.2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
   cursor: pointer;
-  transition: all 0.2s ease;
   line-height: 1;
 }
 
 .btn-remove:hover {
-  background: #fca5a5;
-  color: #991b1b;
-  border-color: #f87171;
-  transform: translateY(-1px);
+  background-color: var(--rouge-danger);
+  color: var(--blanc);
 }
 
-/* ===== SECTION DES JEUX ASSOCIÉS ===== */
+/* Section jeux associés */
 .table-jeux-section {
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
-  padding: 12px 16px;
+  background: var(--fond-principal);
+  padding: 1rem;
+  border-top: 1px solid var(--gris-clair);
 }
 
 .jeux-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
 .jeux-title {
-  font-size: 0.875rem;
-  font-weight: 700;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
   color: var(--couleur-primaire);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  font-size: 1rem;
 }
 
 .jeux-count {
-  font-size: 0.8rem;
-  color: #6b7280;
-  background: #fff;
-  padding: 2px 8px;
-  border-radius: 999px;
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
+  color: var(--couleur-terciere);
+  font-size: 0.9rem;
 }
 
-.loading-jeux {
-  margin: 8px 0;
-  padding: 12px;
+.table-jeux-section .empty {
   text-align: center;
-  color: #6b7280;
-  font-size: 0.875rem;
+  padding: 1.5rem;
+  color: var(--gris-moyen);
   font-style: italic;
 }
 
-.empty {
-  margin: 8px 0;
-  padding: 12px;
-  text-align: center;
-  color: #9ca3af;
-  font-size: 0.875rem;
-  font-style: italic;
-}
-
-/* ===== LISTE DES JEUX ===== */
 .jeux-list {
   list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0.5rem;
 }
 
 .jeu-item {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 6px;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  transition: all 0.15s ease;
-}
-
-.jeu-item:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-  transform: translateX(4px);
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--blanc);
+  border-radius: 0.2rem;
 }
 
 .jeu-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  flex: 1;
-  min-width: 0;
+  gap: 0.25rem;
 }
 
 .jeu-nom {
-  font-size: 0.95rem;
-  color: var(--couleur-primaire);
+  font-family: 'Montserrat', sans-serif;
   font-weight: 600;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  color: var(--gris-fonce);
+  font-size: 0.95rem;
 }
 
 .jeu-editeur {
-  font-size: 0.8rem;
-  color: #6b7280;
+  font-size: 0.85rem;
+  color: var(--gris-moyen);
 }
 
 .btn-remove-jeu {
-  background: none;
+  background: var(--gris-clair);
+  color: var(--gris-fonce);
   border: none;
-  color: #dc2626;
-  font-size: 1.4rem;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 4px 8px;
+  font-size: 1.25rem;
   line-height: 1;
-  border-radius: 4px;
-  transition: all 0.15s ease;
   flex-shrink: 0;
 }
 
 .btn-remove-jeu:hover {
-  background: #fee;
-  color: #991b1b;
+  background: var(--rouge-danger);
+  color: var(--blanc);
 }
 
-/* ===== OVERLAY DROPDOWN ===== */
-.dropdown-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 999;
-  background: transparent;
-}
-
-/* ===== CONFIRMATION POPUP ===== */
-.confirm-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  backdrop-filter: blur(2px);
-}
-
-.confirm-popup {
-  background: var(--blanc);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  max-width: 420px;
-  width: 90%;
-  text-align: center;
-  animation: popupSlideIn 0.2s ease;
-}
-
-@keyframes popupSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.confirm-popup h3 {
-  margin: 0 0 1rem 0;
-  color: var(--couleur-primaire);
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.confirm-popup p {
-  margin: 0 0 1.5rem 0;
-  color: #6b7280;
-  font-size: 1rem;
-  line-height: 1.5;
-}
-
-.confirm-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.confirm-actions .btn {
-  flex: 1;
-  padding: 0.65rem 1.25rem;
-}
-
-/* ===== POPUP AJOUTER UN JEU ===== */
+/* Modal ajout jeu */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  padding: 20px;
+  z-index: 1000;
 }
 
 .modal-content {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  max-width: 500px;
-  width: 100%;
+  background: var(--blanc);
+  border-radius: 0.2rem;
+  width: 90%;
+  max-width: 700px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .modal-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 20px;
-  border-bottom: 1px solid #e5e7eb;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--gris-clair);
 }
 
 .modal-header h3 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
+  font-size: 1.25rem;
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #111827;
 }
 
 .btn-close {
   background: none;
   border: none;
-  font-size: 1.8rem;
-  color: #6b7280;
+  font-size: 1.5rem;
+  color: var(--gris-moyen);
   cursor: pointer;
   padding: 0;
   width: 32px;
@@ -564,151 +393,122 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  line-height: 1;
+  border-radius: 0.2rem;
 }
 
 .btn-close:hover {
-  color: #111827;
+  background: var(--gris-clair);
+  color: var(--gris-fonce);
 }
 
 .modal-body {
-  padding: 20px;
+  padding: 1.5rem;
   overflow-y: auto;
-  flex: 1;
 }
 
-.loading-state,
 .empty-state {
-  padding: 40px 20px;
   text-align: center;
-  color: #6b7280;
+  padding: 3rem;
+  color: var(--gris-moyen);
+  font-style: italic;
 }
 
-.loading-state p,
-.empty-state p {
-  margin: 0;
-  font-size: 1rem;
-}
-
-/* Liste des jeux (verticale) */
 .jeux-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
 }
 
 .jeu-card {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 12px 16px;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  align-items: center;
+  padding: 1rem;
+  background: var(--fond-principal);
+  border: 2px solid var(--gris-clair);
+  border-radius: 0.2rem;
   cursor: pointer;
   text-align: left;
-  width: 100%;
 }
 
 .jeu-card:hover {
-  background: #e0f2fe;
-  border-color: var(--couleur-bouton, #2563eb);
+  border-color: var(--couleur-terciere);
+  background: var(--blanc);
 }
 
 .jeu-info-modal {
   flex: 1;
-  min-width: 0;
 }
 
 .jeu-nom-modal {
-  margin: 0 0 4px 0;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #111827;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: var(--couleur-primaire);
+  font-size: 1rem;
+  margin: 0 0 0.25rem 0;
 }
 
 .jeu-editeur-modal {
-  margin: 0 0 2px 0;
-  font-size: 0.85rem;
-  color: #6b7280;
-}
-
-.jeu-joueurs-modal {
+  font-size: 0.875rem;
+  color: var(--gris-moyen);
   margin: 0;
-  font-size: 0.8rem;
-  color: #9ca3af;
 }
 
 .jeu-arrow {
-  font-size: 1.2rem;
-  color: var(--couleur-bouton, #2563eb);
-  flex-shrink: 0;
+  font-size: 1.25rem;
+  color: var(--couleur-terciere);
+  margin-left: 0.5rem;
 }
 
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 768px) {
-  .modal-content {
-    max-height: 90vh;
-  }
-
-  .modal-header {
-    padding: 16px;
-  }
-
-  .modal-body {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .jeu-card {
-    padding: 10px 12px;
-  }
-
-  .jeu-nom-modal {
-    font-size: 0.9rem;
-  }
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 768px) {
-  .card-table {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .card-actions {
-    width: 100%;
-    justify-content: flex-end;
-    margin-left: 0;
-  }
-
-  .jeu-dropdown {
-    right: 0;
-    min-width: 200px;
-  }
-}
-
-@media (max-width: 480px) {
   .tables-tab {
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
   .header {
     flex-direction: column;
     align-items: flex-start;
+    gap: 1rem;
   }
 
   .actions {
     width: 100%;
   }
 
-  .btn {
+  .actions .btn {
     width: 100%;
   }
 
-  .jeu-nom {
-    font-size: 0.875rem;
+  .card-table {
+    flex-wrap: wrap;
+  }
+
+  .card-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .jeux-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .confirm-actions {
+    flex-direction: column;
+  }
+
+  .confirm-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    width: 95%;
+  }
+
+  .modal-header,
+  .modal-body {
+    padding: 1rem;
   }
 }

@@ -1,132 +1,198 @@
-mat-card {
-  background-color: var(--fond-carte); 
-  border: 1px solid var(--gris-clair);
-  border-radius: 8px;
-  padding: 16px;
-  width: 100%;
-  min-width: 260px;
-  max-width: 320px;
-  margin: 0 auto;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-mat-card-header h2 {
-  color: var(--gris-fonce); 
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: bold;
-}
-
-mat-card-content p {
-  margin: 8px 0;
-  color: var(--gris-moyen);
-  font-size: 0.875rem;
-}
-
-mat-card-actions {
-  margin-top: 12px;
-  text-align: right;
-  gap: 0.5rem;
-}
-
-mat-card-actions button {
-  background-color: var(--couleur-bouton);
-  color: var(--blanc);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-mat-card-actions button:hover {
-  background-color: var(--couleur-terciere);
-}
-
-mat-card-actions button:active {
-  background-color: var(--couleur-primaire);
-}
-
-.highlight {
-  box-shadow: 0 0 0 2px var(--couleur-bouton);
-  border-color: var(--couleur-bouton);
-}
-
-/* Container pour laisser de la place en haut */
 .card-container {
+  background: var(--blanc);
+  border-radius: 0.30rem;
+  padding: 1.5rem;
   position: relative;
-  padding-top: 1.2rem;
+  box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
+  width: 280px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Bouton delete réduit et centré */
+.card-container:hover {
+  box-shadow: 0 4px 12px rgba(28, 83, 135, 0.15);
+}
+
+/* Bouton supprimer */
 .delete-btn {
   position: absolute;
-  top: 0.35rem;
-  right: 0.35rem;
-
-  background: var(--rouge-danger);
-  color: var(--blanc);
-
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--gris-clair);
+  color: var(--gris-fonce);
   border: none;
   border-radius: 50%;
-
-  width: 1.3rem;
-  height: 1.3rem;
-
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: 0;
-
   cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  /* fix Material icon vertical alignment */
-  line-height: 0;
-}
-
-.delete-btn mat-icon {
-  font-size: 0.9rem;   /* 👈 plus petit */
-  width: 0.9rem;
-  height: 0.9rem;
-  line-height: 1;
+  padding: 0;
 }
 
 .delete-btn:hover {
-  background: #b91c1c;
-}
-
-.delete-btn:active {
-  background: #991b1b;
-}
-
-.btn-edit {
-  background-color: var(--couleur-bouton);
+  background: var(--rouge-danger);
   color: var(--blanc);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
 }
 
-.btn-edit:hover {
-  background-color: var(--couleur-terciere);
+.delete-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
-.btn-edit:active {
+/* Header */
+mat-card-header {
+  margin-bottom: auto;
+  padding-right: 2rem;
+}
+
+mat-card-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Content */
+mat-card-content {
+  margin-bottom: 1rem;
+}
+
+mat-card-content p {
+  margin: 0.5rem 0;
+  color: var(--gris-fonce);
+  font-size: 0.9rem;
+}
+
+/* Actions */
+mat-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0;
+  margin: 0;
+}
+
+.btn-detail:hover {
   background-color: var(--couleur-primaire);
 }
 
 .btn-edit {
-  background-color: var(--couleur-secondaire);
+  flex: 1;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
 }
 
 .btn-edit:hover {
-  background-color: var(--couleur-terciere);
+  background-color: var(--gris-moyen);
+  color: var(--blanc);
+}
+
+/* Mode édition - Formulaire */
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.error-message {
+  background-color: #fee2e2;
+  color: var(--rouge-danger);
+  border: 1px solid var(--rouge-danger);
+  padding: 0.5rem;
+  border-radius: 0.2rem;
+  font-size: 0.85rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--couleur-primaire);
+  font-size: 0.9rem;
+}
+
+.form-group input {
+  padding: 0.5rem;
+  border: 2px solid var(--gris-clair);
+  border-radius: 0.2rem;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9rem;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--couleur-terciere);
+}
+
+.error-text-input {
+  color: var(--rouge-danger);
+  font-size: 0.8rem;
+}
+
+mat-card-actions button[type="button"] {
+  flex: 1;
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 0.375rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+mat-card-actions button:not(.btn-cancel) {
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
+}
+
+mat-card-actions button:not(.btn-cancel):hover:not(:disabled) {
+  background-color: var(--couleur-primaire);
+}
+
+mat-card-actions button.btn-cancel {
+  background-color: var(--gris-clair);
+  color: var(--gris-fonce);
+}
+
+mat-card-actions button.btn-cancel:hover:not(:disabled) {
+  background-color: var(--gris-moyen);
+  color: var(--blanc);
+}
+
+mat-card-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .card-container {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-container {
+    width: 100%;
+    min-height: auto;
+  }
+
+  mat-card-actions {
+    flex-direction: column;
+  }
 }

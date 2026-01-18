@@ -72,7 +72,6 @@
   @if (showForm()) {
     <app-editeur-form
       [editeur]="editingEditeur()"
-      [mode]="editingEditeur() ? 'edit' : 'create'"
       (closeForm)="closeForm()">
     </app-editeur-form>
   }

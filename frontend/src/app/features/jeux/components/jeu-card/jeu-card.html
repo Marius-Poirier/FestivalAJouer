@@ -2,8 +2,7 @@
   @let j = jeu()!;
 
   <mat-card class="card-container">
-
-    @if (canManage()) {
+        @if (canManage()) {
       <button
         class="delete-btn"
         (click)="delete.emit(j.id!); $event.stopPropagation()"
@@ -12,15 +11,23 @@
         <mat-icon>close</mat-icon>
       </button>
     }
-
+    <div class="info" (click)="detail.emit(j.id!)">
     <mat-card-header>
+      <div class="left">
+        
+      </div>
+        @if (j.url_image) {
+          <img class="jeu-image" [src]="j.url_image" [alt]="j.nom" loading="lazy" />
+        }   
       <h2>{{ j.nom }}</h2>
+
     </mat-card-header>
 
     <mat-card-content>
       @if (j.type_jeu_nom) {
         <p><strong>Type :</strong> {{ j.type_jeu_nom }}</p>
       }
+  
       <p>
         <strong>Joueurs :</strong>
         {{ j.nb_joueurs_min }}
@@ -33,18 +40,15 @@
       }
     </mat-card-content>
 
-    <mat-card-actions>
-      <button
-        type="button"
-        class="btn-detail"
-        (click)="detail.emit(j.id!)">
-        Détail
-      </button>
 
+    </div>
+
+
+    <mat-card-actions>
       @if (canManage()) {
         <button
           type="button"
-          class="btn-edit"
+          class="btn"
           (click)="update.emit(j.id!)">
           Modifier
         </button>

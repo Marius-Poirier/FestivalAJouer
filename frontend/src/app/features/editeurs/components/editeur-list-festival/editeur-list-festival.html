@@ -4,18 +4,27 @@
             {{ editeursvc.error() }}
         </div>
     }
-    <div class="header-controls">
-        @if (authService.isAdminSuperorga()){
-            <button class="btn-add" (click)="openCreateForm()">+ Nouvel éditeur</button>
-        }
-    </div>
+        <div class="header-controls">
+                <div class="search-bar">
+                    <mat-icon class="search-icon">search</mat-icon>
+                    <input
+                        type="text"
+                        placeholder="Rechercher un éditeur..."
+                        [value]="searchTerm()"
+                        (input)="onSearch($event)"
+                    />
+                </div>
+                @if (authService.isAdminSuperorga()){
+                        <button class="btn-add" (click)="openCreateForm()">+ Nouvel éditeur</button>
+                }
+        </div>
     
     @if (editeursvc.isLoading()) {
         <p class="loading">Chargement des éditeurs...</p>
     } @else {
-        @if(editeursvc.editeurs().length != 0){
+        @if(filteredEditeurs().length > 0){
             <ul class="items-list">
-                @for (editeur of editeursvc.editeurs(); track editeur.id) {
+                @for (editeur of filteredEditeurs(); track editeur.id) {
                     <li>
                         <app-editeur-card
                             [editeur]="editeur"
@@ -36,7 +45,6 @@
     @if(showForm()){
         <app-editeur-form
             [editeur]="editingEditeur()"
-            [mode]="editingEditeur() ? 'edit' : 'create'"
             (closeForm)="closeForm()">
         </app-editeur-form>
     }

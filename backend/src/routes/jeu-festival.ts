@@ -50,6 +50,13 @@ router.get('/view', async (req, res) => {
 
         j.nom AS jeu_nom,
         tj.nom AS type_jeu_nom,
+        j.nb_joueurs_min,
+        j.nb_joueurs_max,
+        j.duree_minutes,
+        j.age_min,
+        j.age_max,
+        j.theme,
+        j.url_image,
 
         r.editeur_id,
         e.nom AS editeur_nom

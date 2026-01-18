@@ -13,8 +13,10 @@
     <mat-card class="detail-card">
       <mat-card-header>
         <div class="header-main">
+        @if (j.url_image) {
+          <img class="jeu-image" [src]="j.url_image" [alt]="j.nom" loading="lazy" />
+        }   
           <h1>{{ j.nom }}</h1>
-
           @if (j.type_jeu_nom) {
             <span class="badge-type">{{ j.type_jeu_nom }}</span>
           }

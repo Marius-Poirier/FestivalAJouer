@@ -24,7 +24,7 @@ export class EditeurForm {
   protected readonly editeurService = inject(EditeurService);
 
   public editeur = input<EditeurDto | null>(null);
-  public mode = input<'create' | 'edit'>('create');
+
 
   public closeForm = output<void>();
 
@@ -50,15 +50,9 @@ export class EditeurForm {
 
     const nom = this.form.value.nom!;
     const current = this.editeur();
-    const mode = this.mode();
-
-    if (mode === 'edit' && current?.id != null) {
-      // MODIFICATION
-      this.editeurService.update(current.id, nom);
-    } else {
-      // CREATION
-      this.editeurService.add({ nom });
-    }
+   
+    this.editeurService.add({ nom });
+    
 
     if (this.editeurService.error() != null) {
       return;
