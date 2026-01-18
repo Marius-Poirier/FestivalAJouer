@@ -1,11 +1,9 @@
 import { Router } from 'express'
 import pool from '../db/database.js'
 import { requireSuperOrga } from '../middleware/auth-superOrga.js'
+import { requireOrganisateur } from '../middleware/auth-organisateur.js'
 
 const router = Router()
-
-// Applique le garde super organisateur à toutes les routes du module
-router.use(requireSuperOrga)
 
 const FESTIVAL_FIELDS = 'id, nom, date_debut, date_fin, lieu, date_creation, created_at, updated_at'
 
@@ -21,8 +19,8 @@ function validateDate(value: string, fieldName: string) {
 	}
 }
 
-// GET /api/festivals
-router.get('/', async (_req, res) => {
+// GET /api/festivals (consultation autorisée aux organisateurs et au-dessus)
+router.get('/', requireOrganisateur, async (_req, res) => {
 	try {
 		const { rows } = await pool.query(
 			`SELECT ${FESTIVAL_FIELDS} FROM Festival ORDER BY created_at DESC`
@@ -34,8 +32,8 @@ router.get('/', async (_req, res) => {
 	}
 })
 
-// GET /api/festivals/:id
-router.get('/:id', async (req, res) => {
+// GET /api/festivals/:id (consultation autorisée aux organisateurs et au-dessus)
+router.get('/:id', requireOrganisateur, async (req, res) => {
 	const festivalId = Number.parseInt(req.params.id, 10)
 	if (!Number.isInteger(festivalId)) {
 		return res.status(400).json({ error: 'Identifiant de festival invalide' })
@@ -58,8 +56,8 @@ router.get('/:id', async (req, res) => {
 	}
 })
 
-// POST /api/festivals
-router.post('/', async (req, res) => {
+// POST /api/festivals (réservé super orga/admin)
+router.post('/', requireSuperOrga, async (req, res) => {
 	const trimmedName = sanitizeString(req.body?.nom)
 	const startDate = sanitizeString(req.body?.date_debut)
 	const endDate = sanitizeString(req.body?.date_fin)
@@ -101,8 +99,8 @@ router.post('/', async (req, res) => {
 	}
 })
 
-// PUT /api/festivals/:id
-router.put('/:id', async (req, res) => {
+// PUT /api/festivals/:id (réservé super orga/admin)
+router.put('/:id', requireSuperOrga, async (req, res) => {
 	const festivalId = Number.parseInt(req.params.id, 10)
 	if (!Number.isInteger(festivalId)) {
 		return res.status(400).json({ error: 'Identifiant de festival invalide' })
@@ -157,8 +155,8 @@ router.put('/:id', async (req, res) => {
 	}
 })
 
-// DELETE /api/festivals/:id
-router.delete('/:id', async (req, res) => {
+// DELETE /api/festivals/:id (réservé super orga/admin)
+router.delete('/:id', requireSuperOrga, async (req, res) => {
 	const festivalId = Number.parseInt(req.params.id, 10)
 	if (!Number.isInteger(festivalId)) {
 		return res.status(400).json({ error: 'Identifiant de festival invalide' })
