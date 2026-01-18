@@ -1,25 +1,63 @@
+/* Container style aligned with reservation-table */
 .container {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
+  background: var(--blanc);
+  border-radius: 8px;
+  padding: 1rem;
 }
 
 .header {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   gap: 10px;
+}
+
+.actions {
+  justify-content: flex-end;
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
 }
 
 .add-row {
   display: flex;
   gap: 12px;
-  align-items: end;
+  align-items: center;
   flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.count {
+  background: var(--gris-tres-clair);
+  color: var(--couleur-primaire);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.count small {
+  font-weight: 400;
+  font-size: 0.75rem;
+  margin-left: 0.35rem;
+  color: var(--gris-moyen);
 }
 
 .field {
   min-width: 280px;
-  flex: 1;
+  flex: 1 1 320px;
 }
 
 .simple-list {
@@ -38,6 +76,10 @@
   border-radius: 6px;
   cursor: pointer;
   transition: 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .item:hover {
@@ -49,13 +91,6 @@
   color: var(--rouge-danger);
 }
 
-.item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
 .name {
   flex: 1;
 }
@@ -65,8 +100,8 @@
   color: var(--blanc);
   border: none;
   border-radius: 999px;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -78,8 +113,52 @@
 }
 
 .btn-remove mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== BUTTON STYLE (conforme demandé) ===== */
+.btn {
+  background: var(--couleur-bouton);
+  color: var(--blanc);
+  border: none;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.78rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn:hover {
+  background: var(--couleur-terciere);
+}
+
+.btn:active {
+  background: var(--couleur-secondaire);
+}
+
+.btn.secondary {
+  background: var(--couleur-bouton);
+  color: var(--blanc);
+}
+
+.btn.secondary:hover {
+  background: var(--couleur-terciere);
+}
+
+.btn.secondary:active {
+  background: var(--couleur-secondaire);
+}
+
+.add-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 

@@ -1,8 +1,16 @@
 <div class="tables-tab">
+  <div class="header">
+    <div class="title-group">
+      <h3>Tables</h3>
+      <span class="count">{{ nbr_tables() }}<small> table(s)</small></span>
+    </div>
+
     <div class="actions">
       <button type="button" class="btn" (click)="showAddTable()">+ Ajouter table</button>
     </div>
+  </div>
 
+  <!-- Modal : Ajouter une table -->
   @if (isAddTable() && reservationId()) {
     <app-add-table-reservation 
       [reservationId]="reservationId() ?? undefined"
@@ -11,6 +19,7 @@
     ></app-add-table-reservation>
   }
 
+  <!-- Popup de confirmation : Retirer une table -->
   @if (showRemoveConfirm()) {
     <div class="confirm-overlay" (click)="closeRemoveConfirm()">
       <div class="confirm-popup" (click)="$event.stopPropagation()">
@@ -24,18 +33,21 @@
     </div>
   }
 
+  <!-- État : Chargement -->
   @if (loading()) {
     <div class="placeholder">
       <p>⏳ Chargement des tables...</p>
     </div>
   }
 
+  <!-- État : Erreur -->
   @if (error() && !loading()) {
     <div class="error-message">
-      <p>❌ {{ error() }}</p>
+      <p>{{ error() }}</p>
     </div>
   }
 
+  <!-- État : Aucune table -->
   @if (!loading() && tables().length === 0 && !error()) {
     <div class="placeholder">
       <p>⚠️ Aucune table attribuée pour le moment.</p>
@@ -45,25 +57,145 @@
     </div>
   }
 
+  <!-- Liste des tables -->
   @if (!loading() && tables().length > 0) {
     <div class="summary">
-      <p>
-        <strong>Résumé :</strong> 
-        {{ tables().length }} table(s) - 
-        <strong>{{prix_total()}} €</strong>
-      </p>
+      <p><strong>Prix Total : {{prix_total()}} €</strong></p>
     </div>
 
     <div class="tables-list">
       @for (table of tables(); track table.id) {
-        <div class="card-table">
-          <app-table-card 
-              [table]="table"
-              (onRemove)="handleRemoveTable($event)">
-          </app-table-card>
-          <button type="button" class="btn btn-remove" (click)="handleRemoveTable(table.id!)">Retirer table</button>
+        <div class="table-wrapper">
+          <!-- Carte de la table -->
+          <div class="card-table">
+            <!-- Bouton pour afficher/masquer les jeux associés -->
+            <button 
+              type="button" 
+              class="btn-rolldown" 
+              (click)="toggleTableJeux(table.id!)"
+              [attr.aria-expanded]="openTableJeux()[table.id!]"
+              title="Afficher les jeux associés"
+            >
+              <span [class.open]="openTableJeux()[table.id!]">&#9660;</span>
+            </button>
+
+            <!-- Informations de la table -->
+            <div class="table-info">
+              <app-table-card 
+                [table]="table" 
+                [showzoneplan]="true"
+              ></app-table-card>
+            </div>
+
+            <!-- Actions -->
+            <div class="card-actions">
+              <!-- Bouton : Ajouter un jeu -->
+              <button 
+                type="button" 
+                class="btn btn-add-jeu" 
+                (click)="openAddJeuModal(table.id!)"
+                title="Ajouter un jeu à cette table"
+              >
+                + Jeu
+              </button>
+
+              <!-- Bouton : Retirer la table -->
+              <button 
+                type="button" 
+                class="btn btn-remove" 
+                (click)="handleRemoveTable(table.id!)"
+                title="Retirer de la réservation"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+
+          <!-- Jeux associés à la table (collapsible) -->
+          @if (openTableJeux()[table.id!]) {
+            <div class="table-jeux-section">
+              <div class="jeux-header">
+                <span class="jeux-title">Jeux associés</span>
+                <span class="jeux-count">
+                  {{ jeuxParTable()[table.id!]?.length || 0 }} jeu(x)
+                </span>
+              </div>
+              @if (jeuxParTable()[table.id!].length === 0) {
+                <p class="empty">Aucun jeu associé à cette table</p>
+              } 
+              <!-- Liste des jeux associés -->
+              @else {
+                <ul class="jeux-list">
+                  @for (jeu of getJeuxDetailsForTable(table.id!); track jeu.id) {
+                    <li class="jeu-item">
+                      <div class="jeu-info">
+                        <span class="jeu-nom">{{ jeu.jeu_nom }}</span>
+                        @if (jeu.editeur_nom) {
+                          <span class="jeu-editeur">{{ jeu.editeur_nom }}</span>
+                        }
+                      </div>
+                      <button 
+                        type="button" 
+                        class="btn-remove-jeu"
+                        title="Retirer ce jeu"
+                        (click)="openRemoveJeuPopup(jeu.id, table.id!, jeu.jeu_nom)"
+                      >
+                        ×
+                      </button>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
         </div>
       }
     </div>
   }
 </div>
+
+<!-- Popup suppression jeu -->
+<app-popup-delete
+  [entiteType]="deleteJeuType()"
+  [entiteId]="deleteJeuId()"
+  [entitenom]="deleteJeuNom()"
+  (confirm)="handleConfirmRemoveJeu()"
+  (cancel)="handleCancelRemoveJeu()"
+></app-popup-delete>
+
+@if (showAddJeuModal()) {
+  <div class="modal-overlay" (click)="closeAddJeuModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+
+      <div class="modal-header">
+        <h3>Ajouter un jeu à la table #{{ showAddJeuModal() }}</h3>
+        <button type="button" class="btn-close" (click)="closeAddJeuModal()">×</button>
+      </div>
+      <div class="modal-body">
+        @if (jeuxDisponibles().length === 0) {
+          <div class="empty-state">
+            <p> Aucun jeu disponible pour cette réservation</p>
+          </div>
+        } @else {
+          <div class="jeux-grid">
+            @for (jeu of jeuxDisponibles(); track jeu.id) {
+              <button 
+                type="button"
+                class="jeu-card"
+                (click)="handleAddJeuToTable(jeu.id!)"
+              >
+                <div class="jeu-info-modal">
+                  <h4 class="jeu-nom-modal">{{ jeu.jeu_nom }}</h4>
+                  @if (jeu.editeur_nom) {
+                    <p class="jeu-editeur-modal">{{ jeu.editeur_nom }}</p>
+                  }
+                </div>
+                <span class="jeu-arrow">→</span>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}

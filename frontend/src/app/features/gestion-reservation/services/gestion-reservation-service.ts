@@ -16,7 +16,10 @@ import { JeuService } from '@jeux/services/jeu-service';
 })
 export class GestionReservationService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/reservation-tables`;
+  private readonly baseUrlTable = `${environment.apiUrl}/reservation-tables`;
+  private readonly baseUrlJeuFestival =`${environment.apiUrl}/jeu-festival`;
+  private readonly baseUrlJeuFestivalTables =`${environment.apiUrl}/jeu-festival-tables`;
+  
   private readonly authService = inject(AuthService);
   private readonly reservationsvc = inject(ReservationsService)
   private readonly tablesService = inject(TablesService);
@@ -54,7 +57,7 @@ export class GestionReservationService {
     const params = new HttpParams().set('reservationId', reservationId.toString());
 
     // D'abord charger les liens reservation-tables
-    return this.http.get<ReservationTableDto[]>(this.baseUrl, { params, withCredentials: true })
+    return this.http.get<ReservationTableDto[]>(this.baseUrlTable, { params, withCredentials: true })
       .pipe(
         // Ensuite charger les détails de chaque table
         switchMap(links => {
@@ -94,7 +97,7 @@ export class GestionReservationService {
 
     const params = new HttpParams().set('reservationId', reservationId.toString());
 
-    this.http.get<ReservationTableDto[]>(this.baseUrl, { params, withCredentials: true })
+    this.http.get<ReservationTableDto[]>(this.baseUrlTable, { params, withCredentials: true })
       .pipe(
         tap(data => this._reservationTables.set(data ?? [])),
         catchError(err => {
@@ -122,7 +125,7 @@ export class GestionReservationService {
 
     const payload = { reservation_id: reservationId, table_id: tableId };
 
-    this.http.post<{ message: string; affectation: ReservationTableDto }>(this.baseUrl, payload, { withCredentials: true })
+    this.http.post<{ message: string; affectation: ReservationTableDto }>(this.baseUrlTable, payload, { withCredentials: true })
       .pipe(
         tap(response => {
           if (response?.affectation) {
@@ -171,7 +174,7 @@ export class GestionReservationService {
     const body = { reservation_id: reservationId, table_id: tableId };
 
     this.http.delete<{ message: string; affectation: ReservationTableDto }>(
-      this.baseUrl,
+      this.baseUrlTable,
       { body, withCredentials: true }
     )
       .pipe(
@@ -225,7 +228,7 @@ export class GestionReservationService {
     if (reservationId) params = params.set('reservationId', reservationId.toString());
 
     return this.http
-      .get<JeuFestivalViewDto[]>(`${environment.apiUrl}/jeu-festival/view`, { params, withCredentials: true })
+      .get<JeuFestivalViewDto[]>(`${this.baseUrlJeuFestival}/view`, { params, withCredentials: true })
       .pipe(
         tap((rows) => this._jeuFestivalView.set(rows ?? [])),
         catchError((err) => {
@@ -255,7 +258,7 @@ export class GestionReservationService {
     };
 
     return this.http
-      .post(`${environment.apiUrl}/jeu-festival`, payload, { withCredentials: true })
+      .post(this.baseUrlJeuFestival, payload, { withCredentials: true })
       .pipe(
         catchError((err) => {
           console.error('Erreur addJeuToReservation', err);
@@ -273,7 +276,7 @@ export class GestionReservationService {
     this._error.set(null);
 
     return this.http
-      .delete(`${environment.apiUrl}/jeu-festival/${jeuFestivalId}`, { withCredentials: true })
+      .delete(`${this.baseUrlJeuFestival}/${jeuFestivalId}`, { withCredentials: true })
       .pipe(
         catchError((err) => {
           console.error('Erreur deleteJeuFromReservation', err);
@@ -312,4 +315,119 @@ export class GestionReservationService {
       })
     );
   }
+
+  //Ajoutre un jeux a une table 
+
+  /**
+   * Associe un jeu (via JeuFestival) à une table
+   */
+  addJeuToTable(jeuFestivalId: number, tableId: number): Observable<any> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const payload = {
+      jeu_festival_id: jeuFestivalId,
+      table_id: tableId
+    };
+
+    return this.http.post<{ message: string; association: any }>(
+        this.baseUrlJeuFestivalTables,
+        payload,
+        { withCredentials: true }
+      )
+      .pipe(
+        tap(response => {
+          if (response?.association) {
+            console.log(`Jeu associé à la table : ${JSON.stringify(response.association)}`);
+          } else {
+            this._error.set("Erreur lors de l'association du jeu à la table");
+          }
+        }),
+        catchError((err) => {
+          console.error('Erreur addJeuToTable', err);
+          if (err?.status === 401) {
+            this._error.set("Vous devez être connecté en tant qu'organisateur");
+          } else if (err?.status === 400) {
+            this._error.set('Données invalides');
+          } else if (err?.status === 409) {
+            this._error.set('Cette table est déjà associée à ce jeu');
+          } else {
+            this._error.set('Erreur serveur');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  /**
+   * Récupère les IDs des jeux (jeu_festival_id) associés à une table
+  */
+  getJeuxByTableId(tableId: number): Observable<number[]> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const params = new HttpParams().set('tableId', tableId.toString());
+
+    return this.http
+      .get<number[]>(`${this.baseUrlJeuFestivalTables}/jeu-table`, { 
+        params, 
+        withCredentials: true 
+      })
+      .pipe(
+        tap(ids => {
+          console.log(`Jeux associés à la table ${tableId}:`, ids);
+        }),
+        catchError((err) => {
+          console.error('Erreur getJeuxByTableId', err);
+          if (err?.status === 400) {
+            this._error.set('ID de table invalide');
+          } else {
+            this._error.set('Erreur lors de la récupération des jeux de la table');
+          }
+          return of([]);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
+  /**
+   * Retirer un jeu d'une table
+   */
+  removeJeuFromTable(jeuFestivalId: number, tableId: number): Observable<any> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    const body = {
+      jeu_festival_id: jeuFestivalId,
+      table_id: tableId
+    };
+
+    return this.http
+      .delete<{ message: string; association: any }>(this.baseUrlJeuFestivalTables, { body, withCredentials: true })
+      .pipe(
+        tap(response => {
+          if (response?.association) {
+            console.log(`Jeu retiré de la table : ${JSON.stringify(response.association)}`);
+          } else {
+            this._error.set("Erreur lors du retrait du jeu");
+          }
+        }),
+        catchError((err) => {
+          console.error('Erreur removeJeuFromTable', err);
+          if (err?.status === 401) {
+            this._error.set("Vous devez être connecté en tant qu'organisateur");
+          } else if (err?.status === 400) {
+            this._error.set('Données invalides');
+          } else if (err?.status === 404) {
+            this._error.set('Association non trouvée');
+          } else {
+            this._error.set('Erreur serveur');
+          }
+          return of(null);
+        }),
+        finalize(() => this._isLoading.set(false))
+      );
+  }
+
 }

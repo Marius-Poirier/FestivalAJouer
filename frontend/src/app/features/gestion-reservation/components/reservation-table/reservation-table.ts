@@ -3,31 +3,49 @@ import { CommonModule } from '@angular/common';
 import { GestionReservationService } from '../../services/gestion-reservation-service';
 import { TableCard } from '@tables/components/table-card/table-card';
 import { AddTableReservation } from '@gestion-reservation/components/add-table-reservation/add-table-reservation';
+import { PopupDelete } from '@sharedComponent/popup-delete/popup-delete';
 
 @Component({
   selector: 'app-reservation-table',
   standalone: true,
-  imports: [CommonModule, TableCard, AddTableReservation],
+  imports: [CommonModule, TableCard, AddTableReservation, PopupDelete],
   templateUrl: './reservation-table.html',
   styleUrl: './reservation-table.css'
 })
 export class ReservationTable {
-  public reservationId = input<number | null>(null);
-  public festivalId = input<number | null>(null);
+  reservationId = input<number | null>(null);
+  festivalId = input<number | null>(null);
 
   private gestionsvc = inject(GestionReservationService);
 
+  tables = computed(() => this.gestionsvc.tables());
+  loading = signal<boolean>(false);
+  error = signal<string | null>(null);
+  prix_total = computed(() => this.gestionsvc.reservation()?.prix_total);
+  nbr_tables = computed(() => this.tables().length);
 
-  public tables = computed(() => this.gestionsvc.tables());
-  public loading = signal<boolean>(false);
-  public error = signal<string | null>(null);
-  public isAddTable = signal<boolean>(false);
-  public showRemoveConfirm = signal<boolean>(false);
-  public tableToRemove = signal<number | null>(null);
+  isAddTable = signal<boolean>(false);
 
-  protected prix_total = computed(()=> this.gestionsvc.reservation()?.prix_total);
+  showRemoveConfirm = signal<boolean>(false);
+  tableToRemove = signal<number | null>(null);
+
+  jeuxDisponibles = computed(() => this.gestionsvc.jeuFestivalView());
+  loadingJeux = signal<boolean>(false);
+  jeuxParTable = signal<Record<number, number[]>>({});
+  openTableJeux = signal<Record<number, boolean>>({});
+
+  showAddJeuModal = signal<number | null>(null);
+
+  //gere la suppresion d'un jeu d'une table 
+  deleteJeuType = signal<string | null>(null);
+  deleteJeuId = signal<number | null>(null);
+  deleteJeuNom = signal<string>('');
+  deleteJeuTableId = signal<number | null>(null);
+
+
 
   constructor() {
+    // Charger les tables quand reservationId change
     effect(() => {
       const id = this.reservationId();
       if (id) {
@@ -35,8 +53,8 @@ export class ReservationTable {
         this.gestionsvc.loadTableDetailsForReservation(id).subscribe({
           next: () => this.loading.set(false),
           error: (err) => {
-            console.error('Erreur lors du chargement des détails des tables:', err);
-            this.error.set('Erreur lors du chargement des détails des tables');
+            console.error('Erreur chargement tables:', err);
+            this.error.set('Erreur lors du chargement des tables');
             this.loading.set(false);
           }
         });
@@ -44,69 +62,214 @@ export class ReservationTable {
         this.error.set(null);
       }
     });
-    effect(()=>{
-      
-    })
+
+    //charger les jeux disponibles
+    effect(() => {
+      const festId = this.festivalId();
+      const resId = this.reservationId();
+      if (festId && resId) {
+        this.loadingJeux.set(true);
+        this.gestionsvc.loadJeuxView(festId, resId).subscribe({
+          next: () => this.loadingJeux.set(false),
+          error: () => this.loadingJeux.set(false)
+        });
+      }
+    });
   }
 
-  protected nbr_tables = computed(() => {
-    return this.tables().length;
-  });
+  // ========================================
+  // MÉTHODES - Gestion des tables
+  // ========================================
 
+  /**
+   * Ouvrir la modal pour ajouter une table
+   */
+  showAddTable() {
+    this.isAddTable.set(true);
+  }
+
+  /**
+   * Fermer la modal d'ajout de table
+   */
+  closeAddModal() {
+    this.isAddTable.set(false);
+  }
+
+  /**
+   * Appelé quand une table est ajoutée avec succès
+   */
+  handleTableAdded() {
+    this.closeAddModal();
+    const reservationId = this.reservationId();
+    if (reservationId) {
+      this.gestionsvc.loadTableDetailsForReservation(reservationId).subscribe();
+    }
+  }
+
+  /**
+   * Demander confirmation avant de retirer une table
+   */
   handleRemoveTable(tableId: number) {
-    console.log('Showing remove confirmation for table:', tableId);
     this.tableToRemove.set(tableId);
     this.showRemoveConfirm.set(true);
   }
 
+  /**
+   * Confirmer la suppression d'une table
+   */
   confirmRemoveTable() {
     const tableId = this.tableToRemove();
     const reservationId = this.reservationId();
     
     if (!tableId || !reservationId) {
-      console.error('Missing table or reservation ID');
       this.error.set('Erreur : données manquantes');
       return;
     }
     
-    console.log('Confirming removal of table:', tableId);
     this.gestionsvc.deleteTable(reservationId, tableId);
     this.closeRemoveConfirm();
   }
 
+  /**
+   * Annuler la suppression d'une table
+   */
   closeRemoveConfirm() {
-    console.log('Cancelling table removal');
     this.showRemoveConfirm.set(false);
     this.tableToRemove.set(null);
   }
 
-  /**
-   * Open the "Add Table" modal
-   */
-  showAddTable() {
-    console.log('Opening add table modal');
-    this.isAddTable.set(true);
-  }
+  // ========================================
+  // MÉTHODES - Gestion des jeux associés
+  // ========================================
 
   /**
-   * Close the "Add Table" modal
+   * Ouvrir/fermer la liste des jeux d'une table
    */
-  closeAddModal() {
-    console.log('Closing add table modal');
-    this.isAddTable.set(false);
-  }
-
-  /**
-   * Handle when a table is successfully added via the modal
-   */
-  handleTableAdded() {
-    console.log('Table added, reloading list...');
-    this.closeAddModal();
+  toggleTableJeux(tableId: number) {
+    const current = this.openTableJeux();
+    const newState = !current[tableId];
     
-    // Reload the tables list to show the newly added table
-    const reservationId = this.reservationId();
-    if (reservationId) {
-      this.gestionsvc.loadTableDetailsForReservation(reservationId).subscribe();
+    this.openTableJeux.set({ ...current, [tableId]: newState });
+    
+    // Charger les jeux si pas encore chargés
+    if (newState && !this.jeuxParTable()[tableId]) {
+      this.loadJeuxForTable(tableId);
     }
+  }
+
+  /**
+   * Charger les jeux associés à une table spécifique
+   */
+  loadJeuxForTable(tableId: number) {
+    this.gestionsvc.getJeuxByTableId(tableId).subscribe({
+      next: (jeuFestivalIds) => {
+        this.jeuxParTable.update(current => ({
+          ...current,
+          [tableId]: jeuFestivalIds
+        }));
+      },
+      error: (err) => {
+        console.error('Erreur chargement jeux table:', err);
+      }
+    });
+  }
+
+  /**
+   * Obtenir les détails complets des jeux d'une table
+   */
+  getJeuxDetailsForTable(tableId: number) {
+    const jeuFestivalIds = this.jeuxParTable()[tableId] || [];
+    const allJeux = this.jeuxDisponibles();
+    return allJeux.filter(jeu => jeuFestivalIds.includes(jeu.id));
+  }
+
+  // ========================================
+  // MÉTHODES - Modal "Ajouter un jeu"
+  // ========================================
+
+  /**
+   * Ouvrir la modal pour ajouter un jeu à une table
+   */
+  openAddJeuModal(tableId: number) {
+    this.showAddJeuModal.set(tableId);
+  }
+
+  /**
+   * Fermer la modal d'ajout de jeu
+   */
+  closeAddJeuModal() {
+    this.showAddJeuModal.set(null);
+  }
+
+  /**
+   * Ajouter un jeu à une table
+   */
+  handleAddJeuToTable(jeuFestivalId: number) {
+    const tableId = this.showAddJeuModal();
+    if (!tableId) return;
+
+    this.gestionsvc.addJeuToTable(jeuFestivalId, tableId).subscribe({
+      next: (response) => {
+        if (response) {
+          this.closeAddJeuModal();
+          
+          // Recharger les jeux disponibles
+          const festId = this.festivalId();
+          const resId = this.reservationId();
+          if (festId && resId) {
+            this.gestionsvc.loadJeuxView(festId, resId).subscribe();
+          }
+          
+          // Recharger les jeux de cette table si elle est ouverte
+          if (this.openTableJeux()[tableId]) {
+            this.loadJeuxForTable(tableId);
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Erreur ajout jeu:', err);
+        this.error.set('Erreur lors de l\'ajout du jeu');
+      }
+    });
+  }
+
+  //gere la suppresion d'un jeu d'une table 
+
+  /**
+   * Ouvrir popup pour retirer un jeu
+   */
+  openRemoveJeuPopup(jeuId: number, tableId: number, nomJeu: string) {
+    this.deleteJeuType.set('jeu-table');
+    this.deleteJeuId.set(jeuId);
+    this.deleteJeuNom.set(nomJeu);
+    this.deleteJeuTableId.set(tableId);
+  }
+
+  /**
+   * Confirmer le retrait du jeu
+   */
+  handleConfirmRemoveJeu() {
+    const jeuId = this.deleteJeuId();
+    const tableId = this.deleteJeuTableId();
+    
+    if (jeuId && tableId) {
+      this.gestionsvc.removeJeuFromTable(jeuId, tableId).subscribe({
+        next: () => {
+          this.loadJeuxForTable(tableId);
+        }
+      });
+    }
+    
+    this.handleCancelRemoveJeu();
+  }
+
+  /**
+   * Annuler le retrait du jeu
+   */
+  handleCancelRemoveJeu() {
+    this.deleteJeuType.set(null);
+    this.deleteJeuId.set(null);
+    this.deleteJeuNom.set('');
+    this.deleteJeuTableId.set(null);
   }
 }

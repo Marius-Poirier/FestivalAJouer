@@ -1,36 +1,49 @@
 <div class="container">
   <div class="header">
-    <h3>Jeux</h3>
+    <div class="title-group">
+      <h3>Jeux</h3>
+      <span class="count">{{ jeuxCount() }}<small> jeu(x)</small></span>
+    </div>
 
     @if (canManage()) {
-      <div class="add-row">
-        <mat-form-field appearance="fill" class="field">
-          <mat-label>Jeu (éditeur)</mat-label>
-
-          <mat-select
-            [value]="selectedJeuId()"
-            (valueChange)="selectedJeuId.set($event)">
-
-            @if (!availableEditeurJeux().length) {
-              <mat-option disabled>Plus de jeux disponibles</mat-option>
-            }
-
-            @for (j of availableEditeurJeux(); track j.id) {
-              <mat-option [value]="j.id">{{ j.nom }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <button
-          mat-raised-button
-          type="button"
-          (click)="addJeuToReservation()"
-          [disabled]="!selectedJeuId() || !availableEditeurJeux().length">
-          + Ajouter
-        </button>
+      <div class="actions">
+        <button type="button" class="btn" (click)="showAddJeux()">+ Ajouter jeux</button>
       </div>
     }
   </div>
+
+  @if (isAddingJeu()) {
+    <div class="add-row">
+      <mat-form-field appearance="fill" class="field">
+        <mat-label>Jeu (éditeur)</mat-label>
+
+        <mat-select
+          [value]="selectedJeuId()"
+          (valueChange)="selectedJeuId.set($event)">
+
+          @if (!availableEditeurJeux().length) {
+            <mat-option disabled>Plus de jeux disponibles</mat-option>
+          }
+
+          @for (j of availableEditeurJeux(); track j.id) {
+            <mat-option [value]="j.id">{{ j.nom }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <div class="add-actions">
+        <button
+          type="button"
+          class="btn"
+          (click)="addJeuToReservation()"
+          [disabled]="!selectedJeuId() || !availableEditeurJeux().length">
+          Ajouter
+        </button>
+
+        <button type="button" class="btn secondary" (click)="hideAddJeux()">Annuler</button>
+      </div>
+    </div>
+  }
 
   @if (isLoading()) {
     <p>Chargement...</p>

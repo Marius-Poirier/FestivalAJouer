@@ -1,0 +1,81 @@
+
+@if (showError()) {
+  <div class="alert-error">
+    <span>{{ this.tablesvc.error() }}</span>
+  </div>
+}
+
+@for (table of tables(); track table.id) {
+  <div class="table-wrapper">
+    <div class="card-table">
+      <button 
+        type="button" 
+        class="btn-rolldown" 
+        (click)="toggleTableJeux(table.id!)"
+        [attr.aria-expanded]="openTableJeux()[table.id!]"
+        title="Afficher les jeux associés"
+      >
+        <span [class.open]="openTableJeux()[table.id!]">&#9660;</span>
+      </button>
+
+      <!-- Informations de la table -->
+      <div class="table-info">
+        <app-table-card 
+          [table]="table" 
+          [showzoneplan]="false"
+        ></app-table-card>
+      </div>
+
+      <div class="card-actions">
+
+        <button 
+          type="button" 
+          class="btn btn-remove" 
+          (click)="openDeletePopup(table)"
+          title="Retirer de la réservation"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+
+    @if (openTableJeux()[table.id!]) {
+      <div class="table-jeux-section">
+        <div class="jeux-header">
+          <span class="jeux-title">Jeux associés</span>
+          <span class="jeux-count">
+            {{ jeuxParTable()[table.id!]?.length || 0 }} jeu(x)
+          </span>
+        </div>
+
+        @if (getJeuxDetailsForTable(table.id!).length === 0) {
+          <p class="empty">Aucun jeu associé à cette table</p>
+        } 
+     
+        @else {
+          <ul class="jeux-list">
+            @for (jeu of getJeuxDetailsForTable(table.id!); track jeu.id) {
+              <li class="jeu-item">
+                <div class="jeu-info">
+                  <span class="jeu-nom">{{ jeu.nom }}</span>
+                  <!-- @if (jeu.editeur_nom) {
+                    <span class="jeu-editeur">{{ jeu.editeur_nom }}</span>
+                  } -->
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+  </div>
+}
+
+
+<!-- Popup delete -->
+<app-popup-delete
+        [entiteType]="deleteType()"
+        [entiteId]="deleteId()"
+        (confirm)="handleConfirm()"
+        (cancel)="handleCancel()">
+</app-popup-delete>

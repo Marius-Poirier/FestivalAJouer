@@ -1,31 +1,19 @@
-<!-- Table Card: Display single table information -->
-<div class="table-card" [attr.data-status]="statusBadgeColor()">
-  <!-- Card Header: Table number + status badge -->
-  <div class="card-header">
-    <div>
-      <h4 class="table-number">Table #{{ table()?.id || 'N/A' }}</h4>
-      <p class="zone-plan"><strong>Zone du plan :</strong> {{ table()?.zone_du_plan_nom || zonePlan()?.nom || 'Zone du plan' }}</p>
+@if(table()) {
+  <div class="table-card-content">
+    <div class="table-header">
+      <h4 class="table-number">Table #{{ table()?.id }}</h4>
+      <span class="table-capacity">{{ capacite() }} jeu(x)</span>
     </div>
-  </div>
-
-  <div class="card-body">
-
-    <div class="info-row occupancy" [style.color]="statusBadgeColor() === 'green' ? 'green' : statusBadgeColor() === 'orange' ? 'orange' : 'red'">
-      <label>Capacité : </label>
-      <span class="value"><strong>{{ capacite() }}</strong></span>
-    </div>
-
-    @if (zoneTarifaire()) {
-      <div class="info-row">
-        <label>Prix par table :</label>
-        <span class="value">{{ zoneTarifaire()!.prix_table | currency:'EUR' }}</span>
+    
+    @if(showzoneplan()) {
+      <div class="table-details">
+        <span class="zone-badge">{{ zonePlan()?.nom }}</span>
       </div>
     }
-
-    @if ((table()?.nb_jeux_actuels || 0) === 0) {
-      <div class="warning">
-        <p>⚠️ Aucun jeu attribué à cette table</p>
-      </div>
-    }
+     @if(zoneTarifaire()?.prix_table) {
+          <span class="table-price">{{ zoneTarifaire()?.prix_table }}€</span>
+        }@else {
+          <span>Statut : {{table()?.statut}}</span>
+        }
   </div>
-</div>
+}

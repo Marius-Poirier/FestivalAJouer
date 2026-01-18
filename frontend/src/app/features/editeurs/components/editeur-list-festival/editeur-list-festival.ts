@@ -24,10 +24,6 @@ export class EditeurListFestival {
   // éditeur en cours d'édition (null = création)
   protected readonly editingEditeur = signal<EditeurDto | null>(null);
 
-  ngOnInit(){
-    // Le service gère automatiquement le rechargement quand le festival change
-  }
-
   // éditer
   protected onUpdate(id: number) {
     const edi = this.editeursvc.findByIdLocal(id);
@@ -51,5 +47,10 @@ export class EditeurListFestival {
   protected closeForm() {
     this.showForm.set(false);
     this.editingEditeur.set(null);
+  }
+
+  protected openCreateForm() {
+    this.editingEditeur.set(null);
+    this.showForm.set(true);
   }
 }
