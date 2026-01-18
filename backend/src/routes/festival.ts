@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import pool from '../db/database.js'
 import { requireSuperOrga } from '../middleware/auth-superOrga.js'
-import { requireOrganisateur } from '../middleware/auth-organisateur.js'
+import { requireOrganisateur, requireFestivalViewer } from '../middleware/auth-organisateur.js'
 
 const router = Router()
 
@@ -19,8 +19,8 @@ function validateDate(value: string, fieldName: string) {
 	}
 }
 
-// GET /api/festivals (consultation autorisée aux organisateurs et au-dessus)
-router.get('/', requireOrganisateur, async (_req, res) => {
+// GET /api/festivals (consultation autorisée aux bénévoles et au-dessus)
+router.get('/', requireFestivalViewer, async (_req, res) => {
 	try {
 		const { rows } = await pool.query(
 			`SELECT ${FESTIVAL_FIELDS} FROM Festival ORDER BY created_at DESC`
@@ -32,8 +32,8 @@ router.get('/', requireOrganisateur, async (_req, res) => {
 	}
 })
 
-// GET /api/festivals/:id (consultation autorisée aux organisateurs et au-dessus)
-router.get('/:id', requireOrganisateur, async (req, res) => {
+// GET /api/festivals/:id (consultation autorisée aux bénévoles et au-dessus)
+router.get('/:id', requireFestivalViewer, async (req, res) => {
 	const festivalId = Number.parseInt(req.params.id, 10)
 	if (!Number.isInteger(festivalId)) {
 		return res.status(400).json({ error: 'Identifiant de festival invalide' })

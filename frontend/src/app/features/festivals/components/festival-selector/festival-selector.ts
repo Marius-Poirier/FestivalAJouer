@@ -3,6 +3,7 @@ import { CurrentFestival } from '@core/services/current-festival';
 import { FestivalService } from '@festivals/services/festival-service';
 import {MatRadioModule} from '@angular/material/radio';
 import { Router } from '@angular/router';
+import { AuthService } from '@core/services/auth-services';
 
 @Component({
   selector: 'app-festival-selector',
@@ -14,10 +15,12 @@ export class FestivalSelector {
   private currentfestsvc = inject(CurrentFestival)
   private festsvc = inject(FestivalService) 
   private router = inject(Router)
+  private auth = inject(AuthService)
 
   public currentFestival = this.currentfestsvc.currentFestival
   public festivals = this.festsvc.festivals
   public listselected = signal<number>(1)
+  public canSeeZones = this.auth.isAdminSuperorga
 
   ngOnInit(){
     this.festsvc.loadAll();
@@ -29,6 +32,11 @@ export class FestivalSelector {
     const tab = stateTab ?? historyTab;
     if (tab) {
       this.listselected.set(Number(tab));
+    }
+
+    // Empêche un onglet zone inaccessible d'être actif pour les rôles non autorisés
+    if (!this.canSeeZones() && (this.listselected() === 3 || this.listselected() === 4)) {
+      this.listselected.set(1);
     }
   }
 
