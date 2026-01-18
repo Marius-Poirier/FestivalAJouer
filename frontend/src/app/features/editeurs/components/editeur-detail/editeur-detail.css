@@ -1,58 +1,112 @@
 .detail-container {
-  max-width: 48rem;
-  margin: 1.5rem auto;
-  padding: 0 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
 .back-link {
   display: inline-block;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  color: var(--couleur-terciere);
+  font-weight: 600;
   text-decoration: none;
-  color: var(--couleur-bouton);
-  font-size: 0.875rem;
 }
 
 .back-link:hover {
-  text-decoration: underline;
+  color: var(--couleur-primaire);
 }
 
-h1 {
+.detail-container h1 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.card {
+  background: var(--blanc);
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
+  margin-bottom: 2rem;
+}
+
+.card h2 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
   font-size: 1.5rem;
   margin-bottom: 1rem;
 }
 
-.card {
-  border: 1px solid var(--gris-clair);
+.card p {
+  margin-bottom: 0.5rem;
+  color: var(--gris-fonce);
+}
+
+.card strong {
+  color: var(--couleur-primaire);
+}
+
+.games {
+  background: var(--blanc);
+  padding: 2rem;
   border-radius: 0.5rem;
-  padding: 1rem;
-  background: var(--fond-carte);
-  margin-bottom: 1.5rem;
+  box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
 }
 
 .games h2 {
-  font-size: 1.25rem;
-  margin-bottom: 0.5rem;
-}
-
-.error {
-  color: var(--rouge-danger);
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .games-list {
   list-style: none;
   padding: 0;
-  margin: 0.5rem 0 0 0;
 }
 
 .games-list li {
-  margin-bottom: 0.25rem;
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--gris-clair);
+}
+
+.games-list li:last-child {
+  border-bottom: none;
 }
 
 .games-list a {
-  color: var(--couleur-bouton);
+  color: var(--couleur-terciere);
+  font-weight: 600;
   text-decoration: none;
 }
 
 .games-list a:hover {
-  text-decoration: underline;
+  color: var(--couleur-primaire);
+}
+
+.error {
+  color: var(--rouge-danger);
+  font-weight: 600;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .detail-container {
+    padding: 1rem;
+  }
+
+  .detail-container h1 {
+    font-size: 1.5rem;
+  }
+
+  .card,
+  .games {
+    padding: 1.5rem;
+  }
+
+  .card h2,
+  .games h2 {
+    font-size: 1.25rem;
+  }
 }

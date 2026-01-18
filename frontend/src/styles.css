@@ -1,4 +1,5 @@
-/* Global Reset */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:wght@400;600&display=swap');
+
 * {
   margin: 0;
   padding: 0;
@@ -7,10 +8,10 @@
 
 :root {
   /* Couleurs principales */
-  --couleur-primaire: #1e40af;
-  --couleur-secondaire: #1e3a8a;
-  --couleur-terciere: #2563eb;
-  --couleur-bouton: #2257ae;
+  --couleur-primaire: #1C5387;
+  --couleur-secondaire: #24699D;
+  --couleur-terciere: #2885BD;
+  --couleur-bouton: #2885BD;
   
   /* Couleurs d'action */
   --vert-succes: #059669;
@@ -18,35 +19,39 @@
   --jaune-accent: #eab308;
   
   /* Couleurs neutres */
-  --blanc: #ffffff;
+  --blanc: #FEFEFE;
   --gris-tres-clair: #f3f4f6;
   --gris-clair: #e5e7eb;
   --gris-moyen: #6b7280;
   --gris-fonce: #1f2937;
   
-  /* Fond principal de la page */
-  --fond-principal: #f0f4fb; 
-  --fond-carte: #ffffff; 
-  --fond-sous-header: #dbeafe;
+  /* Fonds */
+  --fond-principal: #E0E9F3; 
+  --fond-carte: #FEFEFE; 
+  --fond-sous-header: #A1C4DF;
   
-  /* Fonds transparents */
-  --fond-transparent-leger: rgba(255, 255, 255, 0.1);
-  --fond-transparent-moyen: rgba(255, 255, 255, 0.15);
-  --fond-transparent-fort: rgba(255, 255, 255, 0.2);
+  /* Transparents */
+  --fond-transparent-leger: rgba(28, 83, 135, 0.1);
+  --fond-transparent-moyen: rgba(28, 83, 135, 0.15);
+  --fond-transparent-fort: rgba(28, 83, 135, 0.2);
 }
 
 body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: 'Open Sans', sans-serif;
   background: var(--fond-principal);
-  color: #1c1e21;
+  color: var(--gris-fonce);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
 }
 
 a {
   text-decoration: none;
-  color: #385898;
+  color: var(--couleur-terciere);
 }
 
 a:hover {
-  text-decoration: underline;
+  color: var(--couleur-primaire);
 }
-

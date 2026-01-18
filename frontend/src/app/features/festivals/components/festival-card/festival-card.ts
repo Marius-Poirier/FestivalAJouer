@@ -84,7 +84,6 @@ export class FestivalCard {
 
   // gestion d'édition d'un festivale 
   // convertir card en un form
-
   public formEdition(): void {
     const fest = this.festival();
     if (!fest) return;

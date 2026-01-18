@@ -5,11 +5,9 @@
     (click)="$event.stopPropagation()"
   >
     <h2 class="add">
-      @if (mode() === 'edit') {
-        Modifier un éditeur
-      } @else {
+
         Ajouter un éditeur
-      }
+    
     </h2>
 
     @if (editeurService.error()) {
@@ -41,28 +39,28 @@
       }
     }
 
-    <button
-      type="submit"
-      mat-raised-button
-      color="primary"
-      [disabled]="form.invalid || editeurService.isLoading()"
-    >
-      @if (editeurService.isLoading()) {
-        Enregistrement...
-      } @else if (mode() === 'edit') {
-        Mettre à jour
-      } @else {
-        Enregistrer
-      }
-    </button>
+    <div class="form-actions">
+      <button
+        type="submit"
+ 
+        color="primary"
+        [disabled]="form.invalid || editeurService.isLoading()"
+      >
+        @if (editeurService.isLoading()) {
+          Enregistrement...
+        } 
+          Enregistrer
 
-    <button
-      type="button"
-      (click)="close()"
-      mat-raised-button
-      [disabled]="editeurService.isLoading()"
-    >
-      Fermer
-    </button>
+      </button>
+
+      <button
+        type="button"
+        (click)="close()"
+ 
+        [disabled]="editeurService.isLoading()"
+      >
+        Fermer
+      </button>
+    </div>
   </form>
 </div>
