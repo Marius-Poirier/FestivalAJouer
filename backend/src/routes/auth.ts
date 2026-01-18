@@ -91,7 +91,7 @@ router.post('/register', async (req, res) => {
     // Validation basique de l'email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Format d\'email invalide' })
+        return res.status(400).json({ error: 'Adresse e-mail invalide : merci d’utiliser le format nom@domaine.tld' })
     }
     
     // Hasher le mot de passe
