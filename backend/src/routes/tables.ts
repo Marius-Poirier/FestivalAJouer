@@ -186,7 +186,17 @@ router.delete('/:id', async (req, res) => {
     const client = await pool.connect()
     try {
         await client.query('BEGIN')
-        
+
+        // Vérifier si la table est associée à une réservation
+        const { rows: reservations } = await client.query(
+            `SELECT 1 FROM ReservationTable WHERE table_id = $1 LIMIT 1`,
+            [tableId]
+        )
+        if (reservations.length > 0) {
+            await client.query('ROLLBACK')
+            return res.status(400).json({ error: 'Impossible de supprimer : la table est associée à une réservation.' })
+        }
+
         // Récupérer zone_du_plan_id avant suppression
         const { rows: tableRows } = await client.query(
             `SELECT zone_du_plan_id FROM Table_Jeu WHERE id = $1`,

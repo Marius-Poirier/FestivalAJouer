@@ -173,6 +173,8 @@ export class TablesService {
             this._error.set('Vous devez être connecté en tant que super organisateur');
           } else if (err?.status === 404) {
             this._error.set('Table non trouvée');
+          }else if(err?.status === 400){
+            this._error.set('Table réservée');
           } else {
             this._error.set('Erreur serveur');
           }

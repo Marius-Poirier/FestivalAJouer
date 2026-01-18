@@ -1,3 +1,10 @@
+
+@if (showError()) {
+  <div class="alert-error">
+    <span>{{ this.tablesvc.error() }}</span>
+  </div>
+}
+
 @for (table of tables(); track table.id) {
   <div class="table-wrapper">
     <div class="card-table">
@@ -63,6 +70,7 @@
     }
   </div>
 }
+
 
 <!-- Popup delete -->
 <app-popup-delete

@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { TableJeuDto } from '@interfaces/entites/table-jeu-dto';
 import { TableCard } from '../table-card/table-card';
 import { GestionReservationService } from '@gestion-reservation/services/gestion-reservation-service';
@@ -18,7 +18,7 @@ export class TablesList {
 
 
   tables = input<TableJeuDto[]>();
-  private tablesvc = inject(TablesService)
+  protected tablesvc = inject(TablesService)
 
   protected reservationgestionsvc = inject(GestionReservationService);
   protected jeuService = inject(JeuService);
@@ -30,6 +30,17 @@ export class TablesList {
   public deleteType = signal<string | null>(null);
   public deleteId = signal<number | null>(null);
   public deletenom = signal<string>('');
+
+  showError = signal(false);
+
+  constructor() {
+    effect(() => {
+      if (this.tablesvc.error()) {
+        this.showError.set(true);
+        setTimeout(() => this.showError.set(false), 1000);
+      }
+    });
+  }
 
   async loadJeuxForTable(tableId: number) {
     
