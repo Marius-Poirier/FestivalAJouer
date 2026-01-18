@@ -29,7 +29,6 @@
                     @let hiddenFestival = false;
                     <app-festival-card 
                     [idFestival]="fest.id"
-                    [canManage]="authService.isAdminSuperorga()"
                     [hidden]="hiddenFestival">
                     </app-festival-card>
                 </li>

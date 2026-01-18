@@ -5,10 +5,11 @@ import { AuthService } from '@core/services/auth-services';
 import { EditeurCard } from '../editeur-card/editeur-card';
 import { EditeurForm } from '../editeur-form/editeur-form';
 import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-editeur-list-festival',
-  imports: [EditeurCard, EditeurForm],
+  imports: [EditeurCard, EditeurForm,    MatIconModule,],
   templateUrl: './editeur-list-festival.html',
   styleUrl: './editeur-list-festival.css'
 })
@@ -17,12 +18,29 @@ export class EditeurListFestival {
   protected readonly editeursvc = inject(EditeurService)
   protected readonly authService = inject(AuthService)
   private readonly router = inject(Router)
-  private idcurrentfestival = computed(() => this.editeursvc.currentFestival()?.id ?? null)
 
   // form visible ?
   protected readonly showForm = signal(false);
   // éditeur en cours d'édition (null = création)
   protected readonly editingEditeur = signal<EditeurDto | null>(null);
+
+  //filtre
+  protected readonly searchTerm = signal<string>('');
+  protected readonly filteredEditeurs = computed(() => {
+  const term = this.searchTerm().toLowerCase().trim();
+  const list = this.editeursvc.editeurs();
+
+    if (!term) return list;
+
+    return list.filter(e =>
+      e.nom.toLowerCase().includes(term)
+    );
+  });
+
+  protected onSearch(event: Event) {
+    const target = event.target as HTMLInputElement | null;
+    this.searchTerm.set(target?.value ?? '');
+  }
 
   // éditer
   protected onUpdate(id: number) {

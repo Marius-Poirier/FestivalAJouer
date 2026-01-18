@@ -56,7 +56,26 @@
       <ul class="simple-list">
         @for (l of reservationJeux(); track l.id) {
           <li class="item" (click)="openJeuDetail(l.jeu_id)">
-            <span class="name">{{ l.jeu_nom }}</span>
+            <div class="item-left">
+                           
+              @if (l.url_image) {
+                <img class="jeu-image" [src]="l.url_image" [alt]="l.jeu_nom" loading="lazy" />
+              }           
+              <div class="item-info">
+                <div class="name">{{ l.jeu_nom }}</div>
+                <div class="meta">
+                  @if (l.type_jeu_nom) {<span class="meta-item">{{ l.type_jeu_nom }}</span>}
+                  @if (l.nb_joueurs_min || l.nb_joueurs_max) {
+                    <span class="meta-item">Joueurs: {{ l.nb_joueurs_min ?? '-' }} - {{ l.nb_joueurs_max ?? '-' }}</span>
+                  }
+                  @if (l.duree_minutes) {<span class="meta-item">Durée: {{ l.duree_minutes }} min</span>}
+                  @if (l.age_min || l.age_max) {
+                    <span class="meta-item">Âge: {{ l.age_min ?? '-' }} - {{ l.age_max ?? '-' }}</span>
+                  }
+                  @if (l.theme) {<span class="meta-item">Thème: {{ l.theme }}</span>}
+                </div>
+              </div>
+            </div>
 
             @if (canManage()) {
               <button

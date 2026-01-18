@@ -1,63 +1,63 @@
-:host {
-	display: block;
-}
-
 .info-grid {
-	background: #ffffff;
-	border: 1px solid #e5e7eb; /* neutral-200 */
-	border-radius: 12px;
-	padding: 16px;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+  background: var(--blanc);
+  padding: 1.5rem;
+  border-radius: 0.2rem;
+  box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
 }
 
 .info-row {
-	display: grid;
-	grid-template-columns: 180px 1fr;
-	gap: 12px;
-	align-items: center;
-	padding: 8px 4px;
-	border-bottom: 1px dashed #eef1f5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--gris-clair);
 }
 
 .info-row:last-child {
-	border-bottom: none;
+  border-bottom: none;
 }
 
-.label {
-	color: #6b7280; /* neutral-500 */
-	font-weight: 600;
-	letter-spacing: 0.2px;
+.info-row .label {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  color: var(--couleur-primaire);
+  font-size: 0.9rem;
 }
 
-.value {
-	color: #111827; /* neutral-900 */
-	text-align: right;
-	font-weight: 500;
+.info-row .value {
+  font-family: 'Open Sans', sans-serif;
+  color: var(--gris-fonce);
+  font-size: 0.9rem;
+  text-align: right;
 }
 
-.value.highlight {
-	color: #065f46; /* emerald-800 */
-	background: #ecfdf5; /* emerald-50 */
-	border: 1px solid #a7f3d0; /* emerald-200 */
-	border-radius: 8px;
-	padding: 4px 8px;
-	display: inline-block;
+.info-row .value.highlight {
+  font-weight: 700;
+  color: var(--couleur-terciere);
+  font-size: 1.1rem;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-	.info-row {
-		grid-template-columns: 1fr;
-	}
-	.value {
-		text-align: left;
-	}
+.info-grid + p {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gris-moyen);
+  font-style: italic;
 }
 
-/* Subtle emphasis for payment comments when present */
-.info-row .label + .value:not(:empty) {
-	word-break: break-word;
+/* RESPONSIVE */
+@media (max-width: 480px) {
+  .info-grid {
+    padding: 1rem;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 0.5rem 0;
+  }
+
+  .info-row .value {
+    text-align: left;
+  }
 }

@@ -26,7 +26,7 @@ export class FestivalCard {
   public readonly idFestival = input<number>();
   public update = output<number>();
 
-  public canManage = input<boolean>(false);
+
   protected festsvc = inject(FestivalService)
   protected authService = inject(AuthService)
   private fb = inject(FormBuilder)
