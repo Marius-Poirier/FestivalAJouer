@@ -4,7 +4,7 @@ import { requireOrganisateur } from '../middleware/auth-organisateur.js'
 import { sanitizeString } from '../utils/validation.js'
 
 const router = Router()
-const EDITOR_FIELDS = 'id, nom, created_at, updated_at'
+const EDITOR_FIELDS = 'id, nom, logo_url, created_at, updated_at'
 
 // GET /api/editeurs?search=ludo
 router.get('/', async (req, res) => {
@@ -68,14 +68,16 @@ router.get('/:id', async (req, res) => {
 // POST /api/editeurs
 router.post('/', requireOrganisateur, async (req, res) => {
     const nom = sanitizeString(req.body?.nom)
+    const logoInput = sanitizeString(req.body?.logoUrl ?? req.body?.logo_url)
+    const logoUrl = logoInput || null
     if (!nom) {
         return res.status(400).json({ error: 'Le nom est requis' })
     }
     try {
         const { rows } = await pool.query(
-            `INSERT INTO Editeur (nom) VALUES ($1)
+            `INSERT INTO Editeur (nom, logo_url) VALUES ($1, $2)
             RETURNING ${EDITOR_FIELDS}`,
-            [nom]
+            [nom, logoUrl]
         )
         res.status(201).json({ message: 'Éditeur créé', editeur: rows[0] })
     } catch (err: any) {
@@ -94,13 +96,15 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
         return res.status(400).json({ error: 'Identifiant invalide' })
     }
     const nom = sanitizeString(req.body?.nom)
+    const logoInput = sanitizeString(req.body?.logoUrl ?? req.body?.logo_url)
+    const logoUrl = logoInput || null
     if (!nom) {
         return res.status(400).json({ error: 'Le nom est requis' })
     }
     try {
         const { rows } = await pool.query(
-            `UPDATE Editeur SET nom = $1 WHERE id = $2 RETURNING ${EDITOR_FIELDS}`,
-            [nom, editorId]
+            `UPDATE Editeur SET nom = $1, logo_url = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $3 RETURNING ${EDITOR_FIELDS}`,
+            [nom, logoUrl, editorId]
         )
         if (rows.length === 0) {
             return res.status(404).json({ error: 'Éditeur non trouvé' })
