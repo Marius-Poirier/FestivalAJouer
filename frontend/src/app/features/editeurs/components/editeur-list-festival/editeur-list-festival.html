@@ -1,51 +1,95 @@
 <div class="list-container">
-    @if (editeursvc.error()) {
-        <div class="error-banner">
-            {{ editeursvc.error() }}
-        </div>
-    }
-        <div class="header-controls">
-                <div class="search-bar">
-                    <mat-icon class="search-icon">search</mat-icon>
-                    <input
-                        type="text"
-                        placeholder="Rechercher un éditeur..."
-                        [value]="searchTerm()"
-                        (input)="onSearch($event)"
-                    />
-                </div>
-                @if (authService.isAdminSuperorga()){
-                        <button class="btn-add" (click)="openCreateForm()">+ Nouvel éditeur</button>
-                }
-        </div>
-    
-    @if (editeursvc.isLoading()) {
-        <p class="loading">Chargement des éditeurs...</p>
-    } @else {
-        @if(filteredEditeurs().length > 0){
-            <ul class="items-list">
-                @for (editeur of filteredEditeurs(); track editeur.id) {
-                    <li>
-                        <app-editeur-card
-                            [editeur]="editeur"
-                            [canManage]="authService.isAdminSuperorga()"
-                            (delete)="onDelete($event)"
-                            (update)="onUpdate($event)"
-                            (detail)="onDetail($event)">
-                        </app-editeur-card>
-                    </li>
-                }
-            </ul>
-        }
-        @else {
-            <p>Aucun éditeur trouvé pour ce festival</p>
-        }
-    }
+  @if (editeursvc.error()) {
+    <div class="error-banner">
+      {{ editeursvc.error() }}
+    </div>
+  }
 
-    @if(showForm()){
-        <app-editeur-form
-            [editeur]="editingEditeur()"
-            (closeForm)="closeForm()">
-        </app-editeur-form>
+  <!-- BARRE FILTRES -->
+  <div class="filters-bar">
+    <!-- Search -->
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        type="text"
+        placeholder="Rechercher un éditeur..."
+        [value]="searchTerm()"
+        (input)="onSearch($event)"
+      />
+    </div>
+
+    <!-- Actions -->
+    <div class="filters-actions">
+      <button
+        type="button"
+        class="btn-reset"
+        (click)="clearStatuts()"
+        [disabled]="selectedStatuts().size === 0"
+        title="Réinitialiser les statuts"
+      >
+        Tout afficher
+      </button>
+
+      @if (authService.isAdminSuperorga()) {
+        <button class="btn-add" (click)="openCreateForm()">+ Nouvel éditeur</button>
+      }
+    </div>
+  </div>
+
+  <!-- CHIPS STATUT -->
+  <div class="workflow-chips">
+    <div class="chips-title">
+      Éditeurs
+      <span class="chips-subtitle">
+        ({{ filteredEditeurs().length }} / {{ editeursvc.editeurs().length }})
+      </span>
+    </div>
+
+    <div class="chips">
+      @for (st of statutOptions; track st) {
+        @let active = selectedStatuts().has(st);
+
+        <button
+          type="button"
+          class="chip"
+          [class.active]="active"
+          (click)="toggleStatut(st, !active)"
+        >
+          <span class="dot"></span>
+          <span class="chip-label">{{ statutLabels[st] }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  @if (editeursvc.isLoading()) {
+    <p class="loading">Chargement des éditeurs...</p>
+  } @else {
+    @if (filteredEditeurs().length > 0) {
+      <ul class="items-list">
+        @for (editeur of filteredEditeurs(); track editeur.id) {
+          <li>
+            <app-editeur-card
+              [editeur]="editeur"
+              [canManage]="authService.isAdminSuperorga()"
+              (delete)="onDelete($event)"
+              (update)="onUpdate($event)"
+              (detail)="onDetail($event)">
+            </app-editeur-card>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty">
+        Aucun éditeur ne correspond aux filtres.
+      </p>
     }
+  }
+
+  @if (showForm()) {
+    <app-editeur-form
+      [editeur]="editingEditeur()"
+      (closeForm)="closeForm()">
+    </app-editeur-form>
+  }
 </div>
