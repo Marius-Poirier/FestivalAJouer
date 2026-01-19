@@ -12,6 +12,9 @@ import { AuthService } from '@core/services/auth-services';
 import { ReservationInfo } from 'src/app/features/gestion-reservation/components/reservation-info/reservation-info';
 import { ReservationTable } from 'src/app/features/gestion-reservation/components/reservation-table/reservation-table';
 import { ReservationJeu } from '@gestion-reservation/components/reservation-jeu/reservation-jeu';
+import { Router } from '@angular/router';
+import { ReservationForm } from '../reservation-form/reservation-form';
+
 
 @Component({
   selector: 'app-reservation-detail',
@@ -22,7 +25,8 @@ import { ReservationJeu } from '@gestion-reservation/components/reservation-jeu/
     PopupDelete,
     ReservationInfo,
     ReservationTable,
-    ReservationJeu
+    ReservationJeu,
+    ReservationForm
   ],
   templateUrl: './reservation-detail.html',
   styleUrl: './reservation-detail.css'
@@ -34,6 +38,7 @@ export class ReservationDetail {
   private festivalSvc = inject(FestivalService);
   private route = inject(ActivatedRoute);
   protected authSvc = inject(AuthService);
+  private router = inject(Router);
 
   protected readonly reservation = signal<ReservationDto | null>(null);
   protected readonly editeur = signal<any | null>(null);
@@ -44,6 +49,7 @@ export class ReservationDetail {
   protected readonly reservationId = computed(() => this.reservation()?.id ?? null);
   protected readonly festivalId = computed(() => this.reservation()?.festival_id ?? null);
 
+  protected readonly showEditModal = signal<boolean>(false); 
 
   public activeTab = signal<'informations' | 'tables' | 'jeux' | 'workflow'>('informations');
 
@@ -123,29 +129,58 @@ export class ReservationDetail {
   }
 
   public onModifier(): void {
-    console.log('Ouverture de la modale de modification (à implémenter)');
+    const res = this.reservation();
+    console.log(res?.statut_workflow)
+    // Vérifier que la réservation n'est pas verrouillée
+    if (res?.statut_workflow === 'PAIEMENT_RECU'.toLowerCase()) {
+      return;
+    }
+    this.showEditModal.set(true);
+  }
+
+  public onCloseEditModal(): void {
+    this.showEditModal.set(false);
+    const id = this.reservation()?.id;
+    if (id) {
+      this.reservationsvc.loadOne(id).subscribe({
+        next: (res) => {
+          this.reservation.set(res);  
+        }
+      });
+    }
   }
 
   public onSupprimer(): void {
     this.showDeletePopup.set(true);
   }
 
-  public onConfirmDelete(): void {
-    const res = this.reservation();
-    if (!res?.id) {
-      this.error.set('Réservation introuvable');
-      this.showDeletePopup.set(false);
-      return;
-    }
-    this.reservationsvc.delete(res.id);
+public onConfirmDelete(): void {
+  const res = this.reservation();
+  if (!res?.id) {
+    this.error.set('Réservation introuvable');
     this.showDeletePopup.set(false);
+    return;
   }
+  
+
+  this.reservationsvc.delete(res.id).subscribe({
+    next: () => {
+      this.showDeletePopup.set(false);
+      window.location.href = '/workflow';
+    },
+    error: (err) => {
+      console.error('Erreur lors de la suppression', err);
+      this.error.set('Erreur lors de la suppression de la réservation');
+      this.showDeletePopup.set(false);
+    }
+  });
+}
 
   public onCancelDelete(): void {
     this.showDeletePopup.set(false);
   }
 
-  // Méthode privée pour formater le statut workflow
+
   private formatWorkflowLabel(statut: StatutReservationWorkflow): string {
     const labels: Record<string, string> = {
       'PAS_CONTACTE': 'Pas contacté',
@@ -160,5 +195,26 @@ export class ReservationDetail {
     };
     const key = String(statut).toUpperCase();
     return labels[key] || statut;
+  }
+  //work flow commentaire 
+  protected parseCommentaires(): Array<{ texte: string }> {
+    const res = this.reservation();
+    if (!res?.commentaires_paiement) {
+      return [];
+    }
+
+    const commentaires: Array<{ texte: string }> = []; 
+    
+    // Séparer par le délimiteur "---"
+    const parties = res.commentaires_paiement.split('\n---\n');
+    
+    for (const partie of parties) {
+      const trimmed = partie.trim();
+      if (!trimmed) continue;
+      
+      commentaires.push({ texte: trimmed }); 
+    }
+    
+    return commentaires;
   }
 }

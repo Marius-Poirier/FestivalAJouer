@@ -1,6 +1,12 @@
 <div class="form-reservation-container" (click)="close()">
     <form [formGroup]="form" (ngSubmit)="onSubmit()" (click)="$event.stopPropagation()">
-        <h2 class="add">Nouvelle réservation</h2>
+        <h2 class="add">
+            @if (reservation()) {
+                Modifier la réservation #{{ reservation()!.id }}
+            } @else {
+                Nouvelle réservation
+            }
+        </h2>
         
         <!-- Affichage des erreurs -->
         @if (ressvc.error()) {
@@ -11,7 +17,7 @@
 
         <mat-form-field appearance="fill">
             <mat-label>Éditeur</mat-label>
-            <mat-select formControlName="editeur_id" [disabled]="ressvc.isLoading()">
+            <mat-select formControlName="editeur_id">
                 <mat-option [value]="null">-- Choisir un éditeur --</mat-option>
                 @for (editeur of editeursvc.editeurs(); track editeur.id) {
                     <mat-option [value]="editeur.id">{{ editeur.nom }}</mat-option>
@@ -89,9 +95,17 @@
             color="primary" 
             [disabled]="form.invalid || ressvc.isLoading()">
             @if (ressvc.isLoading()) {
-                Création en cours...
+                @if (reservation()) {
+                    Modification en cours...
+                } @else {
+                    Création en cours...
+                }
             } @else {
-                Créer la réservation
+                @if (reservation()) {
+                    Enregistrer les modifications
+                } @else {
+                    Créer la réservation
+                }
             }
         </button>
         
