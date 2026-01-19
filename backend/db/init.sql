@@ -154,6 +154,7 @@ CREATE INDEX idx_tablejeu_statut ON Table_Jeu(statut);
 CREATE TABLE Editeur (
     id SERIAL PRIMARY KEY,
     nom VARCHAR(255) NOT NULL UNIQUE,
+    logo_url VARCHAR(500) NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
