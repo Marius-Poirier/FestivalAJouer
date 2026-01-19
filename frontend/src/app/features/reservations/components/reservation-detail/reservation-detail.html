@@ -8,12 +8,18 @@
 
     <div class="header">
       <h1 class="title">Réservation #{{ res.id }}</h1>
-      @if (this.authSvc.isAdminSuperorgaOrga()) {
-        <div class="actions">
-          <button type="button" class="btn" (click)="onModifier()">Modifier</button>
-          <button type="button" class="btn danger" (click)="onSupprimer()">Supprimer</button>
-        </div>
-      }
+        @if (this.authSvc.isAdminSuperorgaOrga()) {
+          <div class="actions">
+            @if (res.statut_workflow == 'PAIEMENT_RECU'.toLowerCase() && this.authSvc.isAdminSuperorga()) {
+              <button type="button" class="btn" disabled title="Réservation verrouillée">
+                Modifier 🔒
+              </button>
+            } @else {
+                <button type="button" class="btn" (click)="onModifier()">Modifier</button>
+            }
+            <button type="button" class="btn danger" (click)="onSupprimer()">Supprimer</button>
+          </div>
+        }
     </div>
 
     <div class="info-section">
@@ -60,11 +66,34 @@
               </app-reservation-jeu>
             </div>
           }
-          @case ('workflow') { <div class="tab-panel"><p>Onglet Workflow</p></div> }
-        }
+          @case ('workflow') { 
+              <div class="tab-panel">
+                <h3>Historique des commentaires</h3>
+                @if (parseCommentaires().length === 0) {
+                  <p class="empty">Aucun commentaire pour le moment</p>
+                    } @else {
+                      <ul class="commentaires-list">
+                        @for (commentaire of parseCommentaires(); track $index) {
+                          <li class="commentaire-item">
+                            <p class="commentaire-texte">{{ commentaire.texte }}</p>
+                          </li>
+                        }
+                      </ul>
+                    }
+                  </div>
+               }
+          }
       </div>
     </div>
   </div>
+    <!-- Modal d'édition -->
+    @if (showEditModal()) {
+      <app-reservation-form
+        [reservation]="reservation()"
+        (closeForm)="onCloseEditModal()"
+      ></app-reservation-form>
+    }
+
   @if (showDeletePopup()) {
     <app-popup-delete
       [entiteType]="'reservation'"
