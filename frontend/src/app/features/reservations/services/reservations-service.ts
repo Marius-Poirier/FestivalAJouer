@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable, signal, computed, effect } from '@angular/core';
-import { catchError, finalize, map, of, tap } from 'rxjs';
+import { catchError, finalize, map, Observable, of, tap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ReservationDto } from '@interfaces/entites/reservation-dto';
 import { StatutReservationWorkflow } from '@enum/statut-workflow-reservation';
@@ -125,10 +125,10 @@ export class ReservationsService {
 
 
 //supprimer une reservation
-  delete(id: number): void {
+  delete(id: number): Observable<any>  {
     this._isLoading.set(true);
     this._error.set(null);
-    this.http.delete<{ message: string; reservation: ReservationDto }>(`${this.baseUrl}/${id}`, { withCredentials: true })
+    return this.http.delete<{ message: string; reservation: ReservationDto }>(`${this.baseUrl}/${id}`, { withCredentials: true })
       .pipe(
         tap(response => {
           if (response?.reservation) {
@@ -152,8 +152,7 @@ export class ReservationsService {
           return of(null);
         }),
         finalize(() => this._isLoading.set(false))
-      )
-      .subscribe();
+      );
   }
 
   /**
@@ -174,6 +173,24 @@ export class ReservationsService {
         console.error('Erreur lors du chargement de la réservation', err);
         this.reservation.set(null);
         throw err;
+      })
+    );
+  }
+
+  /**
+   * Met à jour une réservation existante
+   */
+  update(id: number, data: Partial<ReservationDto>): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`,data,
+      { withCredentials: true }
+    ).pipe(
+      tap(() => {
+        this.loadOne(id).subscribe();
+      }),
+      catchError((err) => {
+        console.error('Erreur lors de la mise à jour de la réservation', err);
+        this._error.set('Erreur lors de la mise à jour');
+        return throwError(() => err);
       })
     );
   }

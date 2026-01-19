@@ -4,7 +4,6 @@ import { requireSuperOrga } from '../middleware/auth-superOrga.js'
 import { parsePositiveInteger, sanitizeString, parseInteger } from '../utils/validation.js'
 
 const router = Router()
-router.use(requireSuperOrga)
 
 const ZONE_PLAN_FIELDS = 'id, festival_id, nom, nombre_tables, zone_tarifaire_id, created_at, updated_at'
 
@@ -54,7 +53,7 @@ router.get('/:id', async (req, res) => {
 })
 
 // POST /api/zones-du-plan
-router.post('/', async (req, res) => {
+router.post('/', requireSuperOrga, async (req, res) => {
     try {
         const festivalId = parsePositiveInteger(req.body?.festival_id, 'festival_id')
         const zoneTarifaireId = parsePositiveInteger(req.body?.zone_tarifaire_id, 'zone_tarifaire_id')
@@ -87,7 +86,7 @@ router.post('/', async (req, res) => {
 })
 
 // PUT /api/zones-du-plan/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireSuperOrga, async (req, res) => {
     const zoneId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(zoneId)) {
         return res.status(400).json({ error: 'Identifiant invalide' })
@@ -127,7 +126,7 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE /api/zones-du-plan/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireSuperOrga, async (req, res) => {
     const zoneId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(zoneId)) {
         return res.status(400).json({ error: 'Identifiant invalide' })

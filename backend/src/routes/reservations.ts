@@ -144,6 +144,7 @@ router.post('/', requireOrganisateur, async (req, res) => {
 })
 
 // PUT /api/reservations/:id
+// PUT /api/reservations/:id
 router.put('/:id', requireOrganisateur, async (req, res) => {
     const reservationId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(reservationId)) {
@@ -165,7 +166,7 @@ router.put('/:id', requireOrganisateur, async (req, res) => {
                 editeur_presente_jeux = COALESCE($2, editeur_presente_jeux),
                 remise_pourcentage = COALESCE($3, remise_pourcentage),
                 remise_montant = COALESCE($4, remise_montant),
-                commentaires_paiement = CASE WHEN $5 IS NULL THEN commentaires_paiement ELSE NULLIF($5, '') END,
+                commentaires_paiement = COALESCE($5, commentaires_paiement),
                 paiement_relance = COALESCE($6, paiement_relance),
                 date_facture = COALESCE($7, date_facture),
                 date_paiement = COALESCE($8, date_paiement),
