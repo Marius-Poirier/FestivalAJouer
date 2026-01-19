@@ -15,7 +15,7 @@
             <div class="subtitle">Réservation #{{ res.id ?? '—' }}</div>
             <div class="main-info">
                 <div class="title">{{ editeur()?.nom ?? 'Éditeur inconnu' }}</div>
-                <span class="badge">{{ workflowLabel() }}</span>
+                <span class="badge">{{ reservation()?.statut_workflow}}</span>
             </div>
             @if(res.editeur_presente_jeux){
                 <div class="tag">Présente des jeux</div>

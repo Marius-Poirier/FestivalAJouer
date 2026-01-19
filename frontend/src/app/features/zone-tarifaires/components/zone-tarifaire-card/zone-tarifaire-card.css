@@ -1,102 +1,89 @@
-mat-card {
-  background-color: var(--fond-carte); 
-  border: 1px solid var(--gris-clair);
-  border-radius: 8px;
-  padding: 16px;
-  width: 100%;
-  width: 320px;
-  height: 240px;
-  margin: 0 auto;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+.card-container {
+  background: var(--blanc);
+  border-radius: 0.2rem;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
+  width: 280px;
+  min-height: 200px;
   display: flex;
   flex-direction: column;
 }
 
-mat-card-header h2 {
-  color: var(--gris-fonce); 
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: bold;
+.card-container:hover {
+  box-shadow: 0 4px 12px rgba(28, 83, 135, 0.15);
 }
 
+/* Bouton supprimer */
+.delete-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--gris-clair);
+  color: var(--gris-fonce);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.delete-btn:hover {
+  background: var(--rouge-danger);
+  color: var(--blanc);
+}
+
+.delete-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* Header */
+mat-card-header {
+  margin-bottom: 1rem;
+  padding-right: 2rem;
+}
+
+mat-card-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Content */
 mat-card-content {
   flex: 1;
 }
 
 mat-card-content p {
-  margin: 8px 0;
-  color: var(--gris-moyen);
-  font-size: 0.875rem;
-}
-
-mat-card-actions {
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  padding-top: 12px;
-}
-
-mat-card-actions button {
-  background-color: var(--couleur-bouton);
-  color: var(--blanc);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-mat-card-actions button:hover {
-  background-color: var(--couleur-terciere);
-}
-
-mat-card-actions button:active {
-  background-color: var(--couleur-secondaire);
-}
-
-.highlight {
-  box-shadow: 0 0 0 2px var(--couleur-bouton);
-  border-color: var(--couleur-bouton);
-}
-
-.card-container {
-  position: relative;
-  padding-top: 1.2rem;
-}
-
-.delete-btn {
-  position: absolute;
-  top: 0.35rem;
-  right: 0.35rem;
-  background: var(--rouge-danger);
-  color: var(--blanc);
-  border: none;
-  border-radius: 50%;
-  width: 1.3rem;
-  height: 1.3rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  line-height: 0;
-}
-
-.delete-btn mat-icon {
+  margin: 0.5rem 0;
+  color: var(--gris-fonce);
   font-size: 0.9rem;
-  width: 0.9rem;
-  height: 0.9rem;
-  line-height: 1;
+  font-family: 'Open Sans', sans-serif;
 }
 
-.delete-btn:hover {
-  background: #b91c1c;
+mat-card-content p span {
+  font-weight: 600;
+  color: var(--couleur-primaire);
 }
 
-.delete-btn:active {
-  background: #991b1b;
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .card-container {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-container {
+    width: 100%;
+    min-height: auto;
+  }
 }

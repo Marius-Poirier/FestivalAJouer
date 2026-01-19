@@ -1,128 +1,124 @@
 .list-container {
-    padding: 2rem;
-    max-width: 87rem;
-    margin: 0 auto;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
+/* Erreur */
+.error-banner {
+  background-color: #fee2e2;
+  color: var(--rouge-danger);
+  border: 1px solid var(--rouge-danger);
+  padding: 1rem;
+  border-radius: 0.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Header controls */
 .header-controls {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    padding: 0 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
 }
 
+/* Barre de recherche (si décommentée plus tard) */
 .search-bar {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--blanc);
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--gris-clair);
+  border-radius: 0.2rem;
 }
 
 .search-icon {
-    position: absolute;
-    left: 0.75rem;
-    color: var(--gris-moyen);
-    font-size: 1.25rem;
-    width: 1.25rem;
-    height: 1.25rem;
-    pointer-events: none;
+  color: var(--gris-moyen);
 }
 
 .search-bar input {
-    width: 100%;
-    padding: 0.625rem 1rem 0.625rem 2.75rem;
-    font-size: 0.9375rem;
-    border: 1px solid var(--gris-clair);
-    border-radius: 0.25rem;
-    background-color: var(--gris-tres-clair);
-    color: var(--gris-fonce);
-    transition: all 0.2s ease;
-}
-
-.search-bar input::placeholder {
-    color: var(--gris-moyen);
-}
-
-.search-bar input:focus {
-    outline: none;
-    border-color: var(--couleur-bouton);
-    background-color: var(--blanc);
-    box-shadow: 0 0 0 2px var(--fond-transparent-moyen);
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
 }
 
 .btn-add {
-    background: var(--couleur-bouton);
-    color: var(--blanc);
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    font-size: 0.875rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  padding: 0.4rem 0.8rem;
+  background-color: var(--couleur-bouton);
+  color: var(--blanc);
+  border: none;
+  border-radius: 0.2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .btn-add:hover {
-    background: var(--couleur-terciere);
+  background-color: var(--couleur-primaire);
 }
 
-.btn-add:active {
-    background: var(--couleur-secondaire);
+/* États */
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--gris-moyen);
+  font-style: italic;
 }
 
-.error-banner {
-    background-color: #f8d7da;
-    color: var(--rouge-danger);
-    padding: 0.75rem 1rem;
-    border-radius: 0.25rem;
-    border-left: 0.25rem solid var(--rouge-danger);
-    margin-bottom: 1rem;
-    text-align: center;
-    font-weight: 500;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+/* Liste réservations */
+.items-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
 }
 
-ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    justify-content: left;
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.list-container > p {
+  text-align: center;
+  padding: 3rem;
+  color: var(--gris-moyen);
 }
 
-li {
-    display: flex;
-    justify-content: stretch;
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .list-container {
+    padding: 1.5rem;
+  }
+
+  .items-list {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .list-container {
+    padding: 1rem;
+  }
+
+  .header-controls {
+    flex-direction: column;
     align-items: stretch;
-    flex: 0 0 auto;
-    width: 320px;
-    height: 200px;
+    gap: 1rem;
+  }
+
+  .btn-add {
+    width: 100%;
+  }
+
+  .items-list {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
 }
 
-/* Responsive adaptations */
-@media (max-width: 48rem) {
-    ul {
-        gap: 1rem;
-        justify-content: center;
-    }
-    
-    li {
-        width: calc(50% - 0.5rem);
-        min-width: 16.25rem;
-    }
-}
-
-@media (max-width: 30rem) {
-    ul {
-        gap: 0.75rem;
-        justify-content: center;
-    }
-    
-    li {
-        width: 100%;
-    }
+@media (max-width: 480px) {
+  .items-list {
+    grid-template-columns: 1fr;
+  }
 }

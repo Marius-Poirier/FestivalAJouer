@@ -1,26 +1,55 @@
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
 }
 
-.title {
-  margin: 0;
-  color: var(--gris-fonce);
+/* États */
+.container > p {
+  text-align: center;
+  padding: 3rem;
+  color: var(--gris-moyen);
+  font-style: italic;
 }
 
 .error {
   color: var(--rouge-danger);
+  font-weight: 600;
 }
 
+/* Grille de jeux */
 .grid {
   list-style: none;
   padding: 0;
-  margin: 16px 0 0 0;
-
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 12px;
+  gap: 1rem;
 }
 
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .container {
+    padding: 1.5rem;
+  }
 
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
