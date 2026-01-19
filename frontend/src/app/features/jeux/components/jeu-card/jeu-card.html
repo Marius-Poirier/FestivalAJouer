@@ -2,7 +2,7 @@
   @let j = jeu()!;
 
   <mat-card class="card-container">
-        @if (canManage()) {
+    @if (canManage()) {
       <button
         class="delete-btn"
         (click)="delete.emit(j.id!); $event.stopPropagation()"
@@ -11,45 +11,52 @@
         <mat-icon>close</mat-icon>
       </button>
     }
+
     <div class="info" (click)="detail.emit(j.id!)">
-    <mat-card-header>
-      <div class="left">
-        
-      </div>
+      <!-- MEDIA -->
+      <div class="media">
         @if (j.url_image) {
           <img class="jeu-image" [src]="j.url_image" [alt]="j.nom" loading="lazy" />
-        }   
-      <h2>{{ j.nom }}</h2>
-
-    </mat-card-header>
-
-    <mat-card-content>
-      @if (j.type_jeu_nom) {
-        <p><strong>Type :</strong> {{ j.type_jeu_nom }}</p>
-      }
-  
-      <p>
-        <strong>Joueurs :</strong>
-        {{ j.nb_joueurs_min }}
-        @if (j.nb_joueurs_max) {
-          – {{ j.nb_joueurs_max }}
+        } @else {
+          <div class="media-placeholder">
+            <mat-icon>image</mat-icon>
+            <span>Pas d’image</span>
+          </div>
         }
-      </p>
-      @if (j.duree_minutes) {
-        <p><strong>Durée :</strong> ~ {{ j.duree_minutes }} min</p>
-      }
-    </mat-card-content>
+      </div>
 
+      <!-- HEADER -->
+      <mat-card-header>
+        <h2 class="title">{{ j.nom }}</h2>
+      </mat-card-header>
 
+      <!-- CONTENT -->
+      <mat-card-content>
+        @if (j.type_jeu_nom) {
+          <p><strong>Type :</strong> {{ j.type_jeu_nom }}</p>
+        }
+
+        <p>
+          <strong>Joueurs :</strong>
+          {{ j.nb_joueurs_min }}
+          @if (j.nb_joueurs_max) {
+            – {{ j.nb_joueurs_max }}
+          }
+        </p>
+
+        @if (j.duree_minutes) {
+          <p><strong>Durée :</strong> ~ {{ j.duree_minutes }} min</p>
+        }
+      </mat-card-content>
     </div>
-
 
     <mat-card-actions>
       @if (canManage()) {
         <button
           type="button"
           class="btn"
-          (click)="update.emit(j.id!)">
+          (click)="update.emit(j.id!); $event.stopPropagation()"
+        >
           Modifier
         </button>
       }

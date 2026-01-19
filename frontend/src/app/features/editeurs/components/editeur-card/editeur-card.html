@@ -1,92 +1,112 @@
 @if(editeur()){
-    @let edi = editeur()!;
-    <mat-card class="card-container" (click)="detail.emit(edi.id!)">
-        @if (canManage()) {
-            <button
-                class="delete-btn"
-                (click)="openDeletePopup(edi); $event.stopPropagation()"
-                aria-label="Supprimer"
-            >
-                <mat-icon>close</mat-icon>
-            </button>
-        }
-        
-        @if (!isEditMode()) {
-            <!-- Mode affichage -->
-            <mat-card-header>
-                <h2>{{edi.nom}}</h2>
-            </mat-card-header>
-            <mat-card-actions>
-                <!-- <button 
-                    type="button"
-                    class="btn-detail"
-                    (click)="detail.emit(edi.id!)">
-                    Détail
-                </button> -->
-                @if (canManage()) {
-                    <button 
-                        type="button"
-                        class="btn-edit"
-                        (click)="formEdition(); $event.stopPropagation()">
-                        Modifier
-                    </button>
-                }
-            </mat-card-actions>
-        } @else {
-            <!-- Mode édition -->
-            <form [formGroup]="form" (click)="$event.stopPropagation()">
-                <mat-card-header>
-                    <h2>Modifier l'éditeur</h2>
-                </mat-card-header>
-                <mat-card-content class="form-content">
-                    @if (editeursvc.error()) {
-                        <div class="error-message">
-                            {{ editeursvc.error() }}
-                        </div>
-                    }
-                    
-                    <div class="form-group">
-                        <label for="nom">Nom éditeur : </label>
-                        <input 
-                            id="nom"
-                            type="text" 
-                            formControlName="nom" 
-                            placeholder="Nom de l'éditeur" 
-                            [disabled]="editeursvc.isLoading()">
-                        @if (form.controls.nom.invalid && form.controls.nom.touched) {
-                            <span class="error-text-input">Le nom doit contenir au moins 3 caractères</span>
-                        }
-                    </div>
-                </mat-card-content>
-                <mat-card-actions>
-                    <button 
-                        type="button"
-                        (click)="saveChanges(); $event.stopPropagation()" 
-                        [disabled]="form.invalid || editeursvc.isLoading()">
-                        @if (editeursvc.isLoading()) {
-                            Enregistrement...
-                        } @else {
-                            Enregistrer
-                        }
-                    </button>
-                    <button 
-                        type="button"
-                        class="btn-cancel"
-                        (click)="formEdition(); $event.stopPropagation()"
-                        [disabled]="editeursvc.isLoading()">
-                        Annuler
-                    </button>
-                </mat-card-actions>
-            </form>
-        }
-    </mat-card>
+  @let edi = editeur()!;
 
-    <!-- Popup delete -->
-    <app-popup-delete
-        [entiteType]="deleteType()"
-        [entiteId]="deleteId()"
-        [entitenom]="deletenom()"
-        (confirm)="handleConfirm()"
-        (cancel)="handleCancel()">
-    </app-popup-delete>
+  <mat-card class="card-container" (click)="detail.emit(edi.id!)">
+    @if (canManage()) {
+      <button
+        class="delete-btn"
+        (click)="openDeletePopup(edi); $event.stopPropagation()"
+        aria-label="Supprimer"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+
+    @if (!isEditMode()) {
+    <!-- Mode affichage -->
+    <mat-card-header class="header-row">
+        <div class="logo-wrap" (click)="$event.stopPropagation()">
+        @if (edi.logo_url) {
+            <img
+            class="editeur-logo"
+            [src]="edi.logo_url"
+            [alt]="edi.nom"
+            loading="lazy"
+            />
+        } @else {
+            <div class="editeur-logo placeholder" aria-hidden="true">
+            {{ (edi.nom?.[0] ?? '?') | uppercase }}
+            </div>
+        }
+        </div>
+
+        <div class="header-text">
+        <h2 class="title">{{ edi.nom }}</h2>
+        </div>
+    </mat-card-header>
+
+    <mat-card-actions class="actions-row">
+        @if (canManage()) {
+        <button
+            type="button"
+            class="btn-edit"
+            (click)="formEdition(); $event.stopPropagation()"
+        >
+            Modifier
+        </button>
+        }
+    </mat-card-actions>
+
+    } @else {
+      <!-- Mode édition -->
+      <form [formGroup]="form" (click)="$event.stopPropagation()">
+        <mat-card-header>
+          <h2>Modifier l'éditeur</h2>
+        </mat-card-header>
+
+        <mat-card-content class="form-content">
+          @if (editeursvc.error()) {
+            <div class="error-message">
+              {{ editeursvc.error() }}
+            </div>
+          }
+
+          <div class="form-group">
+            <label for="nom">Nom éditeur : </label>
+            <input
+              id="nom"
+              type="text"
+              formControlName="nom"
+              placeholder="Nom de l'éditeur"
+              [disabled]="editeursvc.isLoading()"
+            />
+            @if (form.controls.nom.invalid && form.controls.nom.touched) {
+              <span class="error-text-input">
+                Le nom doit contenir au moins 3 caractères
+              </span>
+            }
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <button
+            type="button"
+            (click)="saveChanges(); $event.stopPropagation()"
+            [disabled]="form.invalid || editeursvc.isLoading()"
+          >
+            @if (editeursvc.isLoading()) { Enregistrement... } @else { Enregistrer }
+          </button>
+
+          <button
+            type="button"
+            class="btn-cancel"
+            (click)="formEdition(); $event.stopPropagation()"
+            [disabled]="editeursvc.isLoading()"
+          >
+            Annuler
+          </button>
+        </mat-card-actions>
+      </form>
+    }
+  </mat-card>
+
+  <!-- Popup delete -->
+  <app-popup-delete
+    [entiteType]="deleteType()"
+    [entiteId]="deleteId()"
+    [entitenom]="deletenom()"
+    (confirm)="handleConfirm()"
+    (cancel)="handleCancel()"
+  >
+  </app-popup-delete>
 }

@@ -11,8 +11,16 @@
     <h1>Détail de l’éditeur</h1>
 
     <section class="card">
-      <h2>{{ edi.nom }}</h2>
-      <p><strong>ID :</strong> {{ edi.id }}</p>
+      <div class="card-head">
+        @if (edi.logo_url) {
+          <img class="editeur-logo" [src]="edi.logo_url" [alt]="edi.nom" loading="lazy" />
+        }
+
+        <div class="card-head-text">
+          <h2>{{ edi.nom }}</h2>
+          <p><strong>ID :</strong> {{ edi.id }}</p>
+        </div>
+      </div>
     </section>
 
     <section class="games">
