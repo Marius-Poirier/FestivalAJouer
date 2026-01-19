@@ -34,7 +34,7 @@
           <li>
             <app-editeur-card
               [editeur]="edi"
-              [canManage]="authService.isAdminSuperorgaOrga()"
+              [canManage]="authService.isAdminSuperorga()"
               (delete)="onDelete($event)"
               (update)="onUpdate($event)"
               (detail)="onDetail($event)">
