@@ -1,100 +1,244 @@
+import 'dotenv/config';
 import axios from 'axios';
 import { XMLParser } from 'fast-xml-parser';
 import pool from '../db/database.js';
 
+const HOT_LIMIT = 100;
+const BGG_API_BASE = 'https://boardgamegeek.com/xmlapi2';
+// We use the token from .env if available, BGG generally blocks AWS/Azure IPs without it/User-Agent
+const BGG_TOKEN = process.env.BGG_TOKEN;
+
 const parser = new XMLParser({
   ignoreAttributes: false,
-  attributeNamePrefix: "",
+  attributeNamePrefix: '@_',
 });
 
-const BGG_API_URL = "https://boardgamegeek.com/xmlapi2";
+const toInt = (value: unknown) => {
+  const n = Number.parseInt(String(value), 10);
+  return Number.isFinite(n) ? n : null;
+};
+
+const pickPrimaryName = (name: any) => name || 'Unknown';
+
+async function fetchHot() {
+  try {
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (compatible; FestivalAJouer/1.0)',
+    };
+    if (BGG_TOKEN) {
+      headers['Authorization'] = `Bearer ${BGG_TOKEN}`;
+    }
+
+    const { data } = await axios.get(`${BGG_API_BASE}/hot?type=boardgame`, { headers });
+    const parsed = parser.parse(data);
+
+    const items = parsed.items?.item;
+    if (!items) return [];
+
+    const itemsArray = Array.isArray(items) ? items : [items];
+
+    // Map to expected structure (we just need gameId essentially)
+    return itemsArray.slice(0, HOT_LIMIT).map((item: any) => ({
+      gameId: item['@_id'],
+      name: item.name?.['@_value'],
+      yearPublished: item.yearpublished?.['@_value']
+    }));
+  } catch (error) {
+    console.error('Error fetching hot list:', error);
+    return [];
+  }
+}
+
+async function fetchThing(id: number) {
+  try {
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (compatible; FestivalAJouer/1.0)',
+    };
+    if (BGG_TOKEN) {
+      headers['Authorization'] = `Bearer ${BGG_TOKEN}`;
+    }
+
+    const { data } = await axios.get(`${BGG_API_BASE}/thing?id=${id}&stats=1`, { headers });
+    const parsed = parser.parse(data);
+
+    const item = parsed.items?.item;
+    if (!item) return null;
+
+    const game = Array.isArray(item) ? item[0] : item;
+
+    let primaryName = 'Unknown';
+    if (Array.isArray(game.name)) {
+      const found = game.name.find((n: any) => n['@_type'] === 'primary');
+      primaryName = found ? found['@_value'] : game.name[0]['@_value'];
+    } else {
+      primaryName = game.name['@_value'];
+    }
+
+    return {
+      gameId: game['@_id'],
+      name: primaryName,
+      minPlayers: game.minplayers?.['@_value'],
+      maxPlayers: game.maxplayers?.['@_value'],
+      playingTime: game.playingtime?.['@_value'],
+      minAge: game.minage?.['@_value'],
+      description: game.description,
+      thumbnail: game.thumbnail,
+      image: game.image
+    };
+  } catch (error) {
+    console.error(`Error fetching thing ${id}:`, error);
+    return null;
+  }
+}
+async function fetchThingsBatch(ids: number[]) {
+  if (ids.length === 0) return [];
+  try {
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (compatible; FestivalAJouer/1.0)',
+    };
+    if (BGG_TOKEN) {
+      headers['Authorization'] = `Bearer ${BGG_TOKEN}`;
+    }
+
+    const idString = ids.join(',');
+    const { data } = await axios.get(`${BGG_API_BASE}/thing?id=${idString}&stats=1`, { headers });
+    const parsed = parser.parse(data);
+
+    const items = parsed.items?.item;
+    if (!items) return [];
+
+    const itemsArray = Array.isArray(items) ? items : [items];
+
+    return itemsArray.map((game: any) => {
+      let primaryName = 'Unknown';
+      if (Array.isArray(game.name)) {
+        const found = game.name.find((n: any) => n['@_type'] === 'primary');
+        primaryName = found ? found['@_value'] : game.name[0]['@_value'];
+      } else {
+        primaryName = game.name?.['@_value'] ?? 'Unknown';
+      }
+
+      return {
+        gameId: game['@_id'],
+        name: primaryName,
+        minPlayers: game.minplayers?.['@_value'],
+        maxPlayers: game.maxplayers?.['@_value'],
+        playingTime: game.playingtime?.['@_value'],
+        minAge: game.minage?.['@_value'],
+        description: game.description,
+        thumbnail: game.thumbnail,
+        image: game.image
+      };
+    });
+  } catch (error) {
+    console.error(`Error fetching things batch:`, error);
+    return [];
+  }
+}
 
 export async function populateDatabase() {
-  console.log("🔥 Starting BGG Database Population...");
-  
-  // Check if Token exists
-  if (!process.env.BGG_TOKEN) {
-    console.error("❌ MISSING BGG_TOKEN in environment variables. Aborting.");
-    return;
-  }
-
-  // ✅ AUTH CONFIGURATION
-  const axiosConfig = {
-    headers: {
-      'User-Agent': 'FestivalAJouer/1.0 (contact@votre-email.com)',
-      'Accept': 'application/xml, text/xml, */*',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Authorization': `Bearer ${process.env.BGG_TOKEN}` // <--- THE FIX
-    }
-  };
-
   try {
-    // 1. Get Popular Games
-    console.log("📡 Fetching Hot List...");
-    const hotResponse = await axios.get(`${BGG_API_URL}/hot?type=boardgame`, axiosConfig);
-    const hotParsed = parser.parse(hotResponse.data);
-
-    if (!hotParsed.items || !hotParsed.items.item) {
-        console.error("❌ No items found in BGG Hot list.");
-        return;
+    // Sync sequence to avoid "duplicate key value" errors
+    try {
+      await pool.query("SELECT setval('jeu_id_seq', COALESCE((SELECT MAX(id) FROM Jeu), 1))");
+      console.log('Database sequence synchronized.');
+    } catch (seqError) {
+      console.warn('Could not sync sequence (might be first run or different schema):', seqError);
     }
 
-    const items = hotParsed.items.item.slice(0, 20); 
-    const ids = items.map((item: any) => item.id).join(',');
+    const hotItems = await fetchHot();
+    if (!hotItems.length) {
+      console.warn('No items found in BGG hot list.');
+      return { inserted: 0, skipped: 0, total: 0 };
+    }
 
-    console.log(`✅ Found ${items.length} games. Fetching details...`);
+    const allGameIds = hotItems.map((item: any) => Number(item.gameId)).filter((id: number) => !isNaN(id));
 
-    // 2. Get Details
-    const detailsResponse = await axios.get(`${BGG_API_URL}/thing?id=${ids}`, axiosConfig);
-    const detailsParsed = parser.parse(detailsResponse.data);
-    
-    const games = Array.isArray(detailsParsed.items.item) 
-      ? detailsParsed.items.item 
-      : [detailsParsed.items.item];
+    // Process in chunks of 20 to be safe with URL length and server load
+    const CHUNK_SIZE = 20;
+    const games = [] as any[];
 
-    // 3. Insert into Database
+    for (let i = 0; i < allGameIds.length; i += CHUNK_SIZE) {
+      const chunk = allGameIds.slice(i, i + CHUNK_SIZE);
+      const batchDetails = await fetchThingsBatch(chunk);
+      games.push(...batchDetails);
+
+      // Small polite delay between batches
+      if (i + CHUNK_SIZE < allGameIds.length) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
+
+    let inserted = 0;
+    let skipped = 0;
+
     for (const game of games) {
-      const nameObj = Array.isArray(game.name) 
-        ? game.name.find((n: any) => n.type === 'primary') 
-        : game.name;
-      const nom = nameObj ? nameObj.value : 'Unknown';
+      const nom = pickPrimaryName(game.name);
 
-      const check = await pool.query('SELECT id FROM games WHERE nom = $1', [nom]);
-      if (check.rows.length > 0) {
-        console.log(`⚠️ Game "${nom}" already exists. Skipping.`);
+      const existing = await pool.query('SELECT id FROM Jeu WHERE nom = $1 LIMIT 1', [nom]);
+      if (existing.rows.length > 0) {
+        console.log(`> Skipped (exists): "${nom}"`);
+        skipped += 1;
         continue;
       }
 
-      const values = [
-        nom,
-        game.minplayers ? parseInt(game.minplayers.value) : null,
-        game.maxplayers ? parseInt(game.maxplayers.value) : null,
-        game.playingtime ? parseInt(game.playingtime.value) : null,
-        game.minage ? parseInt(game.minage.value) : null,
-        null, 
-        game.description || null,
-        `https://boardgamegeek.com/boardgame/${game.id}` 
-      ];
-
       const sql = `
-        INSERT INTO games 
-        (nom, nb_joueurs_min, nb_joueurs_max, duree_minutes, age_min, age_max, description, lien_regles) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO Jeu (
+          nom,
+          nb_joueurs_min,
+          nb_joueurs_max,
+          duree_minutes,
+          age_min,
+          age_max,
+          description,
+          lien_regles,
+          url_image,
+          url_video,
+          prototype
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       `;
 
+      const values = [
+        nom,
+        toInt(game.minPlayers),
+        toInt(game.maxPlayers),
+        toInt(game.playingTime),
+        toInt(game.minAge),
+        null,
+        game.description || null,
+        `https://boardgamegeek.com/boardgame/${game.gameId}`,
+        game.thumbnail || game.image || null,
+        null,
+        false,
+      ];
+
       await pool.query(sql, values);
-      console.log(`✅ Inserted: ${nom}`);
+      console.log(`> Inserted: "${nom}"`);
+      inserted += 1;
     }
 
-    console.log("🏁 Database population finished!");
-
-  } catch (error: any) {
-    if (error.response) {
-        console.error(`❌ BGG API Error: ${error.response.status} ${error.response.statusText}`);
-        // Log detailed error data if available
-        console.error("Details:", error.response.data); 
-    } else {
-        console.error("❌ Error fetching BGG data:", error.message);
-    }
+    return { inserted, skipped, total: games.length };
+  } catch (err: any) {
+    console.error('BGG import failed (network or DNS). Set BGG_JSON_BASE if using a proxy or mirror.', {
+      message: err?.message,
+      code: err?.code,
+      hostname: err?.hostname,
+    });
+    return { inserted: 0, skipped: 0, total: 0 };
   }
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  populateDatabase()
+    .then((result) => {
+      const summary = result
+        ? `BGG import finished. Inserted: ${result.inserted}, skipped: ${result.skipped}, total processed: ${result.total}`
+        : 'BGG import finished.';
+      console.log(summary);
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error('BGG import failed:', err?.message || err);
+      process.exit(1);
+    });
 }
