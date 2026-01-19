@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { TableJeuDto } from '@interfaces/entites/table-jeu-dto'; // À créer si n'existe pas
 import { environment } from 'src/environments/environment';
 import { Observable, catchError, finalize, map, of, tap } from 'rxjs';
+import { JeuDto } from '@interfaces/entites/jeu-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -240,6 +241,16 @@ export class TablesService {
         console.error('Erreur lors du contrôle des réservations pour la table', err);
         return of(false);
       })
+    );
+  }
+
+  /**
+   * Récupère tous les jeux (JeuDto) associés à une table
+   */
+  getJeuxCompletsByTableId(tableId: number): Observable<JeuDto[]> {
+    return this.http.get<JeuDto[]>(
+      `${this.baseUrl}/${tableId}/jeux`,
+      { withCredentials: true }
     );
   }
 }

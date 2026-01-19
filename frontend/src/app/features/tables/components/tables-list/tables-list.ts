@@ -1,8 +1,6 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { TableJeuDto } from '@interfaces/entites/table-jeu-dto';
 import { TableCard } from '../table-card/table-card';
-import { GestionReservationService } from '@gestion-reservation/services/gestion-reservation-service';
-import { JeuService } from '@jeux/services/jeu-service';
 import { JeuDto } from '@interfaces/entites/jeu-dto';
 import { firstValueFrom } from 'rxjs';
 import { TablesService } from '@tables/services/tables-service';
@@ -20,8 +18,7 @@ export class TablesList {
   tables = input<TableJeuDto[]>();
   protected tablesvc = inject(TablesService)
 
-  protected reservationgestionsvc = inject(GestionReservationService);
-  protected jeuService = inject(JeuService);
+
 
   openTableJeux = signal<Record<number, boolean>>({});
   jeuxParTable = signal<Record<number, JeuDto[]>>({});
@@ -43,20 +40,20 @@ export class TablesList {
   }
 
   async loadJeuxForTable(tableId: number) {
-    
-    const ids = await firstValueFrom(this.reservationgestionsvc.getJeuxByTableId(tableId));
-    if (!ids || ids.length === 0) {
+    try {
+      // Récupère TOUS les jeux (JeuDto[]) pour cette table
+      const jeux = await firstValueFrom(
+        this.tablesvc.getJeuxCompletsByTableId(tableId)
+      );
+      
+      this.jeuxParTable.set({ 
+        ...this.jeuxParTable(), 
+        [tableId]: jeux || [] 
+      });
+    } catch (error) {
+      console.error('Erreur chargement jeux pour table', tableId, error);
       this.jeuxParTable.set({ ...this.jeuxParTable(), [tableId]: [] });
-      return;
     }
-    // Récupère les détails de chaque jeu
-    const jeux = await Promise.all(
-      ids.map(id => firstValueFrom(this.jeuService.getById(id)).catch(() => null))
-    );
-    this.jeuxParTable.set({
-      ...this.jeuxParTable(),
-      [tableId]: jeux.filter(j => j !== null) as JeuDto[]
-    });
   }
 
   getJeuxDetailsForTable(tableId: number) {
