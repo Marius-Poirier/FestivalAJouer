@@ -42,7 +42,8 @@ services:
       JWT_EXPIRATION: "15m"
       REFRESH_EXPIRATION: "7d"
       FRONTEND_URL: "https://162.38.111.37:8080"
-      BGG_TOKEN: "PASTE_YOUR_LONG_BGG_TOKEN_HERE"
+    env_file:
+      - ./backend/.env
     volumes:
       - ./backend/certs:/app/certs:ro
     user: "1000:1000"

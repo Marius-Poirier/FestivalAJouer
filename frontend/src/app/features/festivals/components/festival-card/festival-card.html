@@ -1,7 +1,7 @@
 @if(festival()){
     @let fest = festival()!;
     <mat-card class="card-container">
-        @if (authService.isAdminSuperorgaOrga()) {
+        @if (authService.isAdminSuperorga()) {
             <button
                 class="delete-btn"
                 (click)="openDeletePopup(fest); $event.stopPropagation()"
@@ -21,7 +21,7 @@
                 <p>Début : <span style="text-transform: capitalize;">{{fest.date_debut | date: 'fullDate':'':'fr-FR' }}</span></p>
                 <p>Fin : <span style="text-transform: capitalize;">{{fest.date_fin | date: 'fullDate':'':'fr-FR'}}</span></p>
             </mat-card-content>
-            @if (authService.isAdminSuperorgaOrga()) {
+            @if (authService.isAdminSuperorga()) {
                 <mat-card-actions>
                     <button (click)="formEdition(); $event.stopPropagation()">Modifier</button> 
                 </mat-card-actions>

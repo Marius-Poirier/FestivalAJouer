@@ -35,6 +35,15 @@ const toInt = (val: any) => (val && val.trim() !== '') ? parseInt(val, 10) : nul
  */
 const toBool = (val: any) => val === '1' || val === 'true';
 
+/**
+ * Helper to normalize optional strings (empty => null)
+ */
+const toNullableString = (val: any) => {
+    if (typeof val !== 'string') return null;
+    const trimmed = val.trim();
+    return trimmed.length ? trimmed : null;
+};
+
 export async function importCsvData() {
     console.log("Starting CSV Data Import...");
     const client = await pool.connect();
@@ -114,9 +123,9 @@ export async function importCsvData() {
                 if (rawId !== null) {
                     try {
                         await client.query(
-                            `INSERT INTO Editeur (id, nom) VALUES ($1, $2)
-                             ON CONFLICT (id) DO UPDATE SET nom = EXCLUDED.nom`,
-                            [rawId, name]
+                            `INSERT INTO Editeur (id, nom, logo_url) VALUES ($1, $2, $3)
+                             ON CONFLICT (id) DO UPDATE SET nom = EXCLUDED.nom, logo_url = EXCLUDED.logo_url`,
+                            [rawId, name, toNullableString(row.logoEditeur)]
                         );
                         editorNameMap.set(name, rawId);
                         validEditorIds.add(rawId); 

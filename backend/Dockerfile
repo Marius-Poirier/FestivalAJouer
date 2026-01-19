@@ -17,7 +17,8 @@ ENV NODE_ENV=production
 COPY --from=build /app/dist ./dist
 COPY --from=build /app/db ./db
 COPY --from=build /app/ressources ./ressources
+COPY .env ./.env
 COPY package*.json ./
 RUN npm ci --omit=dev
 EXPOSE 4000
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "node dist/services/bggService.js --once || true; node dist/server.js"]
