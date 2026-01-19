@@ -11,6 +11,7 @@ import { AuthService } from '@core/services/auth-services';
 import { FormsModule } from '@angular/forms';
 import { ReservationTable } from '@gestion-reservation/components/reservation-table/reservation-table';
 import { TablesList } from '@tables/components/tables-list/tables-list';
+import { JeuService } from '@jeux/services/jeu-service';
 
 @Component({
   selector: 'app-zone-plan-detail',
@@ -28,6 +29,7 @@ export class ZonePlanDetail {
   private zonePlanSvc = inject(ZonePlanService);
   private zoneTarifaireSvc = inject(ZoneTarifaireService);
   protected authService = inject(AuthService);
+  private readonly jeuSvc = inject(JeuService);
 
   // État
   protected readonly zonePlan = signal<ZoneDuPlanDto | null>(null);

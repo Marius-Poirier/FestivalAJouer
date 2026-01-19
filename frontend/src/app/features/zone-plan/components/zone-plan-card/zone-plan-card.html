@@ -15,7 +15,7 @@
         </mat-card-header>
         <mat-card-content>
             @if (zoneTarifaire()) {
-                <p>Zone tarifaire: <span>{{zoneTarifaire()!.nom}}</span></p>
+                <p>Zone tarifaire: <span style="text-transform: capitalize;">{{zoneTarifaire()!.nom}}</span></p>
                 <p>Prix par table: <span>{{zoneTarifaire()!.prix_table | currency:'EUR'}}</span></p>
                 <p>Prix au m²: <span>{{zoneTarifaire()!.prix_m2 | currency:'EUR'}}</span></p>
             } @else {
