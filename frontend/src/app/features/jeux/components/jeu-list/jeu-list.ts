@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { JeuService } from '../../services/jeu-service';
 import { AuthService } from '@core/services/auth-services';
@@ -28,15 +28,55 @@ export class JeuList {
   // Jeu en cours d’édition (null en création)
   protected readonly editingJeu = signal<JeuDto | null>(null);
 
+  // =========================
+  // ===== filtres TYPE ======
+  // =========================
+
+  /** set des types cochés (vide => tous) */
+  protected readonly selectedTypes = signal<Set<string>>(new Set());
+
+  /** options types (déduites des jeux chargés) */
+  protected readonly typeOptions = computed(() => {
+    const set = new Set<string>();
+    for (const j of this.jeuService.jeux()) {
+      const t = (j.type_jeu_nom ?? '').trim();
+      if (t) set.add(t);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'fr'));
+  });
+
+  protected toggleType(type: string, checked: boolean) {
+    const next = new Set(this.selectedTypes());
+    if (checked) next.add(type);
+    else next.delete(type);
+    this.selectedTypes.set(next);
+    this.currentPage.set(1);
+  }
+
+  protected clearTypes() {
+    this.selectedTypes.set(new Set());
+    this.currentPage.set(1);
+  }
+
+  // =========================
+  // ===== liste filtrée =====
+  // =========================
+
   protected readonly filteredJeux = computed(() => {
     const term = this.searchTerm().toLowerCase().trim();
     const list = this.jeuService.jeux();
 
-    if (!term) return list;
+    const selected = this.selectedTypes();
 
-    return list.filter(j =>
-      j.nom.toLowerCase().includes(term)
-    );
+    return list.filter(j => {
+      // filtre texte
+      if (term && !j.nom.toLowerCase().includes(term)) return false;
+
+      // filtre type
+      if (selected.size === 0) return true;
+      const t = (j.type_jeu_nom ?? '').trim();
+      return t ? selected.has(t) : false;
+    });
   });
 
   protected readonly totalPages = computed(() => {
@@ -53,6 +93,14 @@ export class JeuList {
 
   ngOnInit() {
     this.jeuService.loadAll();
+  }
+
+  constructor() {
+    effect(() => {
+      const total = this.totalPages();
+      const current = this.currentPage();
+      if (current > total) this.currentPage.set(total);
+    });
   }
 
   protected toggleForm() {

@@ -21,6 +21,43 @@
     }
   </div>
 
+  <!-- FILTRES TYPES -->
+  @if (typeOptions().length > 0) {
+    <div class="type-filters">
+      <div class="type-header">
+        <div class="type-title">
+          Types
+          <span class="type-subtitle">
+            ({{ filteredJeux().length }} / {{ jeuService.jeux().length }})
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="btn-reset"
+          (click)="clearTypes()"
+          [disabled]="selectedTypes().size === 0">
+          Tout afficher
+        </button>
+      </div>
+
+      <div class="chips">
+        @for (t of typeOptions(); track t) {
+          <label class="chip" [class.active]="selectedTypes().has(t)">
+            <input
+              class="chip-input"
+              type="checkbox"
+              [checked]="selectedTypes().has(t)"
+              (change)="toggleType(t, $any($event.target).checked)"
+            />
+            <span class="dot"></span>
+            <span>{{ t }}</span>
+          </label>
+        }
+      </div>
+    </div>
+  }
+
   @if (jeuService.isLoading() && !jeuService.jeux().length) {
     <p class="loading">Chargement des jeux...</p>
   } @else {
