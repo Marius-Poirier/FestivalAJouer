@@ -4,7 +4,6 @@ import { requireSuperOrga } from '../middleware/auth-superOrga.js'
 import { parsePositiveInteger, parseInteger } from '../utils/validation.js'
 
 const router = Router()
-router.use(requireSuperOrga)
 
 const TABLE_FIELDS = 'id, zone_du_plan_id, zone_tarifaire_id, capacite_jeux, nb_jeux_actuels, statut, created_at, updated_at'
 
@@ -96,7 +95,7 @@ router.get('/:id/reservation', async (req, res) => {
 })
 
 // POST /api/tables
-router.post('/', async (req, res) => {
+router.post('/', requireSuperOrga, async (req, res) => {
     const client = await pool.connect()
     try {
         await client.query('BEGIN')
@@ -136,7 +135,7 @@ router.post('/', async (req, res) => {
 })
 
 // PUT /api/tables/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', requireSuperOrga, async (req, res) => {
     const tableId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(tableId)) {
         return res.status(400).json({ error: 'Identifiant invalide' })
@@ -177,7 +176,7 @@ router.put('/:id', async (req, res) => {
 })
 
 // DELETE /api/tables/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireSuperOrga, async (req, res) => {
     const tableId = Number.parseInt(req.params.id, 10)
     if (!Number.isInteger(tableId)) {
         return res.status(400).json({ error: 'Identifiant invalide' })
