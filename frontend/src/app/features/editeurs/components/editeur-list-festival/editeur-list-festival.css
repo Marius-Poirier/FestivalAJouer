@@ -4,13 +4,16 @@
   padding: 2rem;
 }
 
-/* Erreur */
+/* ========================= */
+/* ===== Erreur ========= */
+/* ========================= */
+
 .error-banner {
   background-color: #fee2e2;
   color: var(--rouge-danger);
   border: 1px solid var(--rouge-danger);
   padding: 1rem;
-  border-radius: 0.2rem;
+  border-radius: 0.25rem;
   margin-bottom: 1.25rem;
 }
 
@@ -27,14 +30,16 @@
   gap: 1rem;
   align-items: center;
 
-  padding: 0.9rem 1rem;
-  border-radius: 0.35rem;
-  background: var(--blanc);
-  border: 2px solid var(--gris-clair);
-  box-shadow: 0 6px 18px rgba(28, 83, 135, 0.08);
-
+  padding: 0;
   margin-bottom: 1rem;
+
+  /* PAS de carte blanche */
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
+
+/* ===== Search ===== */
 
 .search-bar {
   flex: 1;
@@ -42,10 +47,12 @@
   align-items: center;
   gap: 0.6rem;
 
-  padding: 0.6rem 0.9rem;
+  padding: 0.6rem 1rem;
+
+  /* COMME DANS WORKFLOW JEUX */
+  background: var(--blanc);
   border-radius: 0.35rem;
-  border: 2px solid var(--gris-clair);
-  background: #fbfbfc;
+  border: 1px solid var(--gris-clair);
 }
 
 .search-icon {
@@ -56,10 +63,14 @@
   flex: 1;
   border: none;
   outline: none;
+  background: transparent;
+
   font-family: 'Open Sans', sans-serif;
   font-size: 1rem;
-  background: transparent;
+  color: var(--gris-fonce);
 }
+
+/* ===== Actions ===== */
 
 .filters-actions {
   display: flex;
@@ -69,8 +80,8 @@
 
 .btn-reset {
   padding: 0.45rem 0.8rem;
-  border: 2px solid var(--gris-clair);
-  background: var(--blanc);
+  border: 1px solid var(--gris-clair);
+  background: transparent;
   border-radius: 0.35rem;
   cursor: pointer;
   font-weight: 700;
@@ -109,11 +120,11 @@
 /* ========================= */
 
 .workflow-chips {
-  padding: 0.9rem 1rem;
-  border-radius: 0.35rem;
-  background: var(--blanc);
-  border: 2px solid var(--gris-clair);
   margin-bottom: 1.5rem;
+
+  /* PAS de fond blanc */
+  background: transparent;
+  border: none;
 }
 
 .chips-title {
@@ -143,8 +154,8 @@
   align-items: center;
   gap: 0.55rem;
 
-  border: 2px solid var(--gris-clair);
-  background: #fbfbfc;
+  border: 1px solid var(--gris-clair);
+  background: transparent;
   color: var(--gris-fonce);
 
   padding: 0.5rem 0.8rem;
@@ -193,7 +204,10 @@
   gap: 1.5rem;
 }
 
-/* États */
+/* ========================= */
+/* ===== États ===== */
+/* ========================= */
+
 .loading {
   text-align: center;
   padding: 3rem;
@@ -207,7 +221,10 @@
   color: var(--gris-moyen);
 }
 
-/* RESPONSIVE */
+/* ========================= */
+/* ===== Responsive ===== */
+/* ========================= */
+
 @media (max-width: 768px) {
   .list-container {
     padding: 1rem;

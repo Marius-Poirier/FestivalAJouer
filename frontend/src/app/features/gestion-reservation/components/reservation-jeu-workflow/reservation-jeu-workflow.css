@@ -17,6 +17,47 @@
   font-weight: 600;
 }
 
+/* ===== Barre recherche (comme éditeurs) ===== */
+.header-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  align-items: center;
+}
+
+.search-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--blanc);
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--gris-clair);
+  border-radius: 0.2rem;
+}
+
+.search-icon {
+  color: var(--gris-moyen);
+}
+
+.search-bar input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1rem;
+}
+
+.count {
+  padding: 0.5rem 0.9rem;
+  border: 2px solid var(--gris-clair);
+  border-radius: 0.2rem;
+  background: var(--blanc);
+  color: var(--gris-fonce);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* Grille de jeux */
 .grid {
   list-style: none;
@@ -41,6 +82,15 @@
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
+  }
+
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .count {
+    width: fit-content;
   }
 
   .grid {

@@ -7,20 +7,42 @@
   } @else if (error()) {
     <p class="error">{{ error() }}</p>
   } @else {
+
+    <!-- BARRE DE RECHERCHE -->
+    <div class="header-controls">
+      <div class="search-bar">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          type="text"
+          placeholder="Rechercher un jeu..."
+          [value]="searchTerm()"
+          (input)="onSearch($event)"
+        />
+      </div>
+
+      <div class="count">
+        {{ filteredJeux().length }} / {{ jeux().length }}
+      </div>
+    </div>
+
     @if (jeux().length === 0) {
       <p>Aucun jeu ajouté via les réservations.</p>
     } @else {
-      <ul class="grid">
-        @for (j of jeux(); track j.id) {
-          <li>
-            <app-jeu-card
-              [jeu]="j"
-              [canManage]="true"
-              (detail)="onDetail($event)">
-            </app-jeu-card>
-          </li>
-        }
-      </ul>
+      @if (filteredJeux().length === 0) {
+        <p>Aucun jeu ne correspond à la recherche.</p>
+      } @else {
+        <ul class="grid">
+          @for (j of filteredJeux(); track j.id) {
+            <li>
+              <app-jeu-card
+                [jeu]="j"
+                [canManage]="true"
+                (detail)="onDetail($event)">
+              </app-jeu-card>
+            </li>
+          }
+        </ul>
+      }
     }
   }
 </div>
