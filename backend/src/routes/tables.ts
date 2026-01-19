@@ -235,4 +235,42 @@ router.delete('/:id', async (req, res) => {
     }
 })
 
+// GET /api/tables/:id/jeux
+// Récupère tous les jeux associés à une table
+router.get('/:id/jeux', async (req, res) => {
+    const tableId = Number.parseInt(req.params.id, 10)
+    if (!Number.isInteger(tableId)) {
+        return res.status(400).json({ error: 'Identifiant invalide' })
+    }
+    try {
+        const { rows } = await pool.query(
+            `SELECT 
+                j.id, 
+                j.nom, 
+                j.age_min, 
+                j.age_max, 
+                j.theme, 
+                j.url_image, 
+                tj.nom AS type_jeu_nom,
+                STRING_AGG(DISTINCT e.nom, ', ') AS editeurs
+            FROM JeuFestivalTable jft
+            JOIN JeuFestival jf ON jf.id = jft.jeu_festival_id
+            JOIN Jeu j ON j.id = jf.jeu_id
+            LEFT JOIN TypeJeu tj ON tj.id = j.type_jeu_id
+            LEFT JOIN JeuEditeur je ON je.jeu_id = j.id
+            LEFT JOIN Editeur e ON e.id = je.editeur_id
+            WHERE jft.table_id = $1
+            GROUP BY j.id, j.nom,
+                     j.age_min, j.age_max,  j.theme, 
+                     j.url_image,  tj.nom
+            ORDER BY j.nom`,
+            [tableId]
+        )
+        res.json(rows)
+    } catch (err) {
+        console.error(`Erreur lors de la récupération des jeux de la table ${tableId}`, err)
+        res.status(500).json({ error: 'Erreur serveur' })
+    }
+})
+
 export default router
