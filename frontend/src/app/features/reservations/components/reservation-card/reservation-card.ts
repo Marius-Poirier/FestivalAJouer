@@ -1,4 +1,4 @@
-import { Component, computed, inject, input, output, signal, effect } from '@angular/core';
+import { Component, computed, inject, input, output, signal, effect} from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,11 +8,12 @@ import { ReservationsService } from '../../services/reservations-service';
 import { EditeurService } from '@editeurs/services/editeur-service';
 import { StatutReservationWorkflow } from '@enum/statut-workflow-reservation';
 import { Router } from '@angular/router';
+import { UpperCasePipe } from '@angular/common';
 
 @Component({
   selector: 'app-reservation-card',
   standalone: true,
-  imports: [MatCardModule, MatIconModule, MatButtonModule, PopupDelete],
+  imports: [MatCardModule, MatIconModule, MatButtonModule, PopupDelete, UpperCasePipe],
   templateUrl: './reservation-card.html',
   styleUrl: './reservation-card.css'
 })

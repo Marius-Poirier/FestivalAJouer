@@ -1,5 +1,8 @@
+<!-- reservation-card.html -->
 @if(reservation()){
     @let res = reservation()!;
+    @let edi = editeur();
+    
     <mat-card class="card-container" (click)="navigateToDetail(res.id!)">
         @if (canManage()) {
             <button
@@ -11,15 +14,31 @@
             </button>
         }
 
-        <mat-card-header>
-            <div class="subtitle">Réservation #{{ res.id ?? '—' }}</div>
-            <div class="main-info">
-                <div class="title">{{ editeur()?.nom ?? 'Éditeur inconnu' }}</div>
-                <span class="badge">{{ reservation()?.statut_workflow}}</span>
+        <mat-card-header class="header-row">
+            <!-- Logo de l'éditeur -->
+            <div class="logo-wrap" (click)="$event.stopPropagation()">
+                @if (edi?.logo_url) {
+                    <img
+                        class="editeur-logo"
+                        [src]="edi.logo_url"
+                        [alt]="edi.nom"
+                        loading="lazy"
+                    />
+                } @else {
+                    <div class="editeur-logo placeholder" aria-hidden="true">
+                        {{ (edi?.nom?.[0] ?? '?') | uppercase }}
+                    </div>
+                }
             </div>
-            @if(res.editeur_presente_jeux){
-                <div class="tag">Présente des jeux</div>
-            }
+
+            <!-- Informations de la réservation -->
+            <div class="header-text">
+                <div class="subtitle">Réservation #{{ res.id ?? '—' }}</div>
+                <h2 class="title">{{ edi?.nom ?? 'Éditeur inconnu' }}</h2>
+                <div class="meta-info">
+                    <span class="badge">{{ res.statut_workflow }}</span>
+                </div>
+            </div>
         </mat-card-header>
     </mat-card>
     

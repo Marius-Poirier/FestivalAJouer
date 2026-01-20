@@ -1,129 +1,148 @@
-mat-card {
-  background-color: var(--fond-carte); 
-  border: 1px solid var(--gris-clair);
-  border-radius: 8px;
-  padding: 16px;
-  width: 320px;
-  height: 165px;
-  margin: 0 auto;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-}
-
-mat-card-header {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
-  flex: 0 0 auto;
-}
-
-.subtitle {
-  color: var(--gris-moyen);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.main-info {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.title {
-  color: var(--gris-fonce);
-  font-size: 1.25rem;
-  font-weight: bold;
-  flex: 1;
-}
-
-.badge {
-  background: var(--couleur-primaire);
-  color: var(--blanc);
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-.tag {
-  color: var(--couleur-primaire);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-mat-card-content {
-  flex: 1;
-  overflow: hidden;
-}
-
-mat-card-actions {
-  margin-top: auto;
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  flex: 0 0 auto;
-}
-
-mat-card-actions button {
-  background-color: var(--couleur-bouton);
-  color: var(--blanc);
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-mat-card-actions button:hover {
-  background-color: var(--couleur-terciere);
-}
-
-mat-card-actions button:active {
-  background-color: var(--couleur-secondaire);
-}
-
 .card-container {
+  background: var(--blanc);
+  border-radius: 0.2rem;
+  padding: 1.5rem;
   position: relative;
-  padding-top: 1.2rem;
+  box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
+  width: 320px;
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.card-container:hover {
+  box-shadow: 0 4px 12px rgba(28, 83, 135, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Bouton supprimer */
 .delete-btn {
   position: absolute;
-  top: 0.35rem;
-  right: 0.35rem;
-  background: var(--rouge-danger);
-  color: var(--blanc);
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--gris-clair);
+  color: var(--gris-fonce);
   border: none;
   border-radius: 50%;
-  width: 1.3rem;
-  height: 1.3rem;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
   cursor: pointer;
-  transition: background-color 0.2s ease;
-  line-height: 0;
-}
-
-.delete-btn mat-icon {
-  font-size: 0.9rem;
-  width: 0.9rem;
-  height: 0.9rem;
-  line-height: 1;
+  padding: 0;
+  z-index: 1;
 }
 
 .delete-btn:hover {
-  background: #b91c1c;
+  background: var(--rouge-danger);
+  color: var(--blanc);
 }
 
-.delete-btn:active {
-  background: #991b1b;
+.delete-btn mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
+/* Header */
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-right: 2rem;
+}
+
+.logo-wrap {
+  flex-shrink: 0;
+}
+
+.editeur-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 0.2rem;
+  border: 1px solid var(--gris-clair);
+}
+
+.editeur-logo.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--fond-principal);
+  color: var(--couleur-primaire);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.header-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.subtitle {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.75rem;
+  color: var(--gris-moyen);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+}
+
+.title {
+  font-family: 'Montserrat', sans-serif;
+  color: var(--couleur-primaire);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.meta-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: var(--fond-principal);
+  color: var(--couleur-terciere);
+  border-radius: 0.2rem;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .card-container {
+    width: 100%;
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 480px) {
+  .card-container {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .editeur-logo {
+    width: 50px;
+    height: 50px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+}
