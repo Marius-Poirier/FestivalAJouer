@@ -30,6 +30,14 @@ export class ReservationsService {
   readonly isLoading = this._isLoading.asReadonly();
   readonly error = this._error.asReadonly();
 
+
+  public prixtotal = computed(() => {
+    return this.reservation()?.prix_total
+  })
+  public prixfinal = computed(()=>{
+    return this.reservation()?.prix_final
+  })
+
   constructor() {
     // Recharger automatiquement les réservations quand le festival change
     effect(() => {

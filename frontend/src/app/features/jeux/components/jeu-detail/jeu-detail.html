@@ -20,11 +20,12 @@
           @if (j.type_jeu_nom) {
             <span class="badge-type">{{ j.type_jeu_nom }}</span>
           }
+          @if (j.theme) {
+            <p class="theme">Thème : {{ j.theme }}</p>
+          }
         </div>
 
-        @if (j.theme) {
-          <p class="theme">Thème : {{ j.theme }}</p>
-        }
+
       </mat-card-header>
 
       <mat-card-content>

@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MatRadioModule } from '@angular/material/radio';
@@ -50,6 +50,11 @@ export class ReservationDetail {
   protected readonly festivalId = computed(() => this.reservation()?.festival_id ?? null);
 
   protected readonly showEditModal = signal<boolean>(false); 
+  protected readonly nonModifable = signal<boolean>(false)
+
+  protected readonly prixTotal = computed(() => this.reservation()?.prix_total ?? 0);
+  protected readonly prixFinal = computed(() => this.reservation()?.prix_final ?? 0);
+
 
   public activeTab = signal<'informations' | 'tables' | 'jeux' | 'workflow'>('informations');
 
@@ -59,7 +64,16 @@ export class ReservationDetail {
     return this.formatWorkflowLabel(res.statut_workflow);
   });
 
-
+  constructor() {
+   
+    effect(() => {
+      const serviceReservation = this.reservationsvc.reservation();
+      if (serviceReservation && serviceReservation.id === this.reservation()?.id) {
+        console.log(' Réservation mise à jour depuis le service:', serviceReservation);
+        this.reservation.set(serviceReservation);
+      }
+    });
+  }
 
   ngOnInit() {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -132,7 +146,8 @@ export class ReservationDetail {
     const res = this.reservation();
     console.log(res?.statut_workflow)
     // Vérifier que la réservation n'est pas verrouillée
-    if (res?.statut_workflow === 'PAIEMENT_RECU'.toLowerCase()) {
+    if (res?.statut_workflow === 'PAIEMENT_RECU'.toLowerCase() && !this.authSvc.isAdminSuperorga()) {
+      console.log("Vous ne pouvez pas modifier une réservation déjà payée")
       return;
     }
     this.showEditModal.set(true);

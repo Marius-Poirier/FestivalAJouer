@@ -23,6 +23,7 @@ export class GestionReservationService {
   private readonly authService = inject(AuthService);
   private readonly reservationsvc = inject(ReservationsService)
   private readonly tablesService = inject(TablesService);
+  private reservationsSvc = inject(ReservationsService);
 
   private readonly _reservationTables = signal<ReservationTableDto[]>([]);
   readonly reservationTables = this._reservationTables.asReadonly();
@@ -131,6 +132,7 @@ export class GestionReservationService {
           if (response?.affectation) {
             this._reservationTables.update(list => [response.affectation, ...list]);
             console.log(`Table attribuée : ${JSON.stringify(response.affectation)}`);
+            this.reservationsSvc.loadOne(reservationId).subscribe();
           } else {
             this._error.set('Erreur lors de l\'ajout de la réservation de table');
           }
@@ -185,6 +187,7 @@ export class GestionReservationService {
             );
             this._tables.update(tables => tables.filter(t => t.id !== tableId));
             console.log(`Réservation de table supprimée : ${JSON.stringify(response.affectation)}`);
+            this.reservationsSvc.loadOne(reservationId).subscribe();
           } else {
             this._error.set('Erreur lors de la suppression de la réservation de table');
           }

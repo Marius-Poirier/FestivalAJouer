@@ -535,6 +535,102 @@ FOR EACH ROW
 EXECUTE FUNCTION trg_recalcul_prix_reservation_func();
 
 -- ============================================
+-- TRIGGER: Recalcul du prix lors de la SUPPRESSION d'une table
+-- ============================================
+CREATE OR REPLACE FUNCTION trg_recalcul_prix_reservation_delete_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_prix_total DECIMAL(10, 2);
+    v_remise_pct DECIMAL(5, 2);
+    v_remise_mt DECIMAL(10, 2);
+    v_prix_final DECIMAL(10, 2);
+BEGIN
+    -- Calculer le prix total (après suppression)
+    SELECT COALESCE(SUM(zt.prix_table), 0)
+    INTO v_prix_total
+    FROM ReservationTable rt
+    JOIN Table_Jeu t ON t.id = rt.table_id
+    JOIN ZoneTarifaire zt ON zt.id = t.zone_tarifaire_id
+    WHERE rt.reservation_id = OLD.reservation_id;
+    
+    -- Récupérer les remises
+    SELECT remise_pourcentage, remise_montant
+    INTO v_remise_pct, v_remise_mt
+    FROM Reservation
+    WHERE id = OLD.reservation_id;
+    
+    -- Calculer le prix final
+    v_prix_final := v_prix_total;
+    
+    IF v_remise_pct IS NOT NULL THEN
+        v_prix_final := v_prix_final * (1 - v_remise_pct / 100);
+    END IF;
+    
+    IF v_remise_mt IS NOT NULL THEN
+        v_prix_final := v_prix_final - v_remise_mt;
+    END IF;
+    
+    -- S'assurer que le prix ne soit pas négatif
+    v_prix_final := GREATEST(v_prix_final, 0);
+    
+    -- Mise à jour de la réservation
+    UPDATE Reservation
+    SET prix_total = v_prix_total,
+        prix_final = v_prix_final
+    WHERE id = OLD.reservation_id;
+    
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_recalcul_prix_reservation_delete
+AFTER DELETE ON ReservationTable
+FOR EACH ROW 
+EXECUTE FUNCTION trg_recalcul_prix_reservation_delete_func();
+
+-- ============================================
+-- TRIGGER: Recalcul du prix lors de la modification des REMISES
+-- ============================================
+CREATE OR REPLACE FUNCTION trg_recalcul_prix_remise_func()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_prix_total DECIMAL(10, 2);
+    v_prix_final DECIMAL(10, 2);
+BEGIN
+    -- Le prix_total reste inchangé (basé sur les tables)
+    v_prix_total := NEW.prix_total;
+    
+    -- Recalculer le prix final avec les nouvelles remises
+    v_prix_final := v_prix_total;
+    
+    IF NEW.remise_pourcentage IS NOT NULL THEN
+        v_prix_final := v_prix_final * (1 - NEW.remise_pourcentage / 100);
+    END IF;
+    
+    IF NEW.remise_montant IS NOT NULL THEN
+        v_prix_final := v_prix_final - NEW.remise_montant;
+    END IF;
+    
+    -- S'assurer que le prix ne soit pas négatif
+    v_prix_final := GREATEST(v_prix_final, 0);
+    
+    -- Mettre à jour uniquement le prix_final
+    NEW.prix_final := v_prix_final;
+    
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_recalcul_prix_remise
+BEFORE UPDATE OF remise_pourcentage, remise_montant ON Reservation
+FOR EACH ROW
+WHEN (
+    OLD.remise_pourcentage IS DISTINCT FROM NEW.remise_pourcentage OR
+    OLD.remise_montant IS DISTINCT FROM NEW.remise_montant
+)
+EXECUTE FUNCTION trg_recalcul_prix_remise_func();
+
+-- ============================================
 -- VUES UTILES
 -- ============================================
 
