@@ -39,7 +39,8 @@ export class EditeurCard {
 
   // Formulaire d'édition
   protected readonly form = this.fb.group({
-    nom: ['', [Validators.required, Validators.minLength(3)]]
+    nom: ['', [Validators.required, Validators.minLength(3)]],
+    logo_url: ['']
   });
 
   // Méthodes pour gérer l'édition
@@ -49,7 +50,8 @@ export class EditeurCard {
     
     if (!this.isEditMode()) {
       this.form.patchValue({
-        nom: edi.nom
+        nom: edi.nom,
+        logo_url: edi.logo_url ?? ''
       });
       this.isEditMode.set(true);
     } else {
@@ -61,13 +63,15 @@ export class EditeurCard {
   public saveChanges(): void {
     const edi = this.editeur();
     if (!edi?.id || this.form.invalid) return;
-    
-    const updatedEditeur = {
-      id: edi.id,
-      nom: this.form.value.nom!
-    };
-    
-    this.editeursvc.update(updatedEditeur.id, updatedEditeur.nom);
+
+    const { nom, logo_url } = this.form.getRawValue();
+
+    this.editeursvc.update(
+      edi.id,
+      nom!,
+      logo_url?.trim() ? logo_url.trim() : null
+    );
+
     this.isEditMode.set(false);
   }
 

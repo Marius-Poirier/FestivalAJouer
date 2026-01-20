@@ -29,14 +29,16 @@ export class EditeurForm {
   public closeForm = output<void>();
 
   protected readonly form = this.fb.group({
-    nom: ['', [Validators.required, Validators.minLength(3)]]
+    nom: ['', [Validators.required, Validators.minLength(3)]],
+    logo_url: ['']
   });
 
   ngOnInit() {
     const current = this.editeur();
     if (current) {
       this.form.patchValue({
-        nom: current.nom
+        nom: current.nom,
+        logo_url: current.logo_url
       });
     }
   }
@@ -48,11 +50,13 @@ export class EditeurForm {
   protected onSubmit() {
     if (this.form.invalid) return;
 
-    const nom = this.form.value.nom!;
+    const { nom, logo_url } = this.form.value;
     const current = this.editeur();
    
-    this.editeurService.add({ nom });
-    
+    this.editeurService.add({
+      nom: nom!,
+      logo_url: logo_url || null
+    });
 
     if (this.editeurService.error() != null) {
       return;

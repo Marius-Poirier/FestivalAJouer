@@ -73,7 +73,7 @@ export class EditeurService {
    * body: { nom }
    * réponse: { message, editeur }
    */
-  add(editeur: Pick<EditeurDto, 'nom'>): void {
+  add(editeur: { nom: string; logo_url?: string | null }): void {
     this._isLoading.set(true);
     this._error.set(null);
 
@@ -154,13 +154,13 @@ export class EditeurService {
    * body: { nom }
    * réponse: { message, editeur }
    */
-  update(id: number, nom: string): void {
+  update(id: number, nom: string, logo_url: string | null): void {
     this._isLoading.set(true);
     this._error.set(null);
 
     this.http.put<{ message: string; editeur: EditeurDto }>(
       `${this.baseUrl}/${id}`,
-      { nom },
+      { nom, logo_url },
       { withCredentials: true }
     )
       .pipe(

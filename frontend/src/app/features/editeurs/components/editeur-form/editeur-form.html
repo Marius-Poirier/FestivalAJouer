@@ -39,6 +39,17 @@
       }
     }
 
+    <mat-form-field appearance="fill">
+      <mat-label>URL du logo (optionnel)</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="logo_url"
+        placeholder="https://..."
+        [disabled]="editeurService.isLoading()"
+      />
+    </mat-form-field> 
+
     <div class="form-actions">
       <button
         type="submit"
