@@ -135,7 +135,7 @@ export class EditeurListFestival {
 
   // détail
   protected onDetail(id: number) {
-    this.router.navigate(['/editeurs', id]);
+    this.router.navigate(['/editeurs', id], { queryParams: { returnUrl: this.router.url }});
   }
 
   // supprimer

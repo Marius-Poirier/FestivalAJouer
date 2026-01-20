@@ -5,6 +5,7 @@ import { EditeurDto } from '@interfaces/entites/editeur-dto';
 import { catchError, finalize, of, tap } from 'rxjs';
 import { JeuDto } from '@interfaces/entites/jeu-dto';
 import { CurrentFestival } from '@core/services/current-festival';
+import { PersonneDto } from '@interfaces/entites/personne-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -251,4 +252,33 @@ export class EditeurService {
   getJeuxForEditeur(editeurId: number) {
     return this.http.get<JeuDto[]>(`${this.baseUrl}/${editeurId}/jeux`,{ withCredentials: true });
   }
+
+  getPersonnesForEditeur(editeurId: number) {
+    return this.http.get<PersonneDto[]>(
+      `${this.baseUrl}/${editeurId}/personnes`,
+      { withCredentials: true }
+    );
+  }
+
+  addPersonneToEditeur(editeurId: number, payload: {
+    nom: string;
+    prenom: string;
+    telephone: string;
+    email?: string;
+    fonction?: string;
+  }) {
+    return this.http.post<{ message: string; personne: PersonneDto }>(
+      `${this.baseUrl}/${editeurId}/personnes`,
+      payload,
+      { withCredentials: true }
+    );
+  }
+
+  removePersonneFromEditeur(editeurId: number, personneId: number) {
+    return this.http.delete<{ message: string }>(
+      `${this.baseUrl}/${editeurId}/personnes/${personneId}`,
+      { withCredentials: true }
+    );
+  }
+
 }
