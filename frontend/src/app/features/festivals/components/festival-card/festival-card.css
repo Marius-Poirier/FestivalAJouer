@@ -5,7 +5,8 @@
   position: relative;
   box-shadow: 0 2px 8px rgba(28, 83, 135, 0.1);
   width: 320px;
-  height: 270px;
+  min-height: 270px;
+  max-height: 470px;
   display: flex;
   flex-direction: column;
 }
