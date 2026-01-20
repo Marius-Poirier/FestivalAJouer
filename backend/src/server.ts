@@ -52,27 +52,27 @@ app.use((req, res, next) => {
 })
 // Configuration CORS : autoriser le front Angular en HTTPS local (MUST be before routes!)
 const allowedOrigins = [
-  'https://localhost:4200',  // Local Angular Dev
-  'http://localhost:4200',   // Local Angular Dev (HTTP fallback)
-  'https://162.38.111.37:8080', // VM Production URL
-  'https://localhost:8080',
-  process.env.FRONTEND_URL   // Environment variable fallback
+    'https://localhost:4200',  // Local Angular Dev
+    'http://localhost:4200',   // Local Angular Dev (HTTP fallback)
+    'https://162.38.111.37:8080', // VM Production URL
+    'https://localhost:8080',
+    process.env.FRONTEND_URL   // Environment variable fallback
 ].filter(Boolean); // Remove undefined values
 
 app.use(cors({
-   origin: (origin, callback) => {
-          if (!origin) return callback(null, true);
-      
-      if (allowedOrigins.includes(origin)) {
-         callback(null, true);
-      } else {
-         console.warn(`CORS blocked for origin: ${origin}`);
-         callback(new Error('Not allowed by CORS'));
-      }
-   },
-   credentials: true,
-   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-   allowedHeaders: ['Content-Type', 'Authorization']
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`CORS blocked for origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 
@@ -113,5 +113,11 @@ https.createServer({ key, cert }, app).listen(4000, () => {
     importCsvData()
         .then(() => console.log('CSV Import process finished.'))
         .catch(err => console.error('CSV Import failed:', err));
-    //populateDatabase().catch(err => console.error(err));
+
+    // Auto-run BGG image backfill in background
+    import('./services/bggService.js').then(({ backfillGameImages }) => {
+        backfillGameImages()
+            .then(result => console.log(`Startup BGG Backfill: Updated ${result.updated} images out of ${result.total} candidates.`))
+            .catch(err => console.error('Startup BGG Backfill failed:', err));
+    });
 })

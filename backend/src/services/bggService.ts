@@ -13,6 +13,21 @@ const parser = new XMLParser({
   attributeNamePrefix: '@_',
 });
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function retryWithBackoff<T>(fn: () => Promise<T>, retries = 3, delay = 2000): Promise<T> {
+  try {
+    return await fn();
+  } catch (error: any) {
+    if (retries > 0 && error.response?.status === 429) {
+      console.warn(`Rate limit hit (429). Waiting ${delay}ms...`);
+      await sleep(delay);
+      return retryWithBackoff(fn, retries - 1, delay * 2);
+    }
+    throw error;
+  }
+}
+
 const toInt = (value: unknown) => {
   const n = Number.parseInt(String(value), 10);
   return Number.isFinite(n) ? n : null;
@@ -49,7 +64,7 @@ async function fetchHot() {
   }
 }
 
-async function fetchThing(id: number) {
+export async function fetchThing(id: number) {
   try {
     const headers: Record<string, string> = {
       'User-Agent': 'Mozilla/5.0 (compatible; FestivalAJouer/1.0)',
@@ -58,7 +73,11 @@ async function fetchThing(id: number) {
       headers['Authorization'] = `Bearer ${BGG_TOKEN}`;
     }
 
-    const { data } = await axios.get(`${BGG_API_BASE}/thing?id=${id}&stats=1`, { headers });
+    const data = await retryWithBackoff(async () => {
+      const response = await axios.get(`${BGG_API_BASE}/thing?id=${id}&stats=1`, { headers });
+      return response.data;
+    }, 5, 3000); // 5 retries, start with 3s delay
+
     const parsed = parser.parse(data);
 
     const item = parsed.items?.item;
@@ -90,6 +109,7 @@ async function fetchThing(id: number) {
     return null;
   }
 }
+
 async function fetchThingsBatch(ids: number[]) {
   if (ids.length === 0) return [];
   try {
@@ -101,7 +121,12 @@ async function fetchThingsBatch(ids: number[]) {
     }
 
     const idString = ids.join(',');
-    const { data } = await axios.get(`${BGG_API_BASE}/thing?id=${idString}&stats=1`, { headers });
+
+    const data = await retryWithBackoff(async () => {
+      const response = await axios.get(`${BGG_API_BASE}/thing?id=${idString}&stats=1`, { headers });
+      return response.data;
+    }, 5, 3000);
+
     const parsed = parser.parse(data);
 
     const items = parsed.items?.item;
@@ -136,6 +161,100 @@ async function fetchThingsBatch(ids: number[]) {
   }
 }
 
+export async function fetchSearch(query: string) {
+  try {
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (compatible; FestivalAJouer/1.0)',
+    };
+    if (BGG_TOKEN) {
+      headers['Authorization'] = `Bearer ${BGG_TOKEN}`;
+    }
+
+    // Search specifically for boardgames
+    const url = `${BGG_API_BASE}/search?query=${encodeURIComponent(query)}&type=boardgame`;
+
+    const data = await retryWithBackoff(async () => {
+      const response = await axios.get(url, { headers });
+      return response.data;
+    }, 5, 3000);
+
+    const parsed = parser.parse(data);
+
+    const items = parsed.items?.item;
+    if (!items) return null;
+
+    const itemsArray = Array.isArray(items) ? items : [items];
+    return itemsArray[0]?.['@_id'];
+  } catch (error) {
+    console.error(`Error searching for "${query}":`, error);
+    return null;
+  }
+}
+
+export async function backfillGameImages() {
+  console.log('Starting BGG image backfill...');
+  try {
+    // 1. Get games with missing images
+    const { rows: games } = await pool.query(
+      `SELECT id, nom, lien_regles FROM Jeu WHERE url_image IS NULL OR url_image = ''`
+    );
+
+    console.log(`Found ${games.length} games to process.`);
+    if (games.length === 0) return { updated: 0, total: 0 };
+
+    let updated = 0;
+
+    for (const game of games) {
+      let bggId: number | null = null;
+      let usedSearch = false;
+
+      // Try to extract ID from lien_regles
+      if (game.lien_regles && game.lien_regles.includes('boardgamegeek.com/boardgame/')) {
+        const match = game.lien_regles.match(/boardgamegeek\.com\/boardgame\/(\d+)/);
+        if (match) {
+          bggId = parseInt(match[1], 10);
+        }
+      }
+
+      // If no ID found, search by name
+      if (!bggId) {
+        const searchId = await fetchSearch(game.nom);
+        if (searchId) {
+          bggId = parseInt(searchId, 10);
+          usedSearch = true;
+        }
+        // Polite delay for search - enforce 3s
+        await sleep(3000);
+      }
+
+      if (bggId) {
+        const details = await fetchThing(bggId);
+        if (details && (details.image || details.thumbnail)) {
+          const imageUrl = details.image || details.thumbnail;
+          await pool.query('UPDATE Jeu SET url_image = $1 WHERE id = $2', [imageUrl, game.id]);
+          console.log(`> Updated "${game.nom}" with image: ${imageUrl}`);
+          updated++;
+        } else {
+          console.log(`> No image found for "${game.nom}" (BGG ID: ${bggId})`);
+        }
+
+        // Delay after fetchThing - enforce 3s
+        await sleep(3000);
+      } else {
+        console.log(`> Could not find BGG ID for "${game.nom}"`);
+        // even if we didn't call fetchThing, we might have called fetchSearch
+        if (usedSearch) await sleep(3000);
+      }
+    }
+
+    return { updated, total: games.length };
+
+  } catch (error) {
+    console.error('Error during backfill:', error);
+    throw error;
+  }
+}
+
 export async function populateDatabase() {
   try {
     // Sync sequence to avoid "duplicate key value" errors
@@ -163,9 +282,9 @@ export async function populateDatabase() {
       const batchDetails = await fetchThingsBatch(chunk);
       games.push(...batchDetails);
 
-      // Small polite delay between batches
+      // Delay between batches
       if (i + CHUNK_SIZE < allGameIds.length) {
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await sleep(4000);
       }
     }
 
