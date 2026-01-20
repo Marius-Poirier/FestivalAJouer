@@ -10,10 +10,11 @@
       <h1 class="title">Réservation #{{ res.id }}</h1>
         @if (this.authSvc.isAdminSuperorgaOrga()) {
           <div class="actions">
-            @if (res.statut_workflow == 'PAIEMENT_RECU'.toLowerCase() && this.authSvc.isAdminSuperorga()) {
+            @if (res.statut_workflow == 'PAIEMENT_RECU'.toLowerCase() && !this.authSvc.isAdminSuperorga()) {
               <button type="button" class="btn" disabled title="Réservation verrouillée">
                 Modifier 🔒
               </button>
+
             } @else {
                 <button type="button" class="btn" (click)="onModifier()">Modifier</button>
             }
@@ -22,13 +23,14 @@
         }
     </div>
 
+
     <div class="info-section">
       <p><strong>Éditeur :</strong> {{ editeur()!.nom }}</p>
       <p><strong>Festival :</strong> {{ festival() ? festival()!.nom : 'Chargement...' }}</p>
       
       <p><strong>Statut :</strong> {{ workflowLabel() }}</p>
       <p><strong>Présente des jeux :</strong> {{ res.editeur_presente_jeux ? 'Oui' : 'Non' }}</p>
-      <p><strong>Prix final :</strong> <span class="prix-final">{{ res.prix_final }} €</span></p>
+      <p><strong>Prix final :</strong> <span class="prix-final">{{ prixFinal() }} €</span></p>    
     </div>
 
     <!-- ONGLETS -->

@@ -77,9 +77,8 @@ export class ReservationForm {
           editeur_presente_jeux: res.editeur_presente_jeux,
           remise_pourcentage: res.remise_pourcentage || null,
           remise_montant: res.remise_montant || null,
-          commentaires_paiement: '' // Vide pour ajouter un nouveau commentaire
+          commentaires_paiement: '' 
         });
-        
         // Désactiver le champ éditeur en mode édition
         this.form.controls.editeur_id.disable();
       }
