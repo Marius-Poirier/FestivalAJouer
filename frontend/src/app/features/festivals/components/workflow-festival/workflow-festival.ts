@@ -4,7 +4,7 @@ import { ZoneTarifaireList } from '@zoneTarifaires/components/zone-tarifaire-lis
 import { ZonePlanList } from '@zonePlan/components/zone-plan-list/zone-plan-list';
 import { ReservationList } from '@reservations/components/reservation-list/reservation-list';
 import { EditeurListFestival } from '@editeurs/components/editeur-list-festival/editeur-list-festival';
-import { ReservationJeuWorkFlow } from '@gestion-reservation/components/reservation-jeu-workflow/reservation-jeu-workflow';
+import { ReservationJeuWorkFlow } from '@jeux/components/reservation-jeu-workflow/reservation-jeu-workflow';
 
 @Component({
   selector: 'app-workflow-festival',

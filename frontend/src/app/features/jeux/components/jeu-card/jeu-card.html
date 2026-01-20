@@ -5,7 +5,7 @@
     @if (canManage()) {
       <button
         class="delete-btn"
-        (click)="delete.emit(j.id!); $event.stopPropagation()"
+        (click)="openDeletePopup(j); $event.stopPropagation()"
         aria-label="Supprimer"
       >
         <mat-icon>close</mat-icon>
@@ -62,4 +62,14 @@
       }
     </mat-card-actions>
   </mat-card>
+
+  <!-- Popup delete -->
+  <app-popup-delete
+    [entiteType]="deleteType()"
+    [entiteId]="deleteId()"
+    [entitenom]="deletenom()"
+    (confirm)="handleConfirm()"
+    (cancel)="handleCancel()"
+  >
+  </app-popup-delete>
 }

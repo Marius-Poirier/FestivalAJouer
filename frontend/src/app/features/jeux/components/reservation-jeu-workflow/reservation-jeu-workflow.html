@@ -37,12 +37,23 @@
               <app-jeu-card
                 [jeu]="j"
                 [canManage]="true"
-                (detail)="onDetail($event)">
+                (detail)="onDetail($event)"
+                (update)="onUpdate($event)"
+                (delete)="onDelete($event)">
               </app-jeu-card>
             </li>
           }
         </ul>
       }
+    }
+
+    <!-- MODALE EDIT -->
+    @if (showForm()) {
+      <app-jeu-form
+        [jeu]="editingJeu()"
+        [mode]="editingJeu() ? 'edit' : 'create'"
+        (closeForm)="onFormClosed()">
+      </app-jeu-form>
     }
   }
 </div>
