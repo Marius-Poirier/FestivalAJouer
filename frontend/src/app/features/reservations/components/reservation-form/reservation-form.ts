@@ -70,17 +70,24 @@ export class ReservationForm {
     effect(() => {
       const res = this.reservation();
       if (res) {
-        // Mode édition : on pré-remplit le formulaire
         this.form.patchValue({
           editeur_id: res.editeur_id,
           statut_workflow: res.statut_workflow,
           editeur_presente_jeux: res.editeur_presente_jeux,
-          remise_pourcentage: res.remise_pourcentage || null,
-          remise_montant: res.remise_montant || null,
-          commentaires_paiement: '' 
+          remise_pourcentage: res.remise_pourcentage ?? null,
+          remise_montant: res.remise_montant ?? null,
         });
-        // Désactiver le champ éditeur en mode édition
         this.form.controls.editeur_id.disable();
+      } else {
+        this.form.reset({
+          editeur_id: null,
+          statut_workflow: StatutReservationWorkflow.PAS_CONTACTE,
+          editeur_presente_jeux: false,
+          remise_pourcentage: null,
+          remise_montant: null,
+          commentaires_paiement: ''
+        });
+        this.form.controls.editeur_id.enable();
       }
     });
   }
@@ -98,12 +105,18 @@ export class ReservationForm {
 
     // MODE ÉDITION
     if (res && res.id) {
-      const payload: any = {
-        statut_workflow: raw.statut_workflow?.toLowerCase(),
-        editeur_presente_jeux: !!raw.editeur_presente_jeux,
-        remise_pourcentage: raw.remise_pourcentage !== null ? Number(raw.remise_pourcentage) : null,
-        remise_montant: raw.remise_montant !== null ? Number(raw.remise_montant) : null
-      };
+    const payload: any = {
+      statut_workflow: raw.statut_workflow?.toLowerCase(),
+      editeur_presente_jeux: !!raw.editeur_presente_jeux,
+      remise_pourcentage:
+        raw.remise_pourcentage !== null
+          ? Number(raw.remise_pourcentage)
+          : 0,
+      remise_montant:
+        raw.remise_montant !== null
+          ? Number(raw.remise_montant)
+          : 0
+    };
       if (raw.commentaires_paiement && raw.commentaires_paiement.trim() !== '') {
         const ancienCommentaire = res.commentaires_paiement || '';
         const nouveauCommentaire = raw.commentaires_paiement.trim();

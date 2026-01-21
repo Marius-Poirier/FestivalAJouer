@@ -54,6 +54,29 @@ router.post('/', requireOrganisateur, async (req, res) => {
     try {
         const jeuFestivalId = parsePositiveInteger(req.body?.jeu_festival_id, 'jeu_festival_id')
         const tableId = parsePositiveInteger(req.body?.table_id, 'table_id')
+
+        // Vérifier capacité AVANT insertion
+        const { rows: trows } = await pool.query(
+            `SELECT capacite_jeux, nb_jeux_actuels, statut
+            FROM Table_Jeu
+            WHERE id = $1`,
+            [tableId]
+        )
+        if (trows.length === 0) {
+            return res.status(404).json({ error: 'Table introuvable' })
+        }
+
+        const table = trows[0]
+        const current = Number(table.nb_jeux_actuels ?? 0)
+        const cap = Number(table.capacite_jeux ?? 2)
+
+        if (table.statut === 'hors_service') {
+            return res.status(409).json({ error: 'Table hors service' })
+        }
+        if (current >= cap || table.statut === 'plein') {
+            return res.status(409).json({ error: 'Table pleine (capacité atteinte)' })
+        }
+
         const { rows } = await pool.query(
             `INSERT INTO JeuFestivalTable (jeu_festival_id, table_id)
             VALUES ($1, $2)

@@ -224,6 +224,11 @@ export class ReservationTable {
           if (this.openTableJeux()[tableId]) {
             this.loadJeuxForTable(tableId);
           }
+
+          // refresh tables → met à jour nb_jeux_actuels → compteur auto
+          if (resId) {
+            this.gestionsvc.loadTableDetailsForReservation(resId).subscribe();
+          }
         }
       },
       error: (err) => {
@@ -256,6 +261,10 @@ export class ReservationTable {
       this.gestionsvc.removeJeuFromTable(jeuId, tableId).subscribe({
         next: () => {
           this.loadJeuxForTable(tableId);
+            const resId = this.reservationId();
+            if (resId) {
+              this.gestionsvc.loadTableDetailsForReservation(resId).subscribe();
+            }
         }
       });
     }

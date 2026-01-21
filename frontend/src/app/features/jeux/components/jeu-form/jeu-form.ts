@@ -62,7 +62,7 @@ export class JeuForm {
     url_video: [''],
     prototype: [false],
     type_jeu_id: [null as number | null],
-    editeurs_ids: [[] as number[]]   // 👈 sélection des éditeurs
+    editeurs_ids: [[] as number[]]
   });
 
   ngOnInit() {
@@ -119,7 +119,6 @@ export class JeuForm {
       type_jeu_id: value.type_jeu_id ?? undefined
     };
 
-    // 👇 on ajoute editeurs_ids pour le backend
     (payload as any).editeurs_ids = value.editeurs_ids ?? [];
 
     if (mode === 'edit' && current?.id != null) {

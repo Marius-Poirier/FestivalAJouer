@@ -94,6 +94,7 @@
                 type="button" 
                 class="btn btn-add-jeu" 
                 (click)="openAddJeuModal(table.id!)"
+                [disabled]="(table.nb_jeux_actuels || 0) >= (table.capacite_jeux || 2)"
                 title="Ajouter un jeu à cette table"
               >
                 + Jeu

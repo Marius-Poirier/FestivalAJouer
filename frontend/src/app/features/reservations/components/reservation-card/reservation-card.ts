@@ -95,8 +95,9 @@ export class ReservationCard {
   public handleConfirm(): void {
     const id = this.deleteId();
     if (id !== null) {
-      this.ressvc.delete(id);
-      this.handleCancel(); // Ferme la popup après suppression
+      this.ressvc.delete(id).subscribe(() => {
+        this.handleCancel();
+      });
     }
   }
 
