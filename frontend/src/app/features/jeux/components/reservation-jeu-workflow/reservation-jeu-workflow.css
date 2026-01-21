@@ -17,23 +17,43 @@
   font-weight: 600;
 }
 
-/* ===== Barre recherche (comme éditeurs) ===== */
-.header-controls {
+.empty {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: var(--gris-moyen);
+}
+
+/* ========================= */
+/* ===== Barre filtres ===== */
+/* ========================= */
+
+.filters-bar {
+  position: sticky;
+  top: 0.75rem;
+  z-index: 5;
+
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
   align-items: center;
+
+  margin-bottom: 1rem;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 .search-bar {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
+
+  padding: 0.6rem 1rem;
+
   background: var(--blanc);
-  padding: 0.5rem 1rem;
-  border: 2px solid var(--gris-clair);
-  border-radius: 0.2rem;
+  border-radius: 0.35rem;
+  border: 1px solid var(--gris-clair);
 }
 
 .search-icon {
@@ -44,21 +64,119 @@
   flex: 1;
   border: none;
   outline: none;
+  background: transparent;
+
   font-family: 'Open Sans', sans-serif;
   font-size: 1rem;
-}
-
-.count {
-  padding: 0.5rem 0.9rem;
-  border: 2px solid var(--gris-clair);
-  border-radius: 0.2rem;
-  background: var(--blanc);
   color: var(--gris-fonce);
-  font-weight: 700;
-  white-space: nowrap;
 }
 
-/* Grille de jeux */
+.filters-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.btn-reset {
+  padding: 0.45rem 0.8rem;
+  border: 1px solid var(--gris-clair);
+  background: var(--gris-tres-clair);
+  border-radius: 0.35rem;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--gris-fonce);
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.btn-reset:hover:not(:disabled) {
+  border-color: var(--couleur-bouton);
+  background: var(--blanc);
+}
+
+.btn-reset:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ========================= */
+/* ===== Chips workflow ===== */
+/* ========================= */
+
+.workflow-chips {
+  margin-bottom: 1.5rem;
+  background: transparent;
+  border: none;
+}
+
+.chips-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+
+  font-weight: 800;
+  color: var(--gris-fonce);
+  margin-bottom: 0.75rem;
+}
+
+.chips-subtitle {
+  font-weight: 600;
+  color: var(--gris-moyen);
+  font-size: 0.9rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+
+  border: 1px solid var(--gris-clair);
+  background: var(--gris-tres-clair);
+  color: var(--gris-fonce);
+
+  padding: 0.45rem 0.75rem;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.92rem;
+
+  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  border-color: var(--couleur-bouton);
+  background: var(--blanc);
+}
+
+.chip .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: var(--gris-moyen);
+  opacity: 0.7;
+}
+
+.chip.active {
+  border-color: var(--couleur-bouton);
+  background: var(--fond-transparent-moyen);
+}
+
+.chip.active .dot {
+  background: var(--couleur-bouton);
+  opacity: 1;
+}
+
+/* ========================= */
+/* ===== Grille jeux ======= */
+/* ========================= */
+
 .grid {
   list-style: none;
   padding: 0;
@@ -67,7 +185,71 @@
   gap: 1rem;
 }
 
-/* RESPONSIVE */
+.jeu-item {
+  list-style: none;
+}
+
+/* bloc commun = carte + footer placements */
+.jeu-block {
+  border: 1px solid var(--gris-clair);
+  border-radius: 0.35rem;
+  background: var(--blanc);
+  overflow: hidden;
+}
+
+.jeu-card-inside {
+  display: block;
+}
+
+/* footer placements */
+.placement-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  padding: 8px 10px;
+  border-top: 1px solid var(--gris-clair);
+  background: rgba(0, 0, 0, 0.02);
+
+  /* si trop de tables, on scroll un peu */
+  max-height: 84px;
+  overflow: auto;
+}
+
+.placement-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--gris-clair);
+  background: var(--blanc);
+
+  max-width: 100%;
+}
+
+.chip-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  color: var(--gris-moyen);
+}
+
+.chip-text {
+  font-size: 0.85rem;
+  color: var(--gris-fonce);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 520px;
+}
+
+/* ========================= */
+/* ===== Responsive ======== */
+/* ========================= */
+
 @media (max-width: 1024px) {
   .container {
     padding: 1.5rem;
@@ -84,22 +266,31 @@
     padding: 1rem;
   }
 
-  .header-controls {
+  .filters-bar {
     flex-direction: column;
     align-items: stretch;
+    top: 0.5rem;
   }
 
-  .count {
-    width: fit-content;
+  .filters-actions {
+    justify-content: space-between;
   }
 
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+
+  .chip-text {
+    max-width: 240px;
   }
 }
 
 @media (max-width: 480px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .chip-text {
+    max-width: 220px;
   }
 }

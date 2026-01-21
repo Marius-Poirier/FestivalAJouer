@@ -95,4 +95,42 @@ router.delete('/', requireOrganisateur, async (req, res) => {
     }
 })
 
+// GET /api/jeu-festival-tables/placements?festivalId=123
+router.get('/placements', async (req, res) => {
+  if (!req.query.festivalId) {
+    return res.status(400).json({ error: 'festivalId est requis' })
+  }
+
+  const festivalId = Number.parseInt(String(req.query.festivalId), 10)
+  if (!Number.isInteger(festivalId)) {
+    return res.status(400).json({ error: 'festivalId invalide' })
+  }
+
+  try {
+    const { rows } = await pool.query(
+      `
+      SELECT
+        jf.jeu_id,
+        jft.jeu_festival_id,
+        jft.table_id,
+        t.zone_du_plan_id,
+        z.nom AS zone_du_plan_nom
+      FROM JeuFestivalTable jft
+      JOIN JeuFestival jf ON jf.id = jft.jeu_festival_id
+      JOIN Table_Jeu t ON t.id = jft.table_id
+      JOIN ZoneDuPlan z ON z.id = t.zone_du_plan_id
+      WHERE jf.festival_id = $1
+      ORDER BY jf.jeu_id, z.nom, jft.table_id
+      `,
+      [festivalId]
+    )
+
+    res.json(rows)
+  } catch (err) {
+    console.error('Erreur lors de la récupération des placements', err)
+    res.status(500).json({ error: 'Erreur serveur' })
+  }
+})
+
+
 export default router

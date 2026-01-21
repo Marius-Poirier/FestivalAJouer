@@ -8,8 +8,9 @@
     <p class="error">{{ error() }}</p>
   } @else {
 
-    <!-- BARRE DE RECHERCHE -->
-    <div class="header-controls">
+    <!-- BARRE FILTRES -->
+    <div class="filters-bar">
+      <!-- Search -->
       <div class="search-bar">
         <mat-icon class="search-icon">search</mat-icon>
         <input
@@ -20,8 +21,43 @@
         />
       </div>
 
-      <div class="count">
-        {{ filteredJeux().length }} / {{ jeux().length }}
+      <!-- Actions -->
+      <div class="filters-actions">
+        <button
+          type="button"
+          class="btn-reset"
+          (click)="clearZones()"
+          [disabled]="selectedZones().size === 0"
+          title="Réinitialiser les zones"
+        >
+          Tout afficher
+        </button>
+      </div>
+    </div>
+
+    <!-- CHIPS ZONES -->
+    <div class="workflow-chips">
+      <div class="chips-title">
+        Zones
+        <span class="chips-subtitle">
+          ({{ filteredJeux().length }} / {{ jeux().length }})
+        </span>
+      </div>
+
+      <div class="chips">
+        @for (z of zoneOptions(); track z) {
+          @let active = selectedZones().has(z);
+
+          <button
+            type="button"
+            class="chip"
+            [class.active]="active"
+            (click)="toggleZone(z, !active)"
+          >
+            <span class="dot"></span>
+            <span class="chip-label">{{ zoneLabel(z) }}</span>
+          </button>
+        }
       </div>
     </div>
 
@@ -29,21 +65,40 @@
       <p>Aucun jeu ajouté via les réservations.</p>
     } @else {
       @if (filteredJeux().length === 0) {
-        <p>Aucun jeu ne correspond à la recherche.</p>
+        <p class="empty">Aucun jeu ne correspond aux filtres.</p>
       } @else {
+
         <ul class="grid">
           @for (j of filteredJeux(); track j.id) {
-            <li>
-              <app-jeu-card
-                [jeu]="j"
-                [canManage]="true"
-                (detail)="onDetail($event)"
-                (update)="onUpdate($event)"
-                (delete)="onDelete($event)">
-              </app-jeu-card>
+            <li class="jeu-item">
+              <div class="jeu-block">
+                <app-jeu-card
+                  class="jeu-card-inside"
+                  [jeu]="j"
+                  [canManage]="true"
+                  (detail)="onDetail($event)"
+                  (update)="onUpdate($event)"
+                  (delete)="onDelete($event)">
+                </app-jeu-card>
+
+                @if (getPlacementForJeu(j.id)) {
+                  <div
+                    class="placement-bar"
+                    [title]="formatPlacementsTooltip(getPlacementForJeu(j.id)!)"
+                  >
+                    @for (p of getPlacementForJeu(j.id)!.placements; track p.tableId) {
+                      <div class="placement-chip">
+                        <mat-icon class="chip-icon">table_restaurant</mat-icon>
+                        <span class="chip-text">#{{ p.tableId }} ({{ p.zoneNom }})</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
             </li>
           }
         </ul>
+
       }
     }
 

@@ -10,6 +10,7 @@ import { ReservationsService } from '@reservations/services/reservations-service
 import { JeuDto } from '@interfaces/entites/jeu-dto';
 import { JeuFestivalViewDto } from '@interfaces/entites/jeu-festival-view-dto';
 import { JeuService } from '@jeux/services/jeu-service';
+import { JeuPlacementDto } from '@interfaces/entites/jeu-placement-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -433,4 +434,17 @@ export class GestionReservationService {
       );
   }
 
+  getJeuxPlacementsForFestival(festivalId: number): Observable<JeuPlacementDto[]> {
+    const params = new HttpParams().set('festivalId', festivalId.toString());
+
+    return this.http.get<JeuPlacementDto[]>(
+      `${this.baseUrlJeuFestivalTables}/placements`,
+      { params, withCredentials: true }
+    ).pipe(
+      catchError((err) => {
+        console.error('Erreur getJeuxPlacementsForFestival', err);
+        return of([] as JeuPlacementDto[]);
+      })
+    );
+  }
 }

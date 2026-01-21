@@ -53,23 +53,43 @@ router.post('/', requireOrganisateur, async (req, res) => {
 
 // DELETE /api/reservation-tables
 router.delete('/', requireOrganisateur, async (req, res) => {
+    const client = await pool.connect()
     try {
         const reservationId = parsePositiveInteger(req.body?.reservation_id, 'reservation_id')
         const tableId = parsePositiveInteger(req.body?.table_id, 'table_id')
-        const { rows } = await pool.query(
-            `DELETE FROM ReservationTable WHERE reservation_id = $1 AND table_id = $2 RETURNING ${FIELDS}`,
+        await client.query('BEGIN')
+        const { rows } = await client.query(
+            `DELETE FROM ReservationTable 
+             WHERE reservation_id = $1 AND table_id = $2 
+             RETURNING ${FIELDS}`,
             [reservationId, tableId]
         )
         if (rows.length === 0) {
+            await client.query('ROLLBACK')
             return res.status(404).json({ error: 'Affectation non trouvée' })
         }
+        await client.query(
+            `
+            DELETE FROM JeuFestivalTable jft
+            USING JeuFestival jf
+            WHERE jft.jeu_festival_id = jf.id
+              AND jf.reservation_id = $1
+              AND jft.table_id = $2
+            `,
+            [reservationId, tableId]
+        )
+
+        await client.query('COMMIT')
         res.json({ message: 'Affectation supprimée', affectation: rows[0] })
     } catch (err: any) {
+        await client.query('ROLLBACK')
         if (err.message?.includes('champ')) {
             return res.status(400).json({ error: err.message })
         }
         console.error('Erreur lors de la suppression de l\'affectation', err)
         res.status(500).json({ error: 'Erreur serveur' })
+    } finally {
+        client.release()
     }
 })
 
