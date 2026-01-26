@@ -21,4 +21,4 @@ COPY .env ./.env
 COPY package*.json ./
 RUN npm ci --omit=dev
 EXPOSE 4000
-CMD ["sh", "-c", "node dist/services/bggService.js --once || true; node dist/server.js"]
+CMD ["node", "dist/server.js"]

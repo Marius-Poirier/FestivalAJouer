@@ -115,9 +115,9 @@ https.createServer({ key, cert }, app).listen(4000, () => {
         .catch(err => console.error('CSV Import failed:', err));
 
     // Auto-run BGG image backfill in background
-    import('./services/bggService.js').then(({ backfillGameImages }) => {
+/*    import('./services/bggService.js').then(({ backfillGameImages }) => {
         backfillGameImages()
             .then(result => console.log(`Startup BGG Backfill: Updated ${result.updated} images out of ${result.total} candidates.`))
             .catch(err => console.error('Startup BGG Backfill failed:', err));
-    });
+    });*/
 })

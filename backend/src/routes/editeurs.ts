@@ -19,23 +19,22 @@ router.get('/', async (req, res) => {
             params.push(`%${search}%`)
             filters.push(`nom ILIKE $${params.length}`)
         }
-
-        // Optional filter: only editors with a reservation for a given festival
-        if (req.query?.festivalId !== undefined) {
+          if (req.query?.festivalId !== undefined) {
             const id = Number.parseInt(String(req.query.festivalId), 10)
             if (!Number.isInteger(id)) {
                 return res.status(400).json({ error: 'festivalId invalide' })
             }
             params.push(id)
+            // CHANGE 1: Use 'e.id' (alias) instead of 'Editeur.id'
             filters.push(
-                `EXISTS (SELECT 1 FROM Reservation r WHERE r.editeur_id = Editeur.id AND r.festival_id = $${params.length})`
+                `EXISTS (SELECT 1 FROM Reservation r WHERE r.editeur_id = e.id AND r.festival_id = $${params.length})`
             )
         }
 
         const whereClause = filters.length ? `WHERE ${filters.join(' AND ')}` : ''
 
         const { rows } = await pool.query(
-            `SELECT ${EDITOR_FIELDS} FROM Editeur ${whereClause} ORDER BY nom ASC`,
+            `SELECT ${EDITOR_FIELDS} FROM Editeur e ${whereClause} ORDER BY nom ASC`,
             params
         )
         res.json(rows)
