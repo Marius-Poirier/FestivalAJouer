@@ -7,14 +7,12 @@ services:
     container_name: festivalajouer_db_prod
     restart: unless-stopped
     environment:
-      POSTGRES_USER: secureapp
-      POSTGRES_PASSWORD: secureapp
-      POSTGRES_DB: secureapp
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports: # to delete in production
-      - "5432:5432"
     networks:
       - festival_net
     healthcheck:
@@ -30,18 +28,18 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: festivalajouer_backend_prod  # ← NOM MODIFIÉ
+    container_name: festivalajouer_backend_prod
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://secureapp:secureapp@db:5432/secureapp
-      JWT_SECRET: "mon_secret_jwt_super_long_et_complexe"
-      JWT_EXPIRATION: "15m"
-      REFRESH_EXPIRATION: "7d"
-      FRONTEND_URL: "https://162.38.111.37:8080"
+      DATABASE_URL: ${DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      REFRESH_EXPIRATION: ${REFRESH_EXPIRATION}
+      FRONTEND_URL: ${FRONTEND_URL}
     env_file:
       - ./backend/.env
     volumes:
