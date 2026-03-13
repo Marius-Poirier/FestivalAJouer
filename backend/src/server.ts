@@ -103,21 +103,24 @@ app.use('/api/admin', verifyToken, requireAdmin, (req, res) => {
 })
 app.use('/api/metadata', metadataRouter)
 
-// Chargement du certificat et clé générés par mkcert (étape 0)
-const key = fs.readFileSync('./certs/localhost-key.pem')
-const cert = fs.readFileSync('./certs/localhost.pem')
+// Lancement du serveur (HTTP en production, HTTPS en local)
+if (process.env.NODE_ENV === 'production') {
+    // En production, Nginx gère le SSL. Express tourne en HTTP standard.
+    app.listen(4000, () => {
+        console.log('Serveur API démarré sur http://localhost:4000 (derrière Nginx)')
+        importCsvData()
+            .then(() => console.log('CSV Import process finished.'))
+            .catch(err => console.error('CSV Import failed:', err));
+    })
+} else {
+    // En local, on garde les certificats mkcert pour le dev
+    const key = fs.readFileSync('./certs/localhost-key.pem')
+    const cert = fs.readFileSync('./certs/localhost.pem')
 
-// Lancement du serveur HTTPS
-https.createServer({ key, cert }, app).listen(4000, () => {
-    console.log('Serveur API démarré sur https://localhost:4000')
-    importCsvData()
-        .then(() => console.log('CSV Import process finished.'))
-        .catch(err => console.error('CSV Import failed:', err));
-
-    // Auto-run BGG image backfill in background
-/*    import('./services/bggService.js').then(({ backfillGameImages }) => {
-        backfillGameImages()
-            .then(result => console.log(`Startup BGG Backfill: Updated ${result.updated} images out of ${result.total} candidates.`))
-            .catch(err => console.error('Startup BGG Backfill failed:', err));
-    });*/
-})
+    https.createServer({ key, cert }, app).listen(4000, () => {
+        console.log('Serveur API démarré sur https://localhost:4000')
+        importCsvData()
+            .then(() => console.log('CSV Import process finished.'))
+            .catch(err => console.error('CSV Import failed:', err));
+    })
+}
