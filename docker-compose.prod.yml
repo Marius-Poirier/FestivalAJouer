@@ -54,19 +54,17 @@ services:
   # Frontend Angular (servi via Nginx)
   # --------------------------------------------------------------------
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: festivalajouer_frontend_prod
-    restart: unless-stopped
-    depends_on:
-      - backend
-    volumes:
-      - ./backend/certs:/etc/nginx/certs:ro
-    ports:
-      - "8080:443"
-    networks:
-      - festival_net 
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      container_name: festivalajouer_frontend_prod
+      restart: unless-stopped
+      depends_on:
+        - backend
+      ports:
+        - "8080:80"
+      networks:
+        - festival_net
 
   # =========================================================
   # Adminer (interface web de gestion PostgreSQL)
