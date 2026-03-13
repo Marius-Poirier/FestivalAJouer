@@ -25,30 +25,23 @@ services:
   # Backend Node.js (API Express + JWT + HTTPS)
   # --------------------------------------------------------------------
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: festivalajouer_backend_prod
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      NODE_ENV: production
-      DATABASE_URL: ${DATABASE_URL}
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
-      REFRESH_EXPIRATION: ${REFRESH_EXPIRATION}
-      FRONTEND_URL: ${FRONTEND_URL}
-    env_file:
-      - ./backend/.env
-    volumes:
-      - ./backend/certs:/app/certs:ro
-    user: "1000:1000"
-    ports:
-      - "4000:4000"
-    networks:
-      - festival_net
+      build:
+        context: ./backend
+        dockerfile: Dockerfile
+      container_name: festivalajouer_backend_prod
+      restart: unless-stopped
+      depends_on:
+        db:
+          condition: service_healthy
+      environment:
+        NODE_ENV: production
+      env_file:
+        - ./backend/.env
+      user: "1000:1000"
+      ports:
+        - "4000:4000"
+      networks:
+        - festival_net
 
   # --------------------------------------------------------------------
   # Frontend Angular (servi via Nginx)
